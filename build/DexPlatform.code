@@ -1,0 +1,541 @@
+.macro constructor
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+;; constructor protection
+GETGLOB 6
+THROWIF 51
+PUSHINT 1
+SETGLOB 6
+;; end constructor protection
+; Decode input parameters
+ENDS
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; constructor DexPlatform
+ACCEPT
+; end constructor DexPlatform
+; end modifier onlyRoot
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro setPlatformCode
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode code
+;; decode TvmCell
+LDREF
+ENDS
+;; param: code
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; function setPlatformCode
+;; !
+;; push identifier has_platform_code
+GETGLOB 14
+NOT
+THROWIFNOT 108
+; expValue
+; end expValue
+;; push identifier code
+DUP
+; colValue
+SETGLOB 13
+; end colValue
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 14
+; end colValue
+; end function setPlatformCode
+; end modifier onlyRoot
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro initialize
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode code
+;; decode TvmCell
+LDREF
+; Decode version
+LDU 32
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: code
+;; param: version
+;; param: send_gas_to
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; function initialize
+;; push identifier has_platform_code
+GETGLOB 14
+THROWIFNOT 107
+NEWC
+;; decl: builder
+; expValue
+DUP
+; end expValue
+;; push identifier root
+GETGLOB 10
+STSLICER
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+PUSHINT 0
+;; uint32
+STUR 32
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier version
+PUSH S3
+STUR 32
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier send_gas_to
+PUSH S2
+STSLICER
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier platform_code
+GETGLOB 13
+STREFR
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier params
+GETGLOB 12
+STREFR
+; colValue
+NIP
+; end colValue
+;; push identifier code
+PUSH S3
+SETCODE
+;; push identifier code
+PUSH S3
+CTOS
+BLESS
+POP c3
+;; push identifier builder
+DUP
+ENDC
+CALLREF {
+	CALL $:onCodeUpgrade$
+}
+DROP
+; end function initialize
+; end modifier onlyRoot
+BLKDROP 3
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.internal-alias :onCodeUpgrade, 2
+.internal :onCodeUpgrade
+PUSHINT 1
+CALL 1
+;; param: data
+; function onCodeUpgrade
+; end function onCodeUpgrade
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+COMMIT
+THROW 0
+
+.macro c7_to_c4
+GETGLOB 2
+NEWC
+STU 256
+GETGLOB 3
+STUR 64
+GETGLOB 6
+STUR 1
+GETGLOB 10
+GETGLOB 11
+GETGLOB 12
+GETGLOB 13
+GETGLOB 14
+REVERSE 6, 0
+STSLICE
+STU 8
+STREF
+STREF
+STI 1
+ENDC
+POP C4
+
+.macro c4_to_c7
+PUSHROOT
+CTOS        ; c4
+LDU 256      ; pubkey c4
+LDU 64      ; pubkey timestamp c4
+LDU 1       ; pubkey [timestamp] constructor_flag memory
+LDMSGADDR
+LDU 8
+LDREF
+LDREF
+PLDI 1
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+TRUE
+SETGLOB 1   ; pubkey [timestamp] constructor_flag
+SETGLOB 6   ; pubkey [timestamp]
+SETGLOB 3   ; D
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS        ; c4
+DUP        ; c4 c4
+SBITS      ; c4 bits
+GTINT 1    ; c4 bits>1
+PUSHCONT {
+	LDU 256      ; pubkey c4
+	LDU 64      ; pubkey timestamp c4
+	LDU 1       ; pubkey [timestamp] constructor_flag memory
+	LDMSGADDR
+	LDU 8
+	LDREF
+	LDREF
+	PLDI 1
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	TRUE
+	SETGLOB 1   ; pubkey [timestamp] constructor_flag
+	SETGLOB 6   ; pubkey [timestamp]
+	SETGLOB 3   ; D
+	SETGLOB 2
+}
+PUSHCONT {
+	PLDDICT   ; D
+	; init root
+	PUSHINT 1
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	IFNOT
+	SETGLOB 10
+	; init type_id
+	PUSHINT 2
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 8
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	SETGLOB 11
+	; init params
+	PUSHINT 3
+	PUSH S1
+	PUSHINT 64
+	DICTUGETREF
+	PUSHCONT {
+		NEWC
+		ENDC
+	}
+	IFNOT
+	SETGLOB 12
+	; init platform_code
+	NEWC
+	ENDC
+	SETGLOB 13
+	; init has_platform_code
+	PUSHINT 0
+	SETGLOB 14
+	; set contract pubkey
+	PUSHINT 0
+	SWAP
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	PUSHINT 0 ; constructor_flag
+	SETGLOB 6
+	TRUE
+	SETGLOB 1
+}
+IFELSE
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Function: main_internal
+;; param: contract_balance
+;; param: msg_balance
+;; param: int_msg_info
+;; param: msg_body_slice
+PUSHINT 0  ; main_external trans id
+PUSH S2
+CTOS
+LDU 4       ; bounced tail
+LDMSGADDR   ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+PUSH S1    ; body
+SEMPTY     ; isEmpty
+IFRET
+PUSH S1 ; body
+LDU 32  ; funcId body'
+PUSH S1 ; funcId body' funcId
+IFNOTRET
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHINT -1 ; main_external trans id
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SETGLOB 9
+PUSH S1
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP      ; signatureSlice msgSlice msgSlice
+	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	PUSHCONT {
+		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG s3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG s2
+		GETGLOB 2
+	}
+	IFELSE
+	CHKSIGNU      ; msgSlice isSigned
+	THROWIFNOT 40 ; msgSlice
+}
+PUSHCONT {
+	LDU 1      ; havePubkey msgSlice
+	SWAP       ; msgSlice havePubkey
+	THROWIF 58 ; msgSlice
+}
+IFELSE
+LDU 64                         ; timestamp msgSlice
+SWAP                           ; msgSlice timestamp
+CALL $replay_protection_macro$ ; msgSlice
+LDU 32  ; expireAt msgSlice
+SWAP    ; msgSlice expireAt
+NOW     ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU  32 ; funcId body
+SWAP    ; body funcId
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.macro root
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 10
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST xb7295e20
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
+TRUE
+SETGLOB 7
+
+.macro type_id
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 11
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x96c38030
+PUSH S1
+STUR 8
+ENDC
+PUSHINT 0
+SENDRAWMSG
+TRUE
+SETGLOB 7
+
+.macro params
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 12
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST xb0887a21
+PUSH S1
+STREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+TRUE
+SETGLOB 7
+
+.macro public_function_selector
+DUP
+PUSHINT 529233063
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 381911088
+	EQUAL
+	IFJMPREF {
+		CALL $type_id$
+	}
+	DUP
+	PUSHINT 529233063
+	EQUAL
+	IFJMPREF {
+		CALL $initialize$
+	}
+}
+IFJMP
+DUP
+PUSHINT 925457952
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 814250529
+	EQUAL
+	IFJMPREF {
+		CALL $params$
+	}
+	DUP
+	PUSHINT 925457952
+	EQUAL
+	IFJMPREF {
+		CALL $root$
+	}
+}
+IFJMP
+DUP
+PUSHINT 1814366192
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 1756716863
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 1814366192
+	EQUAL
+	IFJMPREF {
+		CALL $setPlatformCode$
+	}
+}
+IFJMP
