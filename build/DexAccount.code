@@ -32,6 +32,7 @@ IFREF {
 
 .macro fallback_macro
 ; function fallback
+THROW 100
 ; end function fallback
 IFREF {
 	CALL $c7_to_c4$
@@ -61,7 +62,7 @@ ENDS
 ;; get member sender
 GETGLOB 9
 ;; push identifier owner
-GETGLOB 12
+GETGLOB 13
 SDEQ
 THROWIFNOT 100
 ; function resetGas
@@ -207,7 +208,7 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 ;; push identifier owner
-GETGLOB 12
+GETGLOB 13
 ; end function getOwner
 ;; emitting 1 value(s)
 PUSH S1
@@ -402,7 +403,7 @@ PUSHCONT {
 	;; push identifier token_root
 	PUSH S2
 	;; push identifier _wallets
-	GETGLOB 13
+	GETGLOB 14
 	PUSHINT 267
 	DICTGET
 	DUP
@@ -418,7 +419,7 @@ PUSHCONT {
 		;; push identifier token_root
 		PUSH S2
 		;; push identifier _balances
-		GETGLOB 14
+		GETGLOB 15
 		PUSHINT 267
 		DICTGET
 		DUP
@@ -442,7 +443,7 @@ PUSHCONT {
 		;; push identifier token_root
 		PUSH S2
 		;; push identifier _wallets
-		GETGLOB 13
+		GETGLOB 14
 		PUSHINT 267
 		DICTGET
 		THROWIFNOT 50
@@ -450,7 +451,7 @@ PUSHCONT {
 		;; push identifier token_root
 		PUSH S3
 		;; push identifier _balances
-		GETGLOB 14
+		GETGLOB 15
 		PUSHINT 267
 		DICTGET
 		THROWIFNOT 50
@@ -574,10 +575,18 @@ ENDS
 ;; get member sender
 GETGLOB 9
 ;; push identifier owner
-GETGLOB 12
+GETGLOB 13
 SDEQ
 THROWIFNOT 100
 ; function requestUpgrade
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+;; >=
+PUSHINT 5000000000
+GEQ
+THROWIFNOT 103
 PUSHINT 100000000
 PUSHINT 2
 RAWRESERVE
@@ -597,11 +606,11 @@ STSLICECONST x23146422
 ;; push identifier current_version
 GETGLOB 11
 STUR 32
-;; owner
-;; push identifier owner
-GETGLOB 12
-STSLICER
 ;; send_gas_to
+;; push identifier owner
+GETGLOB 13
+STSLICER
+;; owner
 ;; push identifier send_gas_to
 PUSH S2
 STSLICER
@@ -653,108 +662,134 @@ GETGLOB 10
 SDEQ
 THROWIFNOT 101
 ; function upgrade
-NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier root
-GETGLOB 10
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
+;; if
 ;; push identifier current_version
 GETGLOB 11
-STUR 32
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
+;; ==
 ;; push identifier new_version
-PUSH S3
-STUR 32
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier send_gas_to
 PUSH S2
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier platform_code
-GETGLOB 15
-STREFR
-; colValue
-NIP
-; end colValue
-NEWC
-;; decl: dataBuilder
-; expValue
-DUP
-; end expValue
-;; push identifier owner
-GETGLOB 12
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier _wallets
-GETGLOB 13
-SWAP
-STDICT
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier _balances
-GETGLOB 14
-SWAP
-STDICT
-; colValue
-NIP
-; end colValue
-; expValue
-PUSH S1
-; end expValue
-;; push identifier dataBuilder
-PUSH S1
-STBREFR
-; colValue
-POP S2
-; end colValue
-;; push identifier code
-PUSH S4
-SETCODE
-;; push identifier code
-PUSH S4
-CTOS
-BLESS
-POP c3
-;; push identifier builder
-PUSH S1
-ENDC
-CALLREF {
-	CALL $:onCodeUpgrade$
+EQUAL
+PUSHCONT {
+	;; transfer()
+	;; push identifier send_gas_to
+	DUP
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHINT 109
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
 }
-DROP2
+PUSHCONT {
+	NEWC
+	;; decl: builder
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier root
+	GETGLOB 10
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier current_version
+	GETGLOB 11
+	STUR 32
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier new_version
+	PUSH S3
+	STUR 32
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier send_gas_to
+	PUSH S2
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier platform_code
+	GETGLOB 12
+	STREFR
+	; colValue
+	NIP
+	; end colValue
+	NEWC
+	;; decl: dataBuilder
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier owner
+	GETGLOB 13
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier _wallets
+	GETGLOB 14
+	SWAP
+	STDICT
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier _balances
+	GETGLOB 15
+	SWAP
+	STDICT
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	PUSH S1
+	; end expValue
+	;; push identifier dataBuilder
+	PUSH S1
+	STBREFR
+	; colValue
+	POP S2
+	; end colValue
+	;; push identifier code
+	PUSH S4
+	SETCODE
+	;; push identifier code
+	PUSH S4
+	CTOS
+	BLESS
+	POP c3
+	;; push identifier builder
+	PUSH S1
+	ENDC
+	CALLREF {
+		CALL $:onCodeUpgrade$
+	}
+	DROP2
+}
+IFELSE
+;; end if
 ; end function upgrade
 ; end modifier onlyRoot
 BLKDROP 3
@@ -803,14 +838,14 @@ PUSHCONT {
 	SETGLOB 10
 	PUSHINT 0
 	SETGLOB 11
-	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	NEWC
+	ENDC
 	SETGLOB 12
-	NEWDICT
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 13
 	NEWDICT
 	SETGLOB 14
-	NEWC
-	ENDC
+	NEWDICT
 	SETGLOB 15
 	;; end set default state vars
 }
@@ -840,7 +875,7 @@ POP S6
 ; expValue
 ; end expValue
 ; colValue
-SETGLOB 15
+SETGLOB 12
 ; end colValue
 ; expValue
 PUSH S4
@@ -862,7 +897,7 @@ POP S2
 ; expValue
 ; end expValue
 ; colValue
-SETGLOB 12
+SETGLOB 13
 ; end colValue
 PUSHINT 100000000
 PUSHINT 2
@@ -906,10 +941,10 @@ GETGLOB 15
 REVERSE 7, 0
 STSLICE
 STU 32
+STREF
 STSLICE
 STDICT
 STDICT
-STREF
 ENDC
 POP C4
 
@@ -921,10 +956,10 @@ LDU 64      ; pubkey timestamp c4
 LDU 1       ; pubkey [timestamp] constructor_flag memory
 LDMSGADDR
 LDU 32
+LDREF
 LDMSGADDR
 LDDICT
-LDDICT
-PLDREF
+PLDDICT
 SETGLOB 15
 SETGLOB 14
 SETGLOB 13
@@ -949,10 +984,10 @@ PUSHCONT {
 	LDU 1       ; pubkey [timestamp] constructor_flag memory
 	LDMSGADDR
 	LDU 32
+	LDREF
 	LDMSGADDR
 	LDDICT
-	LDDICT
-	PLDREF
+	PLDDICT
 	SETGLOB 15
 	SETGLOB 14
 	SETGLOB 13
@@ -973,18 +1008,18 @@ PUSHCONT {
 	; init current_version
 	PUSHINT 0
 	SETGLOB 11
-	; init owner
-	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 12
-	; init _wallets
-	NEWDICT
-	SETGLOB 13
-	; init _balances
-	NEWDICT
-	SETGLOB 14
 	; init platform_code
 	NEWC
 	ENDC
+	SETGLOB 12
+	; init owner
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 13
+	; init _wallets
+	NEWDICT
+	SETGLOB 14
+	; init _balances
+	NEWDICT
 	SETGLOB 15
 	; set contract pubkey
 	PUSHINT 0

@@ -35,6 +35,24 @@
 			]
 		},
 		{
+			"name": "getAccountVersion",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint32"}
+			]
+		},
+		{
+			"name": "getPairVersion",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint32"}
+			]
+		},
+		{
 			"name": "upgrade",
 			"inputs": [
 				{"name":"code","type":"cell"}
@@ -46,7 +64,26 @@
 			"name": "requestUpgradeAccount",
 			"inputs": [
 				{"name":"current_version","type":"uint32"},
+				{"name":"send_gas_to","type":"address"},
+				{"name":"account_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "forceUpgradeAccount",
+			"inputs": [
 				{"name":"account_owner","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgradePair",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -55,6 +92,15 @@
 		{
 			"name": "resetGas",
 			"inputs": [
+				{"name":"receiver","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "resetTargetGas",
+			"inputs": [
+				{"name":"target","type":"address"},
 				{"name":"receiver","type":"address"}
 			],
 			"outputs": [

@@ -231,6 +231,190 @@ CALLREF {
 TRUE
 SETGLOB 7
 
+.macro getAccountVersion
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getAccountVersion
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier account_version
+GETGLOB 14
+; end function getAccountVersion
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xbb296644
+	PUSH S1
+	STUR 32
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STUR 32
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro getPairVersion
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getPairVersion
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier pair_version
+GETGLOB 16
+; end function getPairVersion
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xaae57883
+	PUSH S1
+	STUR 32
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STUR 32
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro upgrade
 DROP
 GETGLOB 1
@@ -252,6 +436,20 @@ GETGLOB 17
 SDEQ
 THROWIFNOT 100
 ; function upgrade
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; >
+PUSHINT 1000000000
+;; +
+PUSHINT 5000000000
+ADD
+UFITS 128
+GREATER
+THROWIFNOT 103
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
 NEWC
 ;; decl: builder
 ; expValue
@@ -338,7 +536,7 @@ IFREF {
 ; Decode input parameters
 ; Decode current_version
 LDU 32
-; Decode account_owner
+; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
 	;; load next cell
@@ -348,7 +546,7 @@ PUSHCONT {
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
+; Decode account_owner
 LDMSGADDRQ
 PUSHCONT {
 	;; load next cell
@@ -360,11 +558,11 @@ PUSHCONT {
 IFNOT
 ENDS
 ;; param: current_version
-;; param: account_owner
 ;; param: send_gas_to
+;; param: account_owner
 ; modifier onlyAccount
 ;; push identifier account_owner
-PUSH S1
+DUP
 PUSHINT 1
 ;; push identifier account_owner
 PUSH S1
@@ -470,7 +668,7 @@ EQUAL
 PUSHCONT {
 	;; transfer()
 	;; push identifier send_gas_to
-	PUSH S2
+	PUSH S3
 	NEWC
 	STSLICECONST x62_
 	STSLICE
@@ -504,7 +702,7 @@ PUSHCONT {
 	STUR 32
 	;; send_gas_to
 	;; push identifier send_gas_to
-	PUSH S3
+	PUSH S4
 	STSLICER
 	ENDC
 	PUSHINT 128
@@ -518,6 +716,402 @@ DROP
 ; end modifier onlyAccount
 BLKDROP 3
 CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro forceUpgradeAccount
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode account_owner
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: account_owner
+;; param: send_gas_to
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 17
+SDEQ
+THROWIFNOT 100
+; function forceUpgradeAccount
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+;; >=
+PUSHINT 5000000000
+GEQ
+THROWIFNOT 103
+PUSHINT 1000000000
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; -
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+SUB
+UFITS 128
+MAX
+PUSHINT 2
+RAWRESERVE
+;; Remote call IUpgradableByRequest.upgrade
+PUSHINT 1
+;; push identifier account_owner
+PUSH S2
+;; param: account_owner
+; function _buildAccountParams
+NEWC
+;; decl: builder
+; expValue
+DUP
+; end expValue
+;; push identifier account_owner
+PUSH S2
+STSLICER
+; colValue
+NIP
+; end colValue
+;; return
+;; push identifier builder
+DUP
+ENDC
+NIP
+; end function _buildAccountParams
+NIP
+;; param: type_id
+;; param: params
+; function _buildInitData
+;; return
+NEWDICT
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+ROT
+PUSHINT 64
+DICTUSETB
+MYADDR
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+;; push identifier type_id
+PUSH S2
+NEWC
+STU 8
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSETB
+;; push identifier params
+PUSH S1
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+;; push identifier platform_code
+GETGLOB 11
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+; end function _buildInitData
+BLKDROP2 2, 1
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x64a578c8
+;; code
+;; push identifier account_code
+GETGLOB 13
+STREFR
+;; new_version
+;; push identifier account_version
+GETGLOB 14
+STUR 32
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function forceUpgradeAccount
+; end modifier onlyOwner
+DROP2
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro upgradePair
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode left_root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode right_root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: left_root
+;; param: right_root
+;; param: send_gas_to
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 17
+SDEQ
+THROWIFNOT 100
+; function upgradePair
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+;; >=
+PUSHINT 10000000000
+GEQ
+THROWIFNOT 103
+PUSHINT 1000000000
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; -
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+SUB
+UFITS 128
+MAX
+PUSHINT 2
+RAWRESERVE
+;; Remote call IUpgradableByRequest.upgrade
+PUSHINT 2
+;; push identifier left_root
+PUSH S3
+;; push identifier right_root
+PUSH S3
+;; param: left_root
+;; param: right_root
+; function _buildPairParams
+NEWC
+;; decl: builder
+;; if
+;; get member value
+;; push identifier left_root
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+;; >
+;; get member value
+;; push identifier right_root
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+GREATER
+PUSHCONT {
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier left_root
+	PUSH S3
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier right_root
+	PUSH S2
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+}
+PUSHCONT {
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier right_root
+	PUSH S2
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier left_root
+	PUSH S3
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+}
+IFELSE
+;; end if
+;; return
+;; push identifier builder
+DUP
+ENDC
+NIP
+; end function _buildPairParams
+BLKDROP2 2, 1
+;; param: type_id
+;; param: params
+; function _buildInitData
+;; return
+NEWDICT
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+ROT
+PUSHINT 64
+DICTUSETB
+MYADDR
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+;; push identifier type_id
+PUSH S2
+NEWC
+STU 8
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSETB
+;; push identifier params
+PUSH S1
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+;; push identifier platform_code
+GETGLOB 11
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+; end function _buildInitData
+BLKDROP2 2, 1
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x64a578c8
+;; code
+;; push identifier pair_code
+GETGLOB 15
+STREFR
+;; new_version
+;; push identifier pair_version
+GETGLOB 16
+STUR 32
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function upgradePair
+; end modifier onlyOwner
+BLKDROP 3
+IFREF {
 	CALL $c7_to_c4$
 }
 TRUE
@@ -570,6 +1164,86 @@ SENDRAWMSG
 ; end function resetGas
 ; end modifier onlyOwner
 DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro resetTargetGas
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode target
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode receiver
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: target
+;; param: receiver
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 17
+SDEQ
+THROWIFNOT 100
+; function resetTargetGas
+PUSHINT 1000000000
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; -
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+SUB
+UFITS 128
+MAX
+PUSHINT 2
+RAWRESERVE
+;; Remote call IResetGas.resetGas
+;; push identifier target
+PUSH S1
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x06e29f2e
+;; receiver
+;; push identifier receiver
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function resetTargetGas
+; end modifier onlyOwner
+DROP2
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1120,9 +1794,9 @@ THROWIFNOT 111
 CALLREF {
 	CALL $message_balance_macro$
 }
-;; <
-PUSHINT 500000000
-LESS
+;; >=
+PUSHINT 1000000000
+GEQ
 THROWIFNOT 103
 PUSHINT 1000000000
 ;; get member balance
@@ -1339,9 +2013,9 @@ THROWIFNOT 107
 CALLREF {
 	CALL $message_balance_macro$
 }
-;; <
-PUSHINT 10000000000
-LESS
+;; >=
+PUSHINT 5000000000
+GEQ
 THROWIFNOT 103
 PUSHINT 1000000000
 ;; get member balance
@@ -1815,23 +2489,41 @@ PUSHINT 588538914
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 115515182
-	EQUAL
-	IFJMPREF {
-		CALL $resetGas$
+	PUSHINT 230920640
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 115515182
+		EQUAL
+		IFJMPREF {
+			CALL $resetGas$
+		}
+		DUP
+		PUSHINT 230920640
+		EQUAL
+		IFJMPREF {
+			CALL $forceUpgradeAccount$
+		}
 	}
-	DUP
-	PUSHINT 388172858
-	EQUAL
-	IFJMPREF {
-		CALL $upgrade$
-	}
+	IFJMP
 	DUP
 	PUSHINT 453826860
-	EQUAL
-	IFJMPREF {
-		CALL $transferOwner$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 388172858
+		EQUAL
+		IFJMPREF {
+			CALL $upgrade$
+		}
+		DUP
+		PUSHINT 453826860
+		EQUAL
+		IFJMPREF {
+			CALL $transferOwner$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 588538914
 	EQUAL
@@ -1841,68 +2533,122 @@ PUSHCONT {
 }
 IFJMP
 DUP
-PUSHINT 1154017489
+PUSHINT 999058976
 LEQ
 PUSHCONT {
 	DUP
 	PUSHINT 720190441
-	EQUAL
-	IFJMPREF {
-		CALL $deployAccount$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 719681667
+		EQUAL
+		IFJMPREF {
+			CALL $getPairVersion$
+		}
+		DUP
+		PUSHINT 720190441
+		EQUAL
+		IFJMPREF {
+			CALL $deployAccount$
+		}
 	}
+	IFJMP
 	DUP
-	PUSHINT 746385297
-	EQUAL
-	IFJMPREF {
-		CALL $getExpectedPairAddress$
+	PUSHINT 992568900
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 746385297
+		EQUAL
+		IFJMPREF {
+			CALL $getExpectedPairAddress$
+		}
+		DUP
+		PUSHINT 992568900
+		EQUAL
+		IFJMPREF {
+			CALL $getAccountVersion$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 999058976
 	EQUAL
 	IFJMPREF {
 		CALL $installOrUpdatePairCode$
 	}
-	DUP
-	PUSHINT 1154017489
-	EQUAL
-	IFJMPREF {
-		CALL $getExpectedAccountAddress$
-	}
 }
 IFJMP
 DUP
-PUSHINT 1809145905
+PUSHINT 1782970727
 LEQ
 PUSHCONT {
 	DUP
 	PUSHINT 1196840156
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1154017489
+		EQUAL
+		IFJMPREF {
+			CALL $getExpectedAccountAddress$
+		}
+		DUP
+		PUSHINT 1196840156
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
 	}
+	IFJMP
 	DUP
-	PUSHINT 1543215676
-	EQUAL
-	IFJMPREF {
-		CALL $installOrUpdateAccountCode$
+	PUSHINT 1707282005
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1543215676
+		EQUAL
+		IFJMPREF {
+			CALL $installOrUpdateAccountCode$
+		}
+		DUP
+		PUSHINT 1707282005
+		EQUAL
+		IFJMPREF {
+			CALL $resetTargetGas$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 1782970727
 	EQUAL
 	IFJMPREF {
 		CALL $deployPair$
 	}
+}
+IFJMP
+DUP
+PUSHINT 2144984146
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 1809145905
 	EQUAL
 	IFJMPREF {
 		CALL $acceptOwner$
 	}
+	DUP
+	PUSHINT 1915630326
+	EQUAL
+	IFJMPREF {
+		CALL $upgradePair$
+	}
+	DUP
+	PUSHINT 2144984146
+	EQUAL
+	IFJMPREF {
+		CALL $installPlatformOnce$
+	}
 }
 IFJMP
-DUP
-PUSHINT 2144984146
-EQUAL
-IFJMPREF {
-	CALL $installPlatformOnce$
-}
