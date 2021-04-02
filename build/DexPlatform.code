@@ -91,6 +91,16 @@ IFREF {
 LDREF
 ; Decode version
 LDU 32
+; Decode vault
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
@@ -104,6 +114,7 @@ IFNOT
 ENDS
 ;; param: code
 ;; param: version
+;; param: vault
 ;; param: send_gas_to
 ; modifier onlyRoot
 ;; get member sender
@@ -130,6 +141,15 @@ NIP
 ; expValue
 DUP
 ; end expValue
+;; push identifier vault
+PUSH S3
+STSLICER
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
 PUSHINT 0
 ;; uint32
 STUR 32
@@ -140,7 +160,7 @@ NIP
 DUP
 ; end expValue
 ;; push identifier version
-PUSH S3
+PUSH S4
 STUR 32
 ; colValue
 NIP
@@ -173,10 +193,10 @@ STREFR
 NIP
 ; end colValue
 ;; push identifier code
-PUSH S3
+PUSH S4
 SETCODE
 ;; push identifier code
-PUSH S3
+PUSH S4
 CTOS
 BLESS
 POP c3
@@ -189,7 +209,7 @@ CALLREF {
 DROP
 ; end function initialize
 ; end modifier onlyRoot
-BLKDROP 3
+BLKDROP 4
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -486,7 +506,7 @@ SETGLOB 7
 
 .macro public_function_selector
 DUP
-PUSHINT 529233063
+PUSHINT 814250529
 LEQ
 PUSHCONT {
 	DUP
@@ -496,28 +516,28 @@ PUSHCONT {
 		CALL $type_id$
 	}
 	DUP
-	PUSHINT 529233063
-	EQUAL
-	IFJMPREF {
-		CALL $initialize$
-	}
-}
-IFJMP
-DUP
-PUSHINT 925457952
-LEQ
-PUSHCONT {
-	DUP
 	PUSHINT 814250529
 	EQUAL
 	IFJMPREF {
 		CALL $params$
 	}
+}
+IFJMP
+DUP
+PUSHINT 1667719843
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 925457952
 	EQUAL
 	IFJMPREF {
 		CALL $root$
+	}
+	DUP
+	PUSHINT 1667719843
+	EQUAL
+	IFJMPREF {
+		CALL $initialize$
 	}
 }
 IFJMP

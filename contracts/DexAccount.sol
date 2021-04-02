@@ -6,10 +6,11 @@ pragma AbiHeader pubkey;
 
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
-import "./libraries/GasConstants.sol";
+import "./libraries/Gas.sol";
 
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
+import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
 
 import "./DexPlatform.sol";
@@ -21,6 +22,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
     // Base:
     address root;
+    address vault;
     uint32 current_version;
     TvmCell platform_code;
 
@@ -47,7 +49,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
     // ...and allow user to get surplus gas
     function resetGas(address receiver) override external view onlyOwner {
-        tvm.rawReserve(GasConstants.ACCOUNT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         receiver.transfer({ value: 0, flag: 128 });
     }
 
@@ -64,6 +66,10 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
     function getVersion() external view responsible returns (uint32) {
         return{ value: 0, bounce: false, flag: 64 } current_version;
+    }
+
+    function getVault() external view responsible returns (address) {
+        return{ value: 0, bounce: false, flag: 64 } vault;
     }
 
     // returns account wallet_address and balance
@@ -155,8 +161,8 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Code upgrade
     function requestUpgrade(address send_gas_to) external view onlyOwner {
-        require(msg.value >= GasConstants.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
-        tvm.rawReserve(GasConstants.ACCOUNT_INITIAL_BALANCE, 2);
+        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, Gas.WID), DexErrors.VALUE_TOO_LOW);
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         IDexRoot(root).requestUpgradeAccount{ value: 0, flag: 128 }(current_version, owner, send_gas_to);
     }
 
@@ -167,6 +173,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
             TvmBuilder builder;
 
             builder.store(root);
+            builder.store(vault);
             builder.store(current_version);
             builder.store(new_version);
             builder.store(send_gas_to);
@@ -205,14 +212,15 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
     */
     function onCodeUpgrade(TvmCell upgrade_data) private {
         TvmSlice s = upgrade_data.toSlice();
-        (address original_root, uint32 old_version, uint32 new_version, address send_gas_to) =
-            s.decode(address, uint32, uint32, address);
+        (address root_, address vault_, uint32 old_version, uint32 new_version, address send_gas_to) =
+            s.decode(address, address, uint32, uint32, address);
 
         if (old_version == 0) {
             tvm.resetStorage();
         }
 
-        root = original_root;
+        root = root_;
+        vault_ = vault_;
         current_version = new_version;
 
         platform_code = s.loadRef();        // ref 1
@@ -220,7 +228,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
         owner = data.decode(address);
 
-        tvm.rawReserve(GasConstants.ACCOUNT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         send_gas_to.transfer({ value: 0, flag: 128 });
     }
 }

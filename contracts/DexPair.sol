@@ -6,10 +6,11 @@ pragma AbiHeader pubkey;
 
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
-import "./libraries/GasConstants.sol";
+import "./libraries/Gas.sol";
 
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
+import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
 
 import "./DexPlatform.sol";
@@ -21,6 +22,7 @@ contract DexPair is IUpgradableByRequest, IResetGas {
 
     // Base:
     address root;
+    address vault;
     uint32 current_version;
     TvmCell platform_code;
 
@@ -46,7 +48,7 @@ contract DexPair is IUpgradableByRequest, IResetGas {
 
     // ...and allow root to get surplus gas
     function resetGas(address receiver) override external view onlyRoot {
-        tvm.rawReserve(GasConstants.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         receiver.transfer({ value: 0, flag: 128 });
     }
 
@@ -63,6 +65,10 @@ contract DexPair is IUpgradableByRequest, IResetGas {
 
     function getVersion() external view responsible returns (uint32) {
         return{ value: 0, bounce: false, flag: 64 } current_version;
+    }
+
+    function getVault() external view responsible returns (address) {
+        return{ value: 0, bounce: false, flag: 64 } vault;
     }
 
     // TODO:
@@ -162,6 +168,7 @@ contract DexPair is IUpgradableByRequest, IResetGas {
             TvmBuilder builder;
 
             builder.store(root);
+            builder.store(vault);
             builder.store(current_version);
             builder.store(new_version);
             builder.store(send_gas_to);
@@ -201,14 +208,15 @@ contract DexPair is IUpgradableByRequest, IResetGas {
     */
     function onCodeUpgrade(TvmCell upgrade_data) private {
         TvmSlice s = upgrade_data.toSlice();
-        (address original_root, uint32 old_version, uint32 new_version, address send_gas_to) =
-        s.decode(address, uint32, uint32, address);
+        (address root_, address vault_, uint32 old_version, uint32 new_version, address send_gas_to) =
+        s.decode(address, address, uint32, uint32, address);
 
         if (old_version == 0) {
             tvm.resetStorage();
         }
 
-        root = original_root;
+        root = root_;
+        vault = vault_;
         current_version = new_version;
 
         platform_code = s.loadRef();        // ref 1
@@ -217,7 +225,7 @@ contract DexPair is IUpgradableByRequest, IResetGas {
         left_root = data.decode(address);
         right_root = data.decode(address);
 
-        tvm.rawReserve(GasConstants.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         send_gas_to.transfer({ value: 0, flag: 128 });
     }
 }

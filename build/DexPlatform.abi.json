@@ -22,6 +22,7 @@
 			"inputs": [
 				{"name":"code","type":"cell"},
 				{"name":"version","type":"uint32"},
+				{"name":"vault","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [

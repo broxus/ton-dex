@@ -208,9 +208,9 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 ;; push identifier left_root
-GETGLOB 13
-;; push identifier right_root
 GETGLOB 14
+;; push identifier right_root
+GETGLOB 15
 ; end function getTokenRoots
 ;; emitting 2 value(s)
 PUSH S2
@@ -310,7 +310,7 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 ;; push identifier current_version
-GETGLOB 11
+GETGLOB 12
 ; end function getVersion
 ;; emitting 1 value(s)
 PUSH S1
@@ -377,6 +377,98 @@ IFREF {
 TRUE
 SETGLOB 7
 
+.macro getVault
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getVault
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier vault
+GETGLOB 11
+; end function getVault
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xbd1bd325
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STSLICER
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro upgrade
 DROP
 GETGLOB 1
@@ -414,7 +506,7 @@ THROWIFNOT 101
 ; function upgrade
 ;; if
 ;; push identifier current_version
-GETGLOB 11
+GETGLOB 12
 ;; ==
 ;; push identifier new_version
 PUSH S2
@@ -449,8 +541,17 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier current_version
+	;; push identifier vault
 	GETGLOB 11
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier current_version
+	GETGLOB 12
 	STUR 32
 	; colValue
 	NIP
@@ -477,7 +578,7 @@ PUSHCONT {
 	DUP
 	; end expValue
 	;; push identifier platform_code
-	GETGLOB 12
+	GETGLOB 13
 	STREFR
 	; colValue
 	NIP
@@ -488,15 +589,6 @@ PUSHCONT {
 	DUP
 	; end expValue
 	;; push identifier left_root
-	GETGLOB 13
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
 	GETGLOB 14
 	STSLICER
 	; colValue
@@ -505,8 +597,17 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier lp_root
+	;; push identifier right_root
 	GETGLOB 15
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier lp_root
+	GETGLOB 16
 	STSLICER
 	; colValue
 	NIP
@@ -562,18 +663,22 @@ DUP
 ; end expValue
 ;; decode address
 LDMSGADDR
+;; decode address
+LDMSGADDR
 LDU 32
 LDU 32
 ;; decode address
 LDMSGADDR
 ; colValue
-POP S5
+POP S6
 ; end colValue
-BLKSWAP 3, 1
-BLKSWAP 3, 1
-BLKSWAP 3, 1
-BLKSWAP 3, 1
-;; decl: original_root
+BLKSWAP 4, 1
+BLKSWAP 4, 1
+BLKSWAP 4, 1
+BLKSWAP 4, 1
+BLKSWAP 4, 1
+;; decl: root_
+;; decl: vault_
 ;; decl: old_version
 ;; decl: new_version
 ;; decl: send_gas_to
@@ -584,54 +689,63 @@ PUSHCONT {
 	;; set default state vars
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 10
-	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 11
+	PUSHINT 0
+	SETGLOB 12
 	NEWC
 	ENDC
-	SETGLOB 12
-	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 13
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 14
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 15
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 16
 	;; end set default state vars
 }
 IFNOT
 ;; end if
 ; expValue
 ; end expValue
-;; push identifier original_root
-PUSH S3
+;; push identifier root_
+PUSH S4
 ; colValue
 SETGLOB 10
+; end colValue
+; expValue
+; end expValue
+;; push identifier vault_
+PUSH S3
+; colValue
+SETGLOB 11
 ; end colValue
 ; expValue
 ; end expValue
 ;; push identifier new_version
 PUSH S1
 ; colValue
-SETGLOB 11
-; end colValue
-; expValue
-PUSH S4
-; end expValue
-LDREF
-; colValue
-POP S6
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 12
 ; end colValue
 ; expValue
-PUSH S4
+PUSH S5
+; end expValue
+LDREF
+; colValue
+POP S7
+; end colValue
+; expValue
+; end expValue
+; colValue
+SETGLOB 13
+; end colValue
+; expValue
+PUSH S5
 ; end expValue
 LDREFRTOS
 SWAP
 ; colValue
-POP S6
+POP S7
 ; end colValue
 ;; decl: data
 ; expValue
@@ -645,7 +759,7 @@ POP S2
 ; expValue
 ; end expValue
 ; colValue
-SETGLOB 13
+SETGLOB 14
 ; end colValue
 ; expValue
 DUP
@@ -658,7 +772,7 @@ POP S2
 ; expValue
 ; end expValue
 ; colValue
-SETGLOB 14
+SETGLOB 15
 ; end colValue
 PUSHINT 1000000000
 PUSHINT 2
@@ -676,7 +790,7 @@ STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-BLKDROP 6
+BLKDROP 7
 ; end function onCodeUpgrade
 DROP
 CALLREF {
@@ -696,7 +810,9 @@ STUR 1
 NEWC
 GETGLOB 14
 GETGLOB 15
-XCHG s2
+GETGLOB 16
+REVERSE 4, 0
+STSLICE
 STSLICE
 STSLICE
 GETGLOB 10
@@ -706,9 +822,9 @@ GETGLOB 13
 REVERSE 6, 0
 STBREF
 STSLICE
+STSLICE
 STU 32
 STREF
-STSLICE
 ENDC
 POP C4
 
@@ -720,11 +836,14 @@ LDU 64      ; pubkey timestamp c4
 LDU 1       ; pubkey [timestamp] constructor_flag memory
 LDREFRTOS
 LDMSGADDR
+LDMSGADDR
+SETGLOB 16
 SETGLOB 15
 SETGLOB 14
 LDMSGADDR
+LDMSGADDR
 LDU 32
-LDREF
+PLDREF
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
@@ -747,11 +866,14 @@ PUSHCONT {
 	LDU 1       ; pubkey [timestamp] constructor_flag memory
 	LDREFRTOS
 	LDMSGADDR
+	LDMSGADDR
+	SETGLOB 16
 	SETGLOB 15
 	SETGLOB 14
 	LDMSGADDR
+	LDMSGADDR
 	LDU 32
-	LDREF
+	PLDREF
 	SETGLOB 13
 	SETGLOB 12
 	SETGLOB 11
@@ -767,22 +889,25 @@ PUSHCONT {
 	; init root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 10
+	; init vault
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 11
 	; init current_version
 	PUSHINT 0
-	SETGLOB 11
+	SETGLOB 12
 	; init platform_code
 	NEWC
 	ENDC
-	SETGLOB 12
+	SETGLOB 13
 	; init left_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 13
+	SETGLOB 14
 	; init right_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 14
+	SETGLOB 15
 	; init lp_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	SETGLOB 15
+	SETGLOB 16
 	; set contract pubkey
 	PUSHINT 0
 	SWAP
@@ -950,7 +1075,7 @@ PUSHCONT {
 }
 IFJMP
 DUP
-PUSHINT 1688565960
+PUSHINT 1025233701
 LEQ
 PUSHCONT {
 	DUP
@@ -960,28 +1085,34 @@ PUSHCONT {
 		CALL $getVersion$
 	}
 	DUP
+	PUSHINT 1025233701
+	EQUAL
+	IFJMPREF {
+		CALL $getVault$
+	}
+}
+IFJMP
+DUP
+PUSHINT 1756716863
+LEQ
+PUSHCONT {
+	DUP
 	PUSHINT 1688565960
 	EQUAL
 	IFJMPREF {
 		CALL $upgrade$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1950458398
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1756716863
 	EQUAL
 	IFJMPREF {
 		CALL $constructor$
 	}
-	DUP
-	PUSHINT 1950458398
-	EQUAL
-	IFJMPREF {
-		CALL $getRoot$
-	}
 }
 IFJMP
+DUP
+PUSHINT 1950458398
+EQUAL
+IFJMPREF {
+	CALL $getRoot$
+}

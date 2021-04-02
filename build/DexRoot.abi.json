@@ -5,7 +5,8 @@
 		{
 			"name": "constructor",
 			"inputs": [
-				{"name":"initial_owner","type":"address"}
+				{"name":"initial_owner","type":"address"},
+				{"name":"initial_vault","type":"address"}
 			],
 			"outputs": [
 			]
@@ -50,6 +51,40 @@
 			],
 			"outputs": [
 				{"name":"value0","type":"uint32"}
+			]
+		},
+		{
+			"name": "setVault",
+			"inputs": [
+				{"name":"new_vault","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getVault",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "setActive",
+			"inputs": [
+				{"name":"new_active","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "isActive",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
 			]
 		},
 		{

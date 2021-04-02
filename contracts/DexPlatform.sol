@@ -25,12 +25,13 @@ contract DexPlatform {
         has_platform_code = true;
     }
 
-    function initialize(TvmCell code, uint32 version, address send_gas_to) external onlyRoot {
+    function initialize(TvmCell code, uint32 version, address vault, address send_gas_to) external onlyRoot {
         require(has_platform_code, DexErrors.PLATFORM_CODE_EMPTY);
 
         TvmBuilder builder;
 
         builder.store(root);
+        builder.store(vault);
         builder.store(uint32(0));
         builder.store(version);
         builder.store(send_gas_to);
