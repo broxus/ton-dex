@@ -677,7 +677,10 @@ CALLREF {
 }
 ;; >=
 PUSHINT 5000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }

@@ -2,8 +2,6 @@ pragma ton-solidity ^0.39.0;
 
 library Gas {
 
-    int8 constant WID = 0;
-
     // ABSOLUTE
 
     uint128 constant ROOT_INITIAL_BALANCE = 1 ton;

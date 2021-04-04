@@ -161,7 +161,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Code upgrade
     function requestUpgrade(address send_gas_to) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, Gas.WID), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         IDexRoot(root).requestUpgradeAccount{ value: 0, flag: 128 }(current_version, owner, send_gas_to);
     }

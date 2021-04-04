@@ -36,12 +36,6 @@ ENDS
 ;; param: initial_owner
 ;; param: initial_vault
 ; constructor DexRoot
-;; get member wid
-MYADDR
-PARSEMSGADDR
-INDEX 2
-EQINT 0
-THROWIFNOT 100
 ACCEPT
 ; expValue
 ; end expValue
@@ -804,7 +798,10 @@ CALLREF {
 }
 ;; >
 PUSHINT 5000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -1154,7 +1151,10 @@ CALLREF {
 }
 ;; >=
 PUSHINT 5000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -1336,7 +1336,10 @@ CALLREF {
 }
 ;; >=
 PUSHINT 5000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2181,7 +2184,10 @@ CALLREF {
 }
 ;; >=
 PUSHINT 1000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2284,7 +2290,10 @@ STU 256
 ENDC
 CTOS
 PUSHINT 100
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2309,7 +2318,10 @@ NIP
 ;; decl: platform
 ;; Remote call DexPlatform.setPlatformCode
 PUSHINT 100
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2334,7 +2346,10 @@ PUSHINT 1
 SENDRAWMSG
 ;; Remote call DexPlatform.initialize
 PUSHINT 500
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2447,7 +2462,10 @@ CALLREF {
 }
 ;; >=
 PUSHINT 5000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2593,7 +2611,10 @@ STU 256
 ENDC
 CTOS
 PUSHINT 100
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2618,7 +2639,10 @@ NIP
 ;; decl: platform
 ;; Remote call DexPlatform.setPlatformCode
 PUSHINT 100
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }
@@ -2643,7 +2667,10 @@ PUSHINT 1
 SENDRAWMSG
 ;; Remote call DexPlatform.initialize
 PUSHINT 1000
-PUSHINT 0
+;; get member wid
+MYADDR
+PARSEMSGADDR
+INDEX 2
 CALLREF {
 	CALL $__gasToTon_macro$
 }

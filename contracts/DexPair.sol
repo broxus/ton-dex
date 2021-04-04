@@ -12,10 +12,11 @@ import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
+import "./interfaces/IAfterInitialize.sol";
 
 import "./DexPlatform.sol";
 
-contract DexPair is IUpgradableByRequest, IResetGas {
+contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -104,6 +105,11 @@ contract DexPair is IUpgradableByRequest, IResetGas {
 
     modifier onlyRoot() {
         require(msg.sender == root, DexErrors.NOT_ROOT);
+        _;
+    }
+
+    modifier onlyVault() {
+        require(msg.sender == vault, DexErrors.NOT_VAULT);
         _;
     }
 
@@ -226,6 +232,21 @@ contract DexPair is IUpgradableByRequest, IResetGas {
         right_root = data.decode(address);
 
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        send_gas_to.transfer({ value: 0, flag: 128 });
+    }
+
+    function afterInitialize(address send_gas_to) external onlyRoot {
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        if (lp_root.value == 0) {
+            IDexVault(vault).addLiquidityToken{ value: 0, flag: 128 }(address(this), left_root, right_root, send_gas_to);
+        } else {
+            send_gas_to.transfer({ value: 0, flag: 128 });
+        }
+    }
+
+    function liquidityTokenRootDeployed(address lp_root, address send_gas_to) override external onlyVault {
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        lp_root = lp_root;
         send_gas_to.transfer({ value: 0, flag: 128 });
     }
 }
