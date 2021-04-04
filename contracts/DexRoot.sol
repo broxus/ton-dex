@@ -11,6 +11,7 @@ import "./libraries/Gas.sol";
 import "./DexPlatform.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/IUpgradableByRequest.sol";
+import "./interfaces/IAfterInitialize.sol";
 import "./interfaces/IDexRoot.sol";
 import "./interfaces/IResetGas.sol";
 

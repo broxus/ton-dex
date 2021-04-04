@@ -2707,9 +2707,9 @@ STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-;; transfer()
-;; push identifier send_gas_to
-PUSH S1
+;; Remote call IAfterInitialize.afterInitialize
+;; push identifier platform
+DUP
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -2717,6 +2717,11 @@ PUSHINT 109
 STZEROES
 STSLICECONST 0
 STSLICECONST 0
+STSLICECONST x2aff056b
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S2
+STSLICER
 ENDC
 PUSHINT 128
 SENDRAWMSG

@@ -55,10 +55,37 @@
 			]
 		},
 		{
+			"name": "getFeeParams",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"nominator","type":"uint16"},
+				{"name":"denominator","type":"uint16"}
+			]
+		},
+		{
 			"name": "upgrade",
 			"inputs": [
 				{"name":"code","type":"cell"},
 				{"name":"new_version","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "afterInitialize",
+			"inputs": [
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "liquidityTokenRootDeployed",
+			"inputs": [
+				{"name":"lp_root_","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [

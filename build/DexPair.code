@@ -469,6 +469,109 @@ IFREF {
 TRUE
 SETGLOB 7
 
+.macro getFeeParams
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+;; ret param: nominator
+PUSHINT 0
+;; ret param: denominator
+PUSHINT 0
+; function getFeeParams
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier fee_nominator
+GETGLOB 20
+;; push identifier fee_denominator
+GETGLOB 21
+BLKDROP2 2, 2
+; end function getFeeParams
+;; emitting 2 value(s)
+PUSH S2
+EQINT -1
+PUSHCONT {
+	PUSH S4
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xd8d86626
+	PUSH S2
+	STUR 16
+	PUSH S1
+	STUR 16
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S2
+	STUR 16
+	PUSH S1
+	STUR 16
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP2
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro upgrade
 DROP
 GETGLOB 1
@@ -702,6 +805,16 @@ PUSHCONT {
 	SETGLOB 15
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 16
+	PUSHINT 0
+	SETGLOB 17
+	PUSHINT 0
+	SETGLOB 18
+	PUSHINT 0
+	SETGLOB 19
+	PUSHINT 0
+	SETGLOB 20
+	PUSHINT 0
+	SETGLOB 21
 	;; end set default state vars
 }
 IFNOT
@@ -799,6 +912,177 @@ CALLREF {
 COMMIT
 THROW 0
 
+.macro afterInitialize
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: send_gas_to
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; function afterInitialize
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
+;; if
+;; get member value
+;; push identifier lp_root
+GETGLOB 16
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+EQINT 0
+PUSHCONT {
+	;; Remote call IDexVault.addLiquidityToken
+	;; push identifier vault
+	GETGLOB 11
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHINT 109
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST x47aa4332
+	;; pair
+	MYADDR
+	STSLICER
+	;; left_root
+	;; push identifier left_root
+	GETGLOB 14
+	STSLICER
+	;; right_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	NEWC
+	;; send_gas_to
+	;; push identifier send_gas_to
+	PUSH S3
+	STSLICER
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+}
+PUSHCONT {
+	;; transfer()
+	;; push identifier send_gas_to
+	DUP
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHINT 109
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+}
+IFELSE
+;; end if
+; end function afterInitialize
+; end modifier onlyRoot
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro liquidityTokenRootDeployed
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode lp_root_
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: lp_root_
+;; param: send_gas_to
+; modifier onlyVault
+;; get member sender
+GETGLOB 9
+;; push identifier vault
+GETGLOB 11
+SDEQ
+THROWIFNOT 115
+; function liquidityTokenRootDeployed
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
+; expValue
+; end expValue
+;; push identifier lp_root_
+PUSH S1
+; colValue
+SETGLOB 16
+; end colValue
+;; transfer()
+;; push identifier send_gas_to
+DUP
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function liquidityTokenRootDeployed
+; end modifier onlyVault
+DROP2
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro c7_to_c4
 GETGLOB 2
 NEWC
@@ -815,16 +1099,29 @@ REVERSE 4, 0
 STSLICE
 STSLICE
 STSLICE
+NEWC
+GETGLOB 17
+GETGLOB 18
+GETGLOB 19
+REVERSE 4, 0
+STU 128
+STU 128
+STU 128
 GETGLOB 10
 GETGLOB 11
 GETGLOB 12
 GETGLOB 13
-REVERSE 6, 0
+GETGLOB 20
+GETGLOB 21
+REVERSE 9, 0
+STBREF
 STBREF
 STSLICE
 STSLICE
 STU 32
 STREF
+STU 16
+STU 16
 ENDC
 POP C4
 
@@ -840,10 +1137,21 @@ LDMSGADDR
 SETGLOB 16
 SETGLOB 15
 SETGLOB 14
+LDREFRTOS
+LDU 128
+LDU 128
+PLDU 128
+SETGLOB 19
+SETGLOB 18
+SETGLOB 17
 LDMSGADDR
 LDMSGADDR
 LDU 32
-PLDREF
+LDREF
+LDU 16
+PLDU 16
+SETGLOB 21
+SETGLOB 20
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
@@ -870,10 +1178,21 @@ PUSHCONT {
 	SETGLOB 16
 	SETGLOB 15
 	SETGLOB 14
+	LDREFRTOS
+	LDU 128
+	LDU 128
+	PLDU 128
+	SETGLOB 19
+	SETGLOB 18
+	SETGLOB 17
 	LDMSGADDR
 	LDMSGADDR
 	LDU 32
-	PLDREF
+	LDREF
+	LDU 16
+	PLDU 16
+	SETGLOB 21
+	SETGLOB 20
 	SETGLOB 13
 	SETGLOB 12
 	SETGLOB 11
@@ -908,6 +1227,21 @@ PUSHCONT {
 	; init lp_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 16
+	; init lp_supply
+	PUSHINT 0
+	SETGLOB 17
+	; init left_balance
+	PUSHINT 0
+	SETGLOB 18
+	; init right_balance
+	PUSHINT 0
+	SETGLOB 19
+	; init fee_nominator
+	PUSHINT 0
+	SETGLOB 20
+	; init fee_denominator
+	PUSHINT 0
+	SETGLOB 21
 	; set contract pubkey
 	PUSHINT 0
 	SWAP
@@ -922,6 +1256,21 @@ PUSHCONT {
 	SETGLOB 6
 	TRUE
 	SETGLOB 1
+	;; init state var: lp_supply
+	PUSHINT 0
+	SETGLOB 17
+	;; init state var: left_balance
+	PUSHINT 0
+	SETGLOB 18
+	;; init state var: right_balance
+	PUSHINT 0
+	SETGLOB 19
+	;; init state var: fee_nominator
+	PUSHINT 3
+	SETGLOB 20
+	;; init state var: fee_denominator
+	PUSHINT 1000
+	SETGLOB 21
 }
 IFELSE
 
@@ -1057,7 +1406,7 @@ IF
 
 .macro public_function_selector
 DUP
-PUSHINT 115515182
+PUSHINT 721356139
 LEQ
 PUSHCONT {
 	DUP
@@ -1072,10 +1421,16 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $resetGas$
 	}
+	DUP
+	PUSHINT 721356139
+	EQUAL
+	IFJMPREF {
+		CALL $afterInitialize$
+	}
 }
 IFJMP
 DUP
-PUSHINT 1025233701
+PUSHINT 1125423194
 LEQ
 PUSHCONT {
 	DUP
@@ -1090,12 +1445,24 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $getVault$
 	}
+	DUP
+	PUSHINT 1125423194
+	EQUAL
+	IFJMPREF {
+		CALL $liquidityTokenRootDeployed$
+	}
 }
 IFJMP
 DUP
 PUSHINT 1756716863
 LEQ
 PUSHCONT {
+	DUP
+	PUSHINT 1490576934
+	EQUAL
+	IFJMPREF {
+		CALL $getFeeParams$
+	}
 	DUP
 	PUSHINT 1688565960
 	EQUAL

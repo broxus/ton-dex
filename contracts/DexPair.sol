@@ -10,13 +10,14 @@ import "./libraries/Gas.sol";
 
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
+import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
 import "./interfaces/IAfterInitialize.sol";
 
 import "./DexPlatform.sol";
 
-contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
+contract DexPair is IDexPair, IUpgradableByRequest, IAfterInitialize, IResetGas {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -33,7 +34,14 @@ contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
 
     // Custom:
     address lp_root;
-    // TODO:
+    // Total supply of LP tokens
+    uint128 lp_supply = 0;
+    // Balances
+    uint128 left_balance = 0;
+    uint128 right_balance = 0;
+    // Fee
+    uint16 fee_nominator = 3;
+    uint16 fee_denominator = 1000;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Base functions
@@ -70,6 +78,10 @@ contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
 
     function getVault() external view responsible returns (address) {
         return{ value: 0, bounce: false, flag: 64 } vault;
+    }
+
+    function getFeeParams() external view responsible returns (uint16 nominator, uint16 denominator) {
+        return{ value: 0, bounce: false, flag: 64 } (fee_nominator, fee_denominator);
     }
 
     // TODO:
@@ -235,7 +247,7 @@ contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
         send_gas_to.transfer({ value: 0, flag: 128 });
     }
 
-    function afterInitialize(address send_gas_to) external onlyRoot {
+    function afterInitialize(address send_gas_to) override external onlyRoot {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         if (lp_root.value == 0) {
             IDexVault(vault).addLiquidityToken{ value: 0, flag: 128 }(address(this), left_root, right_root, send_gas_to);
@@ -244,9 +256,9 @@ contract DexPair is IUpgradableByRequest, IAfterInitialize, IResetGas {
         }
     }
 
-    function liquidityTokenRootDeployed(address lp_root, address send_gas_to) override external onlyVault {
+    function liquidityTokenRootDeployed(address lp_root_, address send_gas_to) override external onlyVault {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        lp_root = lp_root;
+        lp_root = lp_root_;
         send_gas_to.transfer({ value: 0, flag: 128 });
     }
 }
