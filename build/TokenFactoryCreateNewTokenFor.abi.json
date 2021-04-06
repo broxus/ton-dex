@@ -1,0 +1,76 @@
+{
+	"ABI version": 2,
+	"header": ["pubkey", "time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"factory","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "newToken",
+			"inputs": [
+				{"name":"answer_id","type":"uint32"},
+				{"name":"value","type":"uint128"},
+				{"name":"owner","type":"address"},
+				{"name":"name","type":"bytes"},
+				{"name":"symbol","type":"bytes"},
+				{"name":"decimals","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "notifyTokenRootDeployed",
+			"inputs": [
+				{"name":"answer_id","type":"uint32"},
+				{"name":"root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "notifyTokenRootNotDeployed",
+			"inputs": [
+				{"name":"answer_id","type":"uint32"},
+				{"name":"root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getDeployedToken",
+			"inputs": [
+				{"name":"answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"_randomNonce","type":"uint256"}
+	],
+	"events": [
+		{
+			"name": "RootDepoyed",
+			"inputs": [
+				{"name":"root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "RootNotDepoyed",
+			"inputs": [
+				{"name":"answer_id","type":"uint32"},
+				{"name":"root","type":"address"}
+			],
+			"outputs": [
+			]
+		}
+	]
+}

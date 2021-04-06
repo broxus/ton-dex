@@ -1,0 +1,40 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"data","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getData",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"meta","type":"cell"}
+			],
+			"outputs": [
+				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"value0","type":"tuple"},
+				{"name":"value1","type":"cell"}
+			]
+		},
+		{
+			"name": "prune",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"value0","type":"tuple"}
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"root","type":"address"},
+		{"key":2,"name":"pending_token","type":"address"}
+	],
+	"events": [
+	]
+}

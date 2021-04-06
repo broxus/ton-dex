@@ -8,6 +8,9 @@ library Gas {
     uint128 constant ACCOUNT_INITIAL_BALANCE = 0.1 ton;
     uint128 constant PAIR_INITIAL_BALANCE = 1 ton;
 
+    uint128 constant TOKEN_FACTORY_FEE = 1 ton;
+    uint128 constant DEPLOY_TOKEN_ROOT_MIN_VALUE = 1 ton;
+
     // GAS
 
     uint128 constant DEPLOY_ACCOUNT_MIN_VALUE = 1 micro;

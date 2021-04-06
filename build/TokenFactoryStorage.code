@@ -1,0 +1,691 @@
+.macro constructor
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+;; constructor protection
+GETGLOB 6
+THROWIF 51
+PUSHINT 1
+SETGLOB 6
+;; end constructor protection
+; Decode input parameters
+; Decode data
+;; decode struct StorageData data
+;; decode StorageData.answer_id
+LDU 32
+;; decode StorageData.pending_token
+LDMSGADDR
+;; decode StorageData.root_public_key
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+;; decode StorageData.root_owner_address
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+;; decode StorageData.name
+DUP
+SREFS
+EQINT 1
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDREF
+;; decode StorageData.symbol
+DUP
+SBITREFS
+EQINT 1
+SWAP
+EQINT 0
+AND
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDREF
+;; decode StorageData.decimals
+LDUQ 8
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 8
+}
+IFNOT
+;; decode StorageData.sender
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+;; build struct StorageData ss:9
+BLKSWAP 8, 1
+TUPLE 8
+SWAP
+ENDS
+;; param: data
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; constructor TokenFactoryStorage
+; expValue
+; end expValue
+;; push identifier data
+DUP
+; colValue
+SETGLOB 12
+; end colValue
+; end constructor TokenFactoryStorage
+; end modifier onlyRoot
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro getData
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+; Decode meta
+;; decode TvmCell
+LDREF
+ENDS
+;; param: meta
+CALLREF {
+	CALL $getData_internal_macro$
+}
+;; emitting 2 value(s)
+PUSH S2
+EQINT -1
+PUSHCONT {
+	PUSH S4
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST xa4b22c1f
+	PUSH S3
+	UNTUPLE 8
+	BLKSWAP 1, 8
+	PUSH S8
+	STUR 32
+	PUSH S7
+	STSLICER
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STREFR
+	PUSH S3
+	STREFR
+	PUSH S2
+	STUR 8
+	NEWC
+	PUSH S2
+	STSLICER
+	BLKDROP2 8, 2
+	PUSH S3
+	STREFR
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S3
+	UNTUPLE 8
+	BLKSWAP 1, 8
+	PUSH S8
+	STUR 32
+	PUSH S7
+	STSLICER
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STREFR
+	PUSH S3
+	STREFR
+	PUSH S2
+	STUR 8
+	NEWC
+	PUSH S2
+	STSLICER
+	BLKDROP2 8, 2
+	PUSH S3
+	STREFR
+	STBREFR
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP2
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	getData_internal
+.type	getData_internal, @function
+CALL $getData_internal_macro$
+
+.macro getData_internal_macro
+;; param: meta
+; function getData
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier _data
+GETGLOB 12
+;; push identifier meta
+PUSH S1
+; end function getData
+BLKDROP2 1, 2
+
+.macro prune
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+CALLREF {
+	CALL $prune_internal_macro$
+}
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST xefa13fc1
+	PUSH S2
+	UNTUPLE 8
+	BLKSWAP 1, 8
+	PUSH S8
+	STUR 32
+	PUSH S7
+	STSLICER
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STREFR
+	PUSH S3
+	STREFR
+	PUSH S2
+	STUR 8
+	NEWC
+	PUSH S2
+	STSLICER
+	BLKDROP2 8, 2
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S2
+	UNTUPLE 8
+	BLKSWAP 1, 8
+	PUSH S8
+	STUR 32
+	PUSH S7
+	STSLICER
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STREFR
+	PUSH S3
+	STREFR
+	PUSH S2
+	STUR 8
+	NEWC
+	PUSH S2
+	STSLICER
+	BLKDROP2 8, 2
+	STBREFR
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	prune_internal
+.type	prune_internal, @function
+CALL $prune_internal_macro$
+
+.macro prune_internal_macro
+;; ret param: retParam@0
+PUSHINT 0
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+PUSHINT 0
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+NEWC
+ENDC
+NEWC
+ENDC
+PUSHINT 0
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+TUPLE 8
+; modifier onlyRoot
+;; get member sender
+GETGLOB 9
+;; push identifier root
+GETGLOB 10
+SDEQ
+THROWIFNOT 101
+; function prune
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+PUSHINT 160
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier _data
+GETGLOB 12
+NIP
+; end function prune
+; end modifier onlyRoot
+
+.macro c7_to_c4
+GETGLOB 2
+NEWC
+STU 256
+GETGLOB 3
+STUR 64
+GETGLOB 6
+STUR 1
+GETGLOB 10
+GETGLOB 11
+GETGLOB 12
+REVERSE 4, 0
+STSLICE
+STSLICE
+SWAP
+UNTUPLE 8
+NEWC
+NEWC
+PUSH S2
+STSLICER
+STBREFR
+PUSH S8
+STUR 32
+PUSH S7
+STSLICER
+PUSH S6
+STUR 256
+PUSH S5
+STSLICER
+PUSH S4
+STREFR
+PUSH S3
+STREFR
+PUSH S2
+STUR 8
+BLKDROP2 8, 1
+STBREFR
+ENDC
+POP C4
+
+.macro c4_to_c7
+PUSHROOT
+CTOS        ; c4
+LDU 256      ; pubkey c4
+LDU 64      ; pubkey timestamp c4
+LDU 1       ; pubkey [timestamp] constructor_flag memory
+LDMSGADDR
+LDMSGADDR
+LDREFRTOS
+NIP
+LDREF
+LDU 32
+LDMSGADDR
+LDU 256
+LDMSGADDR
+LDREF
+LDREF
+PLDU 8
+BLKSWAP 1, 7
+CTOS
+TUPLE 8
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+TRUE
+SETGLOB 1   ; pubkey [timestamp] constructor_flag
+SETGLOB 6   ; pubkey [timestamp]
+SETGLOB 3   ; D
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS        ; c4
+DUP        ; c4 c4
+SBITS      ; c4 bits
+GTINT 1    ; c4 bits>1
+PUSHCONT {
+	LDU 256      ; pubkey c4
+	LDU 64      ; pubkey timestamp c4
+	LDU 1       ; pubkey [timestamp] constructor_flag memory
+	LDMSGADDR
+	LDMSGADDR
+	LDREFRTOS
+	NIP
+	LDREF
+	LDU 32
+	LDMSGADDR
+	LDU 256
+	LDMSGADDR
+	LDREF
+	LDREF
+	PLDU 8
+	BLKSWAP 1, 7
+	CTOS
+	TUPLE 8
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	TRUE
+	SETGLOB 1   ; pubkey [timestamp] constructor_flag
+	SETGLOB 6   ; pubkey [timestamp]
+	SETGLOB 3   ; D
+	SETGLOB 2
+}
+PUSHCONT {
+	PLDDICT   ; D
+	; init root
+	PUSHINT 1
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	IFNOT
+	SETGLOB 10
+	; init pending_token
+	PUSHINT 2
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	IFNOT
+	SETGLOB 11
+	; init _data
+	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	NEWC
+	ENDC
+	NEWC
+	ENDC
+	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	TUPLE 8
+	SETGLOB 12
+	; set contract pubkey
+	PUSHINT 0
+	SWAP
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	PUSHINT 0 ; constructor_flag
+	SETGLOB 6
+	TRUE
+	SETGLOB 1
+}
+IFELSE
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Function: main_internal
+;; param: contract_balance
+;; param: msg_balance
+;; param: int_msg_info
+;; param: msg_body_slice
+PUSHINT 0  ; main_external trans id
+PUSH S2
+CTOS
+LDU 4       ; bounced tail
+LDMSGADDR   ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+; beg set default params for responsible func
+GETGLOB 4
+; bounce
+TRUE
+SETINDEXQ 1
+; tons
+PUSHINT 10000000
+SETINDEXQ 2
+; currency
+NULL
+SETINDEXQ 3
+; flag
+PUSHINT 0
+SETINDEXQ 4
+SETGLOB 4
+; end set default params for responsible func
+IFRET
+PUSH S1    ; body
+SEMPTY     ; isEmpty
+IFRET
+PUSH S1 ; body
+LDU 32  ; funcId body'
+PUSH S1 ; funcId body' funcId
+IFNOTRET
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHINT -1 ; main_external trans id
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SETGLOB 9
+PUSH S1
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP      ; signatureSlice msgSlice msgSlice
+	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	ROT
+	GETGLOB 2
+	CHKSIGNU      ; msgSlice isSigned
+	THROWIFNOT 40 ; msgSlice
+}
+IF
+LDU 64                         ; timestamp msgSlice
+SWAP                           ; msgSlice timestamp
+CALL $replay_protection_macro$ ; msgSlice
+LDU  32 ; funcId body
+SWAP    ; body funcId
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.macro public_function_selector
+DUP
+PUSHINT 615656479
+EQUAL
+IFJMPREF {
+	CALL $getData$
+}
+DUP
+PUSHINT 1704946702
+EQUAL
+IFJMPREF {
+	CALL $constructor$
+}
+DUP
+PUSHINT 1872838593
+EQUAL
+IFJMPREF {
+	CALL $prune$
+}

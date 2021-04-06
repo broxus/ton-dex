@@ -1,0 +1,623 @@
+.macro constructor
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+;; constructor protection
+GETGLOB 6
+THROWIF 51
+PUSHINT 1
+SETGLOB 6
+;; end constructor protection
+; Decode input parameters
+; Decode factory
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: factory
+; constructor TokenFactoryCreateNewTokenFor
+ACCEPT
+; expValue
+; end expValue
+;; push identifier factory
+DUP
+; colValue
+SETGLOB 11
+; end colValue
+; end constructor TokenFactoryCreateNewTokenFor
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro newToken
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode answer_id
+LDU 32
+; Decode value
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode owner
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode name
+DUP
+SREFS
+EQINT 1
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDREF
+; Decode symbol
+DUP
+SBITREFS
+EQINT 1
+SWAP
+EQINT 0
+AND
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDREF
+; Decode decimals
+LDUQ 8
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 8
+}
+IFNOT
+ENDS
+;; param: answer_id
+;; param: value
+;; param: owner
+;; param: name
+;; param: symbol
+;; param: decimals
+CALLREF {
+	CALL $newToken_internal_macro$
+}
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	newToken_internal
+.type	newToken_internal, @function
+CALL $newToken_internal_macro$
+
+.macro newToken_internal_macro
+;; param: answer_id
+;; param: value
+;; param: owner
+;; param: name
+;; param: symbol
+;; param: decimals
+; function newToken
+ACCEPT
+;; Remote call ITokenFactory.Token
+;; push identifier value
+PUSH S4
+;; push identifier _factory
+GETGLOB 11
+NEWC
+STSLICECONST x62_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 105
+STZEROES
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x64be7ee7
+;; answer_id
+;; push identifier answer_id
+PUSH S7
+STUR 32
+;; root_public_key
+PUSHINT 0
+STUR 256
+;; root_owner_address
+;; push identifier owner
+PUSH S5
+STSLICER
+;; name
+;; push identifier name
+PUSH S4
+STREFR
+;; symbol
+;; push identifier symbol
+PUSH S3
+STREFR
+;; decimals
+;; push identifier decimals
+PUSH S2
+STUR 8
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+; end function newToken
+BLKDROP 6
+
+.macro notifyTokenRootDeployed
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode answer_id
+LDU 32
+; Decode root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: answer_id
+;; param: root
+CALLREF {
+	CALL $notifyTokenRootDeployed_internal_macro$
+}
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	notifyTokenRootDeployed_internal
+.type	notifyTokenRootDeployed_internal, @function
+CALL $notifyTokenRootDeployed_internal_macro$
+
+.macro notifyTokenRootDeployed_internal_macro
+;; param: answer_id
+;; param: root
+; function notifyTokenRootDeployed
+;; get member sender
+GETGLOB 9
+;; push identifier _factory
+GETGLOB 11
+SDEQ
+THROWIFNOT 100
+;; emit RootDepoyed
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x2f9065a1
+;; root
+;; push identifier root
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
+; expValue
+;; fetch deployedTokens
+GETGLOB 12
+;; push identifier answer_id
+PUSH S2
+SWAP
+; end expValue
+;; push identifier root
+PUSH S2
+; colValue
+ROTREV
+PUSHINT 32
+DICTUSET
+SETGLOB 12
+; end colValue
+; end function notifyTokenRootDeployed
+DROP2
+
+.macro notifyTokenRootNotDeployed
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode answer_id
+LDU 32
+; Decode root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: answer_id
+;; param: root
+CALLREF {
+	CALL $notifyTokenRootNotDeployed_internal_macro$
+}
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	notifyTokenRootNotDeployed_internal
+.type	notifyTokenRootNotDeployed_internal, @function
+CALL $notifyTokenRootNotDeployed_internal_macro$
+
+.macro notifyTokenRootNotDeployed_internal_macro
+;; param: answer_id
+;; param: root
+; function notifyTokenRootNotDeployed
+;; get member sender
+GETGLOB 9
+;; push identifier _factory
+GETGLOB 11
+SDEQ
+THROWIFNOT 100
+;; emit RootNotDepoyed
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x68223ffd
+;; answer_id
+;; push identifier answer_id
+PUSH S2
+STUR 32
+;; root
+;; push identifier root
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
+; end function notifyTokenRootNotDeployed
+DROP2
+
+.macro getDeployedToken
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode answer_id
+LDU 32
+ENDS
+;; param: answer_id
+CALLREF {
+	CALL $getDeployedToken_internal_macro$
+}
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xd0b975f1
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	getDeployedToken_internal
+.type	getDeployedToken_internal, @function
+CALL $getDeployedToken_internal_macro$
+
+.macro getDeployedToken_internal_macro
+;; param: answer_id
+; function getDeployedToken
+;; return
+;; index
+;; push identifier answer_id
+DUP
+;; push identifier deployedTokens
+GETGLOB 12
+PUSHINT 32
+DICTUGET
+PUSHCONT {
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+IFNOT
+; end function getDeployedToken
+NIP
+
+.macro c7_to_c4
+GETGLOB 2
+NEWC
+STU 256
+GETGLOB 3
+STUR 64
+GETGLOB 6
+STUR 1
+GETGLOB 10
+GETGLOB 11
+GETGLOB 12
+REVERSE 4, 0
+STU 256
+STSLICE
+STDICT
+ENDC
+POP C4
+
+.macro c4_to_c7
+PUSHROOT
+CTOS        ; c4
+LDU 256      ; pubkey c4
+LDU 64      ; pubkey timestamp c4
+LDU 1       ; pubkey [timestamp] constructor_flag memory
+LDU 256
+LDMSGADDR
+PLDDICT
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+TRUE
+SETGLOB 1   ; pubkey [timestamp] constructor_flag
+SETGLOB 6   ; pubkey [timestamp]
+SETGLOB 3   ; D
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS        ; c4
+DUP        ; c4 c4
+SBITS      ; c4 bits
+GTINT 1    ; c4 bits>1
+PUSHCONT {
+	LDU 256      ; pubkey c4
+	LDU 64      ; pubkey timestamp c4
+	LDU 1       ; pubkey [timestamp] constructor_flag memory
+	LDU 256
+	LDMSGADDR
+	PLDDICT
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	TRUE
+	SETGLOB 1   ; pubkey [timestamp] constructor_flag
+	SETGLOB 6   ; pubkey [timestamp]
+	SETGLOB 3   ; D
+	SETGLOB 2
+}
+PUSHCONT {
+	PLDDICT   ; D
+	; init _randomNonce
+	PUSHINT 1
+	PUSH S1
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 256
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	SETGLOB 10
+	; init _factory
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 11
+	; init deployedTokens
+	NEWDICT
+	SETGLOB 12
+	; set contract pubkey
+	PUSHINT 0
+	SWAP
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	PUSHINT 0 ; constructor_flag
+	SETGLOB 6
+	TRUE
+	SETGLOB 1
+}
+IFELSE
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Function: main_internal
+;; param: contract_balance
+;; param: msg_balance
+;; param: int_msg_info
+;; param: msg_body_slice
+PUSHINT 0  ; main_external trans id
+PUSH S2
+CTOS
+LDU 4       ; bounced tail
+LDMSGADDR   ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+PUSH S1    ; body
+SEMPTY     ; isEmpty
+IFRET
+PUSH S1 ; body
+LDU 32  ; funcId body'
+PUSH S1 ; funcId body' funcId
+IFNOTRET
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHINT -1 ; main_external trans id
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SETGLOB 9
+PUSH S1
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP      ; signatureSlice msgSlice msgSlice
+	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	PUSHCONT {
+		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG s3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG s2
+		GETGLOB 2
+	}
+	IFELSE
+	CHKSIGNU      ; msgSlice isSigned
+	THROWIFNOT 40 ; msgSlice
+}
+PUSHCONT {
+	LDU 1      ; havePubkey msgSlice
+	SWAP       ; msgSlice havePubkey
+	THROWIF 58 ; msgSlice
+}
+IFELSE
+LDU 64                         ; timestamp msgSlice
+SWAP                           ; msgSlice timestamp
+CALL $replay_protection_macro$ ; msgSlice
+LDU 32  ; expireAt msgSlice
+SWAP    ; msgSlice expireAt
+NOW     ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU  32 ; funcId body
+SWAP    ; body funcId
+CALLREF {
+	CALL $public_function_selector$
+}
+GETGLOB 7
+ISNULL
+THROWIF 60
+
+.macro public_function_selector
+DUP
+PUSHINT 1073820897
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 744553903
+	EQUAL
+	IFJMPREF {
+		CALL $notifyTokenRootDeployed$
+	}
+	DUP
+	PUSHINT 1073820897
+	EQUAL
+	IFJMPREF {
+		CALL $notifyTokenRootNotDeployed$
+	}
+}
+IFJMP
+DUP
+PUSHINT 1354331633
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 1196840156
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 1354331633
+	EQUAL
+	IFJMPREF {
+		CALL $getDeployedToken$
+	}
+}
+IFJMP
+DUP
+PUSHINT 2054428688
+EQUAL
+IFJMPREF {
+	CALL $newToken$
+}
