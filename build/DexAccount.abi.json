@@ -60,8 +60,90 @@
 				{"name":"token_root","type":"address"}
 			],
 			"outputs": [
-				{"name":"value0","type":"address"},
-				{"name":"value1","type":"uint128"}
+				{"name":"wallet","type":"address"},
+				{"name":"balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "transfer",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"token_root","type":"address"},
+				{"name":"to_dex_account","type":"address"},
+				{"name":"willing_to_deploy","type":"bool"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "internalTransfer",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"amount","type":"uint128"},
+				{"name":"token_root","type":"address"},
+				{"name":"sender_owner","type":"address"},
+				{"name":"willing_to_deploy","type":"bool"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "exchange",
+			"inputs": [
+				{"name":"spent_amount","type":"uint128"},
+				{"name":"spent_token_root","type":"address"},
+				{"name":"receive_token_root","type":"address"},
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "depositLiquidity",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"left_amount","type":"uint128"},
+				{"name":"right_root","type":"address"},
+				{"name":"right_amount","type":"uint128"},
+				{"name":"auto_change","type":"bool"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "addPair",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "checkPairCallback",
+			"inputs": [
+				{"name":"original_call_id","type":"uint64"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"lp_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedWalletAddressCallback",
+			"inputs": [
+				{"name":"wallet","type":"address"},
+				{"name":"wallet_public_key","type":"uint256"},
+				{"name":"owner_address","type":"address"}
+			],
+			"outputs": [
 			]
 		},
 		{
@@ -78,6 +160,14 @@
 				{"name":"code","type":"cell"},
 				{"name":"new_version","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "successCallback",
+			"inputs": [
+				{"name":"call_id","type":"uint64"}
 			],
 			"outputs": [
 			]

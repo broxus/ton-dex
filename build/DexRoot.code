@@ -1377,14 +1377,14 @@ PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; >
+;; <
 ;; get member value
 ;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-GREATER
+LESS
 PUSHCONT {
 	; expValue
 	DUP
@@ -1968,14 +1968,14 @@ PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; >
+;; <
 ;; get member value
 ;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-GREATER
+LESS
 PUSHCONT {
 	; expValue
 	DUP
@@ -2471,6 +2471,37 @@ CALLREF {
 }
 GEQ
 THROWIFNOT 103
+;; get member value
+;; push identifier left_root
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+;; !=
+;; get member value
+;; push identifier right_root
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQ
+THROWIFNOT 121
+;; get member value
+;; push identifier left_root
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQINT 0
+THROWIFNOT 121
+;; get member value
+;; push identifier right_root
+PUSH S1
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQINT 0
+THROWIFNOT 121
 PUSHINT 1000000000
 ;; get member balance
 GETPARAM 7
@@ -2502,14 +2533,14 @@ PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; >
+;; <
 ;; get member value
 ;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-GREATER
+LESS
 PUSHCONT {
 	; expValue
 	DUP

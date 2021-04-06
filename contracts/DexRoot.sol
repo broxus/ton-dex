@@ -250,7 +250,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     function _buildPairParams(address left_root, address right_root) private inline pure returns (TvmCell) {
         TvmBuilder builder;
-        if (left_root.value > right_root.value) {
+        if (left_root.value < right_root.value) {
             builder.store(left_root);
             builder.store(right_root);
         } else {
@@ -298,6 +298,9 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     function deployPair(address left_root, address right_root, address send_gas_to) external onlyActive {
         require(msg.value >= gasToValue(Gas.DEPLOY_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
+        require(left_root.value != 0, DexErrors.WRONG_PAIR);
+        require(right_root.value != 0, DexErrors.WRONG_PAIR);
 
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 

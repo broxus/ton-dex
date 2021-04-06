@@ -4,18 +4,27 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
+import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol';
+import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol';
+import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokensReceivedCallback.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IExpectedWalletAddressCallback.sol";
+
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
 
+import "./structures/ITokenOperationStructure.sol";
+
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
+import "./interfaces/IDexAccount.sol";
+import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
 
 import "./DexPlatform.sol";
 
-contract DexAccount is IUpgradableByRequest, IResetGas {
+contract DexAccount is IDexAccount, IExpectedWalletAddressCallback, ITokenOperationStructure, IUpgradableByRequest, IResetGas {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data:
@@ -30,10 +39,21 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
     address owner;
 
     // Custom:
+    uint64 _nonce;
     // root -> wallet
     mapping(address => address) _wallets;
     // root -> balance
     mapping(address => uint128) _balances;
+
+    // Operations temporary data:
+    // token_root -> true
+    mapping(address => bool) _tmp_deploying_wallets;
+    // _nonce -> TokenOperation[]
+    mapping(uint64 => TokenOperation[]) _tmp_operations;
+    // _nonce -> send_gas_to
+    mapping(uint64 => address) _tmp_send_gas_to;
+    // _nonce -> expected_confirmation_sender
+    mapping(uint64 => address) _tmp_expected_callback_sender;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Base functions
@@ -56,24 +76,23 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getters
 
-    function getRoot() external view responsible returns (address) {
+    function getRoot() override external view responsible returns (address) {
         return{ value: 0, bounce: false, flag: 64 } root;
     }
 
-    function getOwner() external view responsible returns (address) {
+    function getOwner() override external view responsible returns (address) {
         return{ value: 0, bounce: false, flag: 64 } owner;
     }
 
-    function getVersion() external view responsible returns (uint32) {
+    function getVersion() override external view responsible returns (uint32) {
         return{ value: 0, bounce: false, flag: 64 } current_version;
     }
 
-    function getVault() external view responsible returns (address) {
+    function getVault() override external view responsible returns (address) {
         return{ value: 0, bounce: false, flag: 64 } vault;
     }
 
-    // returns account wallet_address and balance
-    function getWalletData(address token_root) external view responsible returns (address, uint128) {
+    function getWalletData(address token_root) override external view responsible returns (address wallet, uint128 balance) {
         if(_wallets.exists(token_root) && _balances.exists(token_root)) {
             return{ value: 0, bounce: false, flag: 64 } (_wallets.at(token_root), _balances.at(token_root));
         } else {
@@ -90,11 +109,240 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Transfers
-    // TODO:
+
+    function transfer(
+        uint128 amount,
+        address token_root,
+        address to_dex_account,
+        bool    willing_to_deploy,
+        address send_gas_to
+    ) override external onlyOwner {
+        require(amount > 0, DexErrors.AMOUNT_TOO_LOW);
+        require(msg.value >= gasToValue(Gas.TRANSFER_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(_wallets.exists(token_root) && _balances.exists(token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_balances[token_root] >= amount, DexErrors.NOT_ENOUGH_FUNDS);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        _balances[token_root] -= amount;
+
+        address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
+
+        _nonce++;
+        _tmp_operations[_nonce] = [TokenOperation(amount, token_root)];
+        _tmp_send_gas_to[_nonce] = send_gas_to_;
+        _tmp_expected_callback_sender[_nonce] = to_dex_account;
+
+        IDexAccount(to_dex_account).internalTransfer{ value: 0, flag: 128 }(
+            _nonce,
+            amount,
+            token_root,
+            owner,
+            willing_to_deploy,
+            send_gas_to_
+        );
+    }
+
+    function internalTransfer(
+        uint64 call_id,
+        uint128 amount,
+        address token_root,
+        address sender_owner,
+        bool    willing_to_deploy,
+        address send_gas_to
+    ) override external onlyAccount(sender_owner) {
+        require(willing_to_deploy || _wallets.exists(token_root) || _tmp_deploying_wallets.exists(token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        _balances[token_root] += amount;
+
+        if (willing_to_deploy && !_wallets.exists(token_root) && !_tmp_deploying_wallets.exists(token_root)) {
+            _deployWallet(token_root, send_gas_to);
+        }
+
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: 128 }(call_id);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Pair operations
-    // TODO:
+
+    function exchange(
+        uint128 spent_amount,
+        address spent_token_root,
+        address receive_token_root,
+        uint128 expected_amount,
+        address send_gas_to
+    ) override external onlyOwner {
+        require(spent_amount > 0, DexErrors.AMOUNT_TOO_LOW);
+        require(msg.value >= gasToValue(Gas.EXCHANGE_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(_wallets.exists(spent_token_root) && _balances.exists(spent_token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_wallets.exists(receive_token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_balances[spent_token_root] >= spent_amount, DexErrors.NOT_ENOUGH_FUNDS);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        address pair = address(tvm.hash(_buildInitData(
+            PlatformTypes.Pair,
+            _buildPairParams(spent_token_root, receive_token_root)
+        )));
+
+        _balances[spent_token_root] -= spent_amount;
+
+        address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
+
+        _nonce++;
+        _tmp_operations[_nonce] = [TokenOperation(spent_amount, spent_token_root)];
+        _tmp_send_gas_to[_nonce] = send_gas_to_;
+        _tmp_expected_callback_sender[_nonce] = pair;
+
+        IDexPair(pair).exchange{value: 0, flag: 128}(
+            _nonce,
+            spent_amount,
+            spent_token_root,
+            receive_token_root,
+            expected_amount,
+            owner,
+            current_version,
+            send_gas_to_
+        );
+    }
+
+    function depositLiquidity(
+        address left_root,
+        uint128 left_amount,
+        address right_root,
+        uint128 right_amount,
+        bool    auto_change,
+        address send_gas_to
+    ) override external onlyOwner {
+        require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
+        require(left_root.value != 0, DexErrors.WRONG_PAIR);
+        require(right_root.value != 0, DexErrors.WRONG_PAIR);
+        require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
+                DexErrors.AMOUNT_TOO_LOW);
+        require(msg.value >= gasToValue(Gas.DEPOSIT_LIQUIDITY_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(_wallets.exists(left_root) && _balances.exists(left_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_wallets.exists(right_root) && _balances.exists(right_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_balances[left_root] >= left_amount, DexErrors.NOT_ENOUGH_FUNDS);
+        require(_balances[right_root] >= right_amount, DexErrors.NOT_ENOUGH_FUNDS);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        address pair = address(tvm.hash(_buildInitData(
+            PlatformTypes.Pair,
+            _buildPairParams(left_root, right_root)
+        )));
+
+        _balances[left_root] -= left_amount;
+        _balances[right_root] -= right_amount;
+
+        address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
+
+        _nonce++;
+        _tmp_operations[_nonce] = [
+            TokenOperation(left_amount, left_root),
+            TokenOperation(right_amount, right_root)
+        ];
+        _tmp_send_gas_to[_nonce] = send_gas_to_;
+        _tmp_expected_callback_sender[_nonce] = pair;
+
+        IDexPair(pair).depositLiquidity{value: 0, flag: 128}(
+            _nonce,
+            left_root.value < right_root.value ? left_amount : right_amount,
+            left_root.value < right_root.value ? right_amount : left_amount,
+            owner,
+            current_version,
+            send_gas_to_
+        );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Add wallets flow
+
+    function addPair(
+        address left_root,
+        address right_root,
+        address send_gas_to
+    ) override external onlyOwner {
+        require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
+        require(left_root.value != 0, DexErrors.WRONG_PAIR);
+        require(right_root.value != 0, DexErrors.WRONG_PAIR);
+        require(msg.value >= gasToValue(Gas.ADD_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        address expected = address(tvm.hash(_buildInitData(
+            PlatformTypes.Pair,
+            _buildPairParams(left_root, right_root)
+        )));
+
+        address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
+
+        _nonce++;
+        _tmp_send_gas_to[_nonce] = send_gas_to_;
+
+        IDexPair(expected).checkPair{ value: 0, flag: 128}(_nonce, owner, current_version, send_gas_to_);
+    }
+
+    function checkPairCallback(
+        uint64 original_call_id,
+        address left_root,
+        address right_root,
+        address lp_root,
+        address send_gas_to
+    ) override external onlyPair(left_root, right_root) {
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        delete _tmp_send_gas_to[original_call_id];
+
+        if (!_wallets.exists(left_root)) {
+            _deployWallet(left_root, send_gas_to);
+        }
+        if (!_wallets.exists(right_root)) {
+            _deployWallet(right_root, send_gas_to);
+        }
+        if (!_wallets.exists(lp_root)) {
+            _deployWallet(lp_root, send_gas_to);
+        }
+
+        send_gas_to.transfer({ value: 0, flag: 128 });
+    }
+
+    function _deployWallet(address token_root, address send_gas_to) private {
+        _tmp_deploying_wallets[token_root] = true;
+        IRootTokenContract(token_root)
+            .deployEmptyWallet{ value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, token_root.wid), flag: 1}(
+                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
+                0,                              // wallet_public_key
+                address(this),                  // owner_address
+                send_gas_to                     // gas_back_address
+            );
+        IRootTokenContract(token_root)
+            .sendExpectedWalletAddress{ value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid), flag: 1}(
+                0,                              // wallet_public_key_
+                address(this),                  // owner_address_
+                address(this)                   // to
+            );
+    }
+
+    // callback for IRootTokenContract(...).sendExpectedWalletAddress
+    function expectedWalletAddressCallback(
+        address wallet,
+        uint256 wallet_public_key,
+        address owner_address
+    ) override external {
+        require(_tmp_deploying_wallets[msg.sender]);
+        require(!_wallets.exists(msg.sender));
+        require(wallet_public_key == 0);
+        require(owner_address == address(this));
+
+        _wallets[msg.sender] = wallet;
+        delete _tmp_deploying_wallets[msg.sender];
+
+        ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: 128}(address(this), false);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Modifiers
@@ -135,7 +383,7 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
     function _buildPairParams(address left_root, address right_root) private inline pure returns (TvmCell) {
         TvmBuilder builder;
-        if (left_root.value > right_root.value) {
+        if (left_root.value < right_root.value) {
             builder.store(left_root);
             builder.store(right_root);
         } else {
@@ -230,5 +478,54 @@ contract DexAccount is IUpgradableByRequest, IResetGas {
 
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         send_gas_to.transfer({ value: 0, flag: 128 });
+    }
+
+    // success
+    function successCallback(
+        uint64 call_id
+    ) override external {
+        require(!_tmp_expected_callback_sender.exists(call_id), DexErrors.INVALID_CALLBACK);
+        require(_tmp_expected_callback_sender.at(call_id) == msg.sender, DexErrors.INVALID_CALLBACK_SENDER);
+
+        delete _tmp_operations[call_id];
+        delete _tmp_expected_callback_sender[call_id];
+
+        address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
+        delete _tmp_send_gas_to[call_id];
+
+        send_gas_to.transfer({ value: 0, flag: 128 });
+    }
+
+    // onBounce
+    onBounce(TvmSlice body) external {
+        tvm.accept();
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
+
+        uint32 functionId = body.decode(uint32);
+        if (functionId == tvm.functionId(IDexPair.exchange) ||
+            functionId == tvm.functionId(IDexPair.depositLiquidity) ||
+            functionId == tvm.functionId(IDexAccount.internalTransfer)) {
+            uint64 call_id = body.decode(uint64);
+            if (_tmp_operations.exists(call_id)) {
+                for (TokenOperation op : _tmp_operations.at(call_id)) { // iteration over array
+                    _balances[op.root] += op.amount;
+                }
+                delete _tmp_operations[call_id];
+            }
+
+            delete _tmp_expected_callback_sender[call_id];
+
+            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
+            delete _tmp_send_gas_to[call_id];
+
+            send_gas_to.transfer({ value: 0, flag: 128 });
+        } else if(functionId == tvm.functionId(IDexPair.checkPair)) {
+            uint64 call_id = body.decode(uint64);
+
+            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
+            delete _tmp_send_gas_to[call_id];
+
+            send_gas_to.transfer({ value: 0, flag: 128 });
+        }
     }
 }

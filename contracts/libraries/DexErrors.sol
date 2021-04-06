@@ -17,4 +17,10 @@ library DexErrors {
     uint8 constant NOT_LP_TOKEN_ROOT            = 113;
     uint8 constant NOT_ACTIVE                   = 114;
     uint8 constant NOT_VAULT                    = 115;
+    uint8 constant AMOUNT_TOO_LOW               = 116;
+    uint8 constant UNKNOWN_TOKEN_ROOT           = 117;
+    uint8 constant NOT_ENOUGH_FUNDS             = 118;
+    uint8 constant INVALID_CALLBACK             = 119;
+    uint8 constant INVALID_CALLBACK_SENDER      = 120;
+    uint8 constant WRONG_PAIR                   = 121;
 }
