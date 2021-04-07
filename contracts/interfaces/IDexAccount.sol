@@ -12,6 +12,12 @@ interface IDexAccount {
 
     function getWalletData(address token_root) external view responsible returns (address wallet, uint128 balance);
 
+    function withdraw(
+        uint128 amount,
+        address token_root,
+        address send_gas_to
+    ) external;
+
     function transfer(
         uint128 amount,
         address token_root,
@@ -25,6 +31,14 @@ interface IDexAccount {
         address spent_token_root,
         address receive_token_root,
         uint128 expected_amount,
+        address send_gas_to
+    ) external;
+
+    function withdrawLiquidity(
+        uint128 lp_amount,
+        address lp_root,
+        address left_root,
+        address right_root,
         address send_gas_to
     ) external;
 
@@ -54,12 +68,20 @@ interface IDexAccount {
         address send_gas_to
     ) external;
 
-    function internalTransfer(
+    function internalAccountTransfer(
         uint64 call_id,
         uint128 amount,
         address token_root,
         address sender_owner,
         bool    willing_to_deploy,
+        address send_gas_to
+    ) external;
+
+    function internalPairTransfer(
+        uint128 amount,
+        address token_root,
+        address sender_left_root,
+        address sender_right_root,
         address send_gas_to
     ) external;
 

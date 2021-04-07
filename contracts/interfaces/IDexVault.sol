@@ -19,5 +19,14 @@ interface IDexVault {
 
 
     function deployTokenWallet(address owner, address token_root, address send_gas_to) external;
-    function withdrawRequest(uint64 callbackId, uint128 amount, address token_root, address owner) external;
+
+    function withdraw(
+        uint64 call_id,
+        uint128 amount,
+        address token_root,
+        address vault_wallet,
+        address account_owner,
+        uint32 account_version,
+        address send_gas_to
+    ) external;
 }

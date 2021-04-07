@@ -1888,15 +1888,20 @@ CALLREF {
 TRUE
 SETGLOB 7
 
-.macro expectedLeftToRight
+.macro expectedWithdrawLiquidity
 DROP
 GETGLOB 1
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
 ; Decode input parameters
-; Decode left_amount
+; Decode lp_amount
 LDUQ 128
 PUSHCONT {
 	;; load next cell
@@ -1907,72 +1912,47 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: left_amount
+;; param: lp_amount
+;; ret param: expected_left_amount
+PUSHINT 0
 ;; ret param: expected_right_amount
 PUSHINT 0
-;; ret param: expected_left_fee
-PUSHINT 0
-; function expectedLeftToRight
-;; return
-;; push identifier left_amount
-PUSH S2
+; function expectedWithdrawLiquidity
 ;; push identifier left_balance
 GETGLOB 20
+;; push identifier lp_amount
+PUSH S3
+;; push identifier lp_supply
+GETGLOB 19
+MULDIV
+UFITS 128
+;; decl: left_back_amount
 ;; push identifier right_balance
 GETGLOB 21
-;; param: a_amount
-;; param: a_pool
-;; param: b_pool
-; function _expectedExchange
-;; push identifier a_amount
-PUSH S2
-;; push identifier fee_nominator
-GETGLOB 22
-;; push identifier fee_denominator
-GETGLOB 23
+;; push identifier lp_amount
+PUSH S4
+;; push identifier lp_supply
+GETGLOB 19
 MULDIV
 UFITS 128
-;; decl: a_fee
-;; push identifier a_pool
-PUSH S2
-;; +
-;; push identifier a_amount
-PUSH S4
-ADD
-UFITS 128
-;; decl: new_a_pool
-;; push identifier a_pool
-PUSH S3
-;; push identifier b_pool
-PUSH S3
-;; push identifier new_a_pool
-PUSH S2
-;; -
-;; push identifier a_fee
-PUSH S4
-SUB
-UFITS 128
-MULDIV
-UFITS 128
-;; decl: new_b_pool
-;; push identifier b_pool
-PUSH S3
-;; -
-;; push identifier new_b_pool
-PUSH S1
-SUB
-UFITS 128
-;; decl: expected_b_amount
+;; decl: right_back_amount
 ;; return
-;; push identifier expected_b_amount
-DUP
-;; push identifier a_fee
-PUSH S4
-BLKDROP2 4, 2
-; end function _expectedExchange
-BLKDROP2 3, 2
-BLKDROP2 2, 2
-; end function expectedLeftToRight
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier left_back_amount
+PUSH S1
+;; push identifier right_back_amount
+PUSH S1
+BLKDROP2 2, 4
+SWAP2
+DROP2
+; end function expectedWithdrawLiquidity
 BLKDROP2 1, 2
 ;; emitting 2 value(s)
 PUSH S2
@@ -1991,7 +1971,7 @@ PUSHCONT {
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
-	STSLICECONST xa0d8b5ed
+	STSLICECONST x909f3e11
 	PUSH S2
 	STUR 128
 	PUSH S1
@@ -2000,7 +1980,42 @@ PUSHCONT {
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S2
+	STUR 128
+	PUSH S1
+	STUR 128
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
 DROP2
 IFREF {
 	CALL $c7_to_c4$
@@ -2008,7 +2023,7 @@ IFREF {
 TRUE
 SETGLOB 7
 
-.macro expectedRightToLeft
+.macro withdrawLiquidity
 DROP
 GETGLOB 1
 ISNULL
@@ -2016,7 +2031,9 @@ IFREF {
 	CALL $c4_to_c7$
 }
 ; Decode input parameters
-; Decode right_amount
+; Decode call_id
+LDU 64
+; Decode lp_amount
 LDUQ 128
 PUSHCONT {
 	;; load next cell
@@ -2026,74 +2043,345 @@ PUSHCONT {
 	LDU 128
 }
 IFNOT
+; Decode expected_lp_root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode account_owner
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode account_version
+LDUQ 32
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 32
+}
+IFNOT
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: right_amount
-;; ret param: expected_left_amount
-PUSHINT 0
-;; ret param: expected_right_fee
-PUSHINT 0
-; function expectedRightToLeft
-;; return
-;; push identifier right_amount
+;; param: call_id
+;; param: lp_amount
+;; param: expected_lp_root
+;; param: account_owner
+;; param: account_version
+;; param: send_gas_to
+; modifier onlyActive
+;; push identifier active
+GETGLOB 16
+THROWIFNOT 114
+; modifier onlyAccount
+;; push identifier account_owner
 PUSH S2
-;; push identifier right_balance
-GETGLOB 21
-;; push identifier left_balance
-GETGLOB 20
-;; param: a_amount
-;; param: a_pool
-;; param: b_pool
-; function _expectedExchange
-;; push identifier a_amount
-PUSH S2
-;; push identifier fee_nominator
-GETGLOB 22
-;; push identifier fee_denominator
-GETGLOB 23
-MULDIV
-UFITS 128
-;; decl: a_fee
-;; push identifier a_pool
-PUSH S2
-;; +
-;; push identifier a_amount
-PUSH S4
-ADD
-UFITS 128
-;; decl: new_a_pool
-;; push identifier a_pool
-PUSH S3
-;; push identifier b_pool
-PUSH S3
-;; push identifier new_a_pool
-PUSH S2
-;; -
-;; push identifier a_fee
-PUSH S4
-SUB
-UFITS 128
-MULDIV
-UFITS 128
-;; decl: new_b_pool
-;; push identifier b_pool
-PUSH S3
-;; -
-;; push identifier new_b_pool
+PUSHINT 1
+;; push identifier account_owner
 PUSH S1
-SUB
-UFITS 128
-;; decl: expected_b_amount
-;; return
-;; push identifier expected_b_amount
+;; param: account_owner
+; function _buildAccountParams
+NEWC
+;; decl: builder
+; expValue
 DUP
-;; push identifier a_fee
-PUSH S4
-BLKDROP2 4, 2
-; end function _expectedExchange
-BLKDROP2 3, 2
+; end expValue
+;; push identifier account_owner
+PUSH S2
+STSLICER
+; colValue
+NIP
+; end colValue
+;; return
+;; push identifier builder
+DUP
+ENDC
+NIP
+; end function _buildAccountParams
+NIP
+;; param: type_id
+;; param: params
+; function _buildInitData
+;; return
+NEWDICT
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+ROT
+PUSHINT 64
+DICTUSETB
+MYADDR
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+;; push identifier type_id
+PUSH S2
+NEWC
+STU 8
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSETB
+;; push identifier params
+PUSH S1
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+;; push identifier platform_code
+GETGLOB 13
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+; end function _buildInitData
+BLKDROP2 2, 1
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+;; decl: expected
+;; get member sender
+GETGLOB 9
+;; push identifier expected
+PUSH S1
+SDEQ
+THROWIFNOT 105
+; function withdrawLiquidity
+; end function withdrawLiquidity
+DROP
+DROP
+; end modifier onlyAccount
+; end modifier onlyActive
+BLKDROP 6
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro expectedExchange
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+; Decode amount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode is_left_to_right
+LDIQ 1
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDI 1
+}
+IFNOT
+ENDS
+;; param: amount
+;; param: is_left_to_right
+;; ret param: expected_amount
+PUSHINT 0
+;; ret param: expected_fee
+PUSHINT 0
+; function expectedExchange
+PUSHCONT {
+	;; if
+	;; push identifier is_left_to_right
+	PUSH S2
+	PUSHCONT {
+		;; return
+		GETGLOB 4
+		PUSHINT 0
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier amount
+		PUSH S3
+		;; push identifier left_balance
+		GETGLOB 20
+		;; push identifier right_balance
+		GETGLOB 21
+		;; param: a_amount
+		;; param: a_pool
+		;; param: b_pool
+		; function _expectedExchange
+		;; push identifier a_amount
+		PUSH S2
+		;; push identifier fee_nominator
+		GETGLOB 22
+		;; push identifier fee_denominator
+		GETGLOB 23
+		MULDIV
+		UFITS 128
+		;; decl: a_fee
+		;; push identifier a_pool
+		PUSH S2
+		;; +
+		;; push identifier a_amount
+		PUSH S4
+		ADD
+		UFITS 128
+		;; decl: new_a_pool
+		;; push identifier a_pool
+		PUSH S3
+		;; push identifier b_pool
+		PUSH S3
+		;; push identifier new_a_pool
+		PUSH S2
+		;; -
+		;; push identifier a_fee
+		PUSH S4
+		SUB
+		UFITS 128
+		MULDIV
+		UFITS 128
+		;; decl: new_b_pool
+		;; push identifier b_pool
+		PUSH S3
+		;; -
+		;; push identifier new_b_pool
+		PUSH S1
+		SUB
+		UFITS 128
+		;; decl: expected_b_amount
+		;; return
+		;; push identifier expected_b_amount
+		DUP
+		;; push identifier a_fee
+		PUSH S4
+		BLKDROP2 4, 2
+		; end function _expectedExchange
+		BLKDROP2 3, 2
+		BLKDROP2 2, 2
+		RET
+	}
+	PUSHCONT {
+		;; return
+		GETGLOB 4
+		PUSHINT 0
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier amount
+		PUSH S3
+		;; push identifier right_balance
+		GETGLOB 21
+		;; push identifier left_balance
+		GETGLOB 20
+		;; param: a_amount
+		;; param: a_pool
+		;; param: b_pool
+		; function _expectedExchange
+		;; push identifier a_amount
+		PUSH S2
+		;; push identifier fee_nominator
+		GETGLOB 22
+		;; push identifier fee_denominator
+		GETGLOB 23
+		MULDIV
+		UFITS 128
+		;; decl: a_fee
+		;; push identifier a_pool
+		PUSH S2
+		;; +
+		;; push identifier a_amount
+		PUSH S4
+		ADD
+		UFITS 128
+		;; decl: new_a_pool
+		;; push identifier a_pool
+		PUSH S3
+		;; push identifier b_pool
+		PUSH S3
+		;; push identifier new_a_pool
+		PUSH S2
+		;; -
+		;; push identifier a_fee
+		PUSH S4
+		SUB
+		UFITS 128
+		MULDIV
+		UFITS 128
+		;; decl: new_b_pool
+		;; push identifier b_pool
+		PUSH S3
+		;; -
+		;; push identifier new_b_pool
+		PUSH S1
+		SUB
+		UFITS 128
+		;; decl: expected_b_amount
+		;; return
+		;; push identifier expected_b_amount
+		DUP
+		;; push identifier a_fee
+		PUSH S4
+		BLKDROP2 4, 2
+		; end function _expectedExchange
+		BLKDROP2 3, 2
+		BLKDROP2 2, 2
+		RET
+	}
+	CONDSEL
+	JMPX
+	;; end if
+}
+CALLX
+; end function expectedExchange
 BLKDROP2 2, 2
-; end function expectedRightToLeft
-BLKDROP2 1, 2
 ;; emitting 2 value(s)
 PUSH S2
 EQINT -1
@@ -2111,7 +2399,7 @@ PUSHCONT {
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
-	STSLICECONST xfc597178
+	STSLICECONST xb614a297
 	PUSH S2
 	STUR 128
 	PUSH S1
@@ -2120,7 +2408,42 @@ PUSHCONT {
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S2
+	STUR 128
+	PUSH S1
+	STUR 128
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
 DROP2
 IFREF {
 	CALL $c7_to_c4$
@@ -2540,6 +2863,16 @@ GETGLOB 12
 ;; push identifier new_version
 PUSH S2
 EQUAL
+;; short-circuiting ||
+DUP
+PUSHCONT {
+	DROP
+	;; !
+	;; push identifier active
+	GETGLOB 16
+	NOT
+}
+IFNOT
 PUSHCONT {
 	;; transfer()
 	;; push identifier send_gas_to
@@ -2638,6 +2971,60 @@ PUSHCONT {
 	;; push identifier lp_root
 	GETGLOB 17
 	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier lp_wallet
+	GETGLOB 18
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier lp_supply
+	GETGLOB 19
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier left_balance
+	GETGLOB 20
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier right_balance
+	GETGLOB 21
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier fee_nominator
+	GETGLOB 22
+	STUR 16
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier fee_denominator
+	GETGLOB 23
+	STUR 16
 	; colValue
 	NIP
 	; end colValue
@@ -2991,82 +3378,6 @@ PUSH S1
 ; colValue
 SETGLOB 17
 ; end colValue
-;; Remote call IRootTokenContract.deployEmptyWallet
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
-;; push identifier lp_root
-GETGLOB 17
-NEWC
-STSLICECONST x62_
-STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
-NEWC
-STSLICECONST x542b1672
-;; deploy_grams
-PUSHINT 50
-STUR 128
-;; wallet_public_key
-PUSHINT 0
-STUR 256
-;; owner_address
-MYADDR
-STSLICER
-;; gas_back_address
-;; push identifier send_gas_to
-PUSH S2
-STSLICER
-STBREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
-;; Remote call IRootTokenContract.sendExpectedWalletAddress
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
-;; push identifier lp_root
-GETGLOB 17
-NEWC
-STSLICECONST x62_
-STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
-NEWC
-STSLICECONST x55b3a9fb
-;; wallet_public_key_
-PUSHINT 0
-STUR 256
-;; owner_address_
-MYADDR
-STSLICER
-;; to
-MYADDR
-STSLICER
-STBREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
 ;; transfer()
 ;; push identifier send_gas_to
 DUP
@@ -3083,107 +3394,6 @@ SENDRAWMSG
 ; end function liquidityTokenRootDeployed
 ; end modifier onlyVault
 DROP2
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.macro expectedWalletAddressCallback
-DROP
-GETGLOB 1
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-; Decode input parameters
-; Decode wallet
-LDMSGADDRQ
-PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDMSGADDR
-}
-IFNOT
-; Decode wallet_public_key
-LDUQ 256
-PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDU 256
-}
-IFNOT
-; Decode owner_address
-LDMSGADDRQ
-PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDMSGADDR
-}
-IFNOT
-ENDS
-;; param: wallet
-;; param: wallet_public_key
-;; param: owner_address
-; function expectedWalletAddressCallback
-;; get member sender
-GETGLOB 9
-;; push identifier lp_root
-GETGLOB 17
-SDEQ
-THROWIFNOT 100
-;; get member value
-;; push identifier lp_wallet
-GETGLOB 18
-PARSEMSGADDR
-INDEX 3
-PLDU 256
-EQINT 0
-THROWIFNOT 100
-;; push identifier wallet_public_key
-PUSH S1
-EQINT 0
-THROWIFNOT 100
-;; push identifier owner_address
-DUP
-MYADDR
-SDEQ
-THROWIFNOT 100
-; expValue
-; end expValue
-;; push identifier wallet
-PUSH S2
-; colValue
-SETGLOB 18
-; end colValue
-;; Remote call ITONTokenWallet.setReceiveCallback
-;; push identifier wallet
-PUSH S2
-NEWC
-STSLICECONST x62_
-STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x71eee875
-;; receive_callback
-MYADDR
-STSLICER
-;; allow_non_notifiable
-FALSE
-STIR 1
-ENDC
-PUSHINT 128
-SENDRAWMSG
-; end function expectedWalletAddressCallback
-BLKDROP 3
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -3522,11 +3732,11 @@ IF
 
 .macro public_function_selector
 DUP
-PUSHINT 565050858
+PUSHINT 721356139
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 292780380
+	PUSHINT 278871569
 	LEQ
 	PUSHCONT {
 		DUP
@@ -3536,15 +3746,15 @@ PUSHCONT {
 			CALL $resetGas$
 		}
 		DUP
-		PUSHINT 292780380
+		PUSHINT 278871569
 		EQUAL
 		IFJMPREF {
-			CALL $expectedWalletAddressCallback$
+			CALL $expectedWithdrawLiquidity$
 		}
 	}
 	IFJMP
 	DUP
-	PUSHINT 551073261
+	PUSHINT 565050858
 	LEQ
 	PUSHCONT {
 		DUP
@@ -3554,18 +3764,18 @@ PUSHCONT {
 			CALL $getTokenRoots$
 		}
 		DUP
-		PUSHINT 551073261
+		PUSHINT 565050858
 		EQUAL
 		IFJMPREF {
-			CALL $expectedLeftToRight$
+			CALL $isActive$
 		}
 	}
 	IFJMP
 	DUP
-	PUSHINT 565050858
+	PUSHINT 721356139
 	EQUAL
 	IFJMPREF {
-		CALL $isActive$
+		CALL $afterInitialize$
 	}
 }
 IFJMP
@@ -3574,20 +3784,20 @@ PUSHINT 1125423194
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 766070063
+	PUSHINT 907322007
 	LEQ
 	PUSHCONT {
-		DUP
-		PUSHINT 721356139
-		EQUAL
-		IFJMPREF {
-			CALL $afterInitialize$
-		}
 		DUP
 		PUSHINT 766070063
 		EQUAL
 		IFJMPREF {
 			CALL $getVersion$
+		}
+		DUP
+		PUSHINT 907322007
+		EQUAL
+		IFJMPREF {
+			CALL $expectedExchange$
 		}
 	}
 	IFJMP
@@ -3618,57 +3828,63 @@ PUSHCONT {
 }
 IFJMP
 DUP
-PUSHINT 1789196393
+PUSHINT 1756716863
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 1490576934
+	PUSHINT 1439800549
 	LEQ
 	PUSHCONT {
+		DUP
+		PUSHINT 1417804635
+		EQUAL
+		IFJMPREF {
+			CALL $withdrawLiquidity$
+		}
 		DUP
 		PUSHINT 1439800549
 		EQUAL
 		IFJMPREF {
 			CALL $expectedDepositLiquidity$
 		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 1688565960
+	LEQ
+	PUSHCONT {
 		DUP
 		PUSHINT 1490576934
 		EQUAL
 		IFJMPREF {
 			CALL $getFeeParams$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1756716863
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1688565960
 		EQUAL
 		IFJMPREF {
 			CALL $upgrade$
 		}
-		DUP
-		PUSHINT 1756716863
-		EQUAL
-		IFJMPREF {
-			CALL $constructor$
-		}
 	}
 	IFJMP
+	DUP
+	PUSHINT 1756716863
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+}
+IFJMP
+DUP
+PUSHINT 2066445604
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 1789196393
 	EQUAL
 	IFJMPREF {
 		CALL $exchange$
 	}
-}
-IFJMP
-DUP
-PUSHINT 2086236536
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1950458398
 	EQUAL
@@ -3680,12 +3896,6 @@ PUSHCONT {
 	EQUAL
 	IFJMPREF {
 		CALL $checkPair$
-	}
-	DUP
-	PUSHINT 2086236536
-	EQUAL
-	IFJMPREF {
-		CALL $expectedRightToLeft$
 	}
 }
 IFJMP

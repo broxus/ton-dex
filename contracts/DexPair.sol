@@ -4,11 +4,6 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol';
-import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol';
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokensReceivedCallback.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IExpectedWalletAddressCallback.sol";
-
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
@@ -23,7 +18,7 @@ import "./interfaces/IAfterInitialize.sol";
 
 import "./DexPlatform.sol";
 
-contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByRequest, IAfterInitialize, IResetGas {
+contract DexPair is IDexPair, IUpgradableByRequest, IAfterInitialize, IResetGas {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -96,8 +91,6 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         return { value: 0, bounce: false, flag: 64 } active;
     }
 
-    // TODO:
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Deposit liquidity
 
@@ -114,7 +107,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         uint128 left_amount,
         uint128 right_amount,
         address account_owner,
-        uint32 account_version,
+        uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
         // TODO
@@ -204,17 +197,39 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Withdraw liquidity
-    // TODO:
+
+    function expectedWithdrawLiquidity(
+        uint128 lp_amount
+    ) override external view responsible returns (uint128 expected_left_amount, uint128 expected_right_amount) {
+        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
+        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
+
+        return { value: 0, bounce: false, flag: 64 } (left_back_amount, right_back_amount);
+    }
+
+    function withdrawLiquidity(
+        uint64 call_id,
+        uint128 lp_amount,
+        address expected_lp_root,
+        address account_owner,
+        uint32 /*account_version*/,
+        address send_gas_to
+    ) override external onlyActive onlyAccount(account_owner) {
+        // TODO:
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Exchange
 
-    function expectedLeftToRight(uint128 left_amount) external view returns (uint128 expected_right_amount, uint128 expected_left_fee) {
-        return _expectedExchange(left_amount, left_balance, right_balance);
-    }
-
-    function expectedRightToLeft(uint128 right_amount) external view returns (uint128 expected_left_amount, uint128 expected_right_fee) {
-        return _expectedExchange(right_amount, right_balance, left_balance);
+    function expectedExchange(
+        uint128 amount,
+        bool is_left_to_right
+    ) override external view responsible returns (uint128 expected_amount, uint128 expected_fee) {
+        if (is_left_to_right) {
+            return { value: 0, bounce: false, flag: 64 } _expectedExchange(amount, left_balance, right_balance);
+        } else {
+            return { value: 0, bounce: false, flag: 64 } _expectedExchange(amount, right_balance, left_balance);
+        }
     }
 
     function exchange(
@@ -224,7 +239,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         address receive_token_root,
         uint128 expected_amount,
         address account_owner,
-        uint32 account_version,
+        uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
         // TODO:
@@ -248,16 +263,9 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         address account_owner,
         uint32 /*account_version*/,
         address send_gas_to
-    ) override external onlyActive {
-        address expected = address(tvm.hash(_buildInitData(
-                PlatformTypes.Account,
-                _buildAccountParams(account_owner)
-            )));
-        require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
-
+    ) override external onlyAccount(account_owner) {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-
-        IDexAccount(expected).checkPairCallback{value: 0, flag: 128}(call_id, left_root, right_root, lp_root, send_gas_to);
+        IDexAccount(msg.sender).checkPairCallback{value: 0, flag: 128}(call_id, left_root, right_root, lp_root, send_gas_to);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,7 +351,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     // Code upgrade
 
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
-        if (current_version == new_version) {
+        if (current_version == new_version || !active) {
             send_gas_to.transfer({ value: 0, flag: 128 });
         } else {
             TvmBuilder builder;
@@ -359,8 +367,19 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
             TvmBuilder dataBuilder;        // ref2:
             dataBuilder.store(left_root);
             dataBuilder.store(right_root);
+
+            // Liquidity tokens
             dataBuilder.store(lp_root);
-            // TODO:
+            dataBuilder.store(lp_wallet);
+            dataBuilder.store(lp_supply);
+            // Balances
+            dataBuilder.store(left_balance);
+            dataBuilder.store(right_balance);
+            // Fee
+            dataBuilder.store(fee_nominator);
+            dataBuilder.store(fee_denominator);
+
+
             builder.storeRef(dataBuilder);
 
             // set code after complete this method
@@ -422,38 +441,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     function liquidityTokenRootDeployed(address lp_root_, address send_gas_to) override external onlyVault {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         lp_root = lp_root_;
-
-        IRootTokenContract(lp_root)
-        .deployEmptyWallet{ value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, lp_root.wid), flag: 1}(
-            Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
-            0,                              // wallet_public_key
-            address(this),                  // owner_address
-            send_gas_to                     // gas_back_address
-        );
-        IRootTokenContract(lp_root)
-        .sendExpectedWalletAddress{ value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, lp_root.wid), flag: 1}(
-            0,                              // wallet_public_key_
-            address(this),                  // owner_address_
-            address(this)                   // to
-        );
-
         send_gas_to.transfer({ value: 0, flag: 128 });
-    }
-
-    // callback for IRootTokenContract(...).sendExpectedWalletAddress
-    function expectedWalletAddressCallback(
-        address wallet,
-        uint256 wallet_public_key,
-        address owner_address
-    ) override external {
-        require(msg.sender == lp_root);
-        require(lp_wallet.value == 0);
-        require(wallet_public_key == 0);
-        require(owner_address == address(this));
-
-        lp_wallet = wallet;
-
-        ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: 128}(address(this), false);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

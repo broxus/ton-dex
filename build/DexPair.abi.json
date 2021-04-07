@@ -100,23 +100,39 @@
 			]
 		},
 		{
-			"name": "expectedLeftToRight",
+			"name": "expectedWithdrawLiquidity",
 			"inputs": [
-				{"name":"left_amount","type":"uint128"}
-			],
-			"outputs": [
-				{"name":"expected_right_amount","type":"uint128"},
-				{"name":"expected_left_fee","type":"uint128"}
-			]
-		},
-		{
-			"name": "expectedRightToLeft",
-			"inputs": [
-				{"name":"right_amount","type":"uint128"}
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"lp_amount","type":"uint128"}
 			],
 			"outputs": [
 				{"name":"expected_left_amount","type":"uint128"},
-				{"name":"expected_right_fee","type":"uint128"}
+				{"name":"expected_right_amount","type":"uint128"}
+			]
+		},
+		{
+			"name": "withdrawLiquidity",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"lp_amount","type":"uint128"},
+				{"name":"expected_lp_root","type":"address"},
+				{"name":"account_owner","type":"address"},
+				{"name":"account_version","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedExchange",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"amount","type":"uint128"},
+				{"name":"is_left_to_right","type":"bool"}
+			],
+			"outputs": [
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"expected_fee","type":"uint128"}
 			]
 		},
 		{
@@ -168,16 +184,6 @@
 			"inputs": [
 				{"name":"lp_root_","type":"address"},
 				{"name":"send_gas_to","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "expectedWalletAddressCallback",
-			"inputs": [
-				{"name":"wallet","type":"address"},
-				{"name":"wallet_public_key","type":"uint256"},
-				{"name":"owner_address","type":"address"}
 			],
 			"outputs": [
 			]

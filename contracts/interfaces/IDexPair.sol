@@ -30,6 +30,21 @@ interface IDexPair {
 
     function isActive() external view responsible returns (bool);
 
+    function expectedExchange(
+        uint128 amount,
+        bool is_left_to_right
+    ) external view responsible returns (uint128 expected_amount, uint128 expected_fee);
+
+    function expectedDepositLiquidity(
+        uint128 left_amount,
+        uint128 right_amount,
+        bool auto_change
+    ) external view responsible returns (DepositLiquidityResult);
+
+    function expectedWithdrawLiquidity(
+        uint128 lp_amount
+    ) external view responsible returns (uint128 expected_left_amount, uint128 expected_right_amount);
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // INTERNAL
 
@@ -53,16 +68,19 @@ interface IDexPair {
         address send_gas_to
     ) external;
 
-    function expectedDepositLiquidity(
-        uint128 left_amount,
-        uint128 right_amount,
-        bool auto_change
-    ) external view responsible returns (DepositLiquidityResult);
-
     function depositLiquidity(
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        address account_owner,
+        uint32 account_version,
+        address send_gas_to
+    ) external;
+
+    function withdrawLiquidity(
+        uint64 call_id,
+        uint128 lp_amount,
+        address expected_lp_root,
         address account_owner,
         uint32 account_version,
         address send_gas_to

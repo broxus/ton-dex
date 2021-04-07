@@ -65,6 +65,32 @@
 			]
 		},
 		{
+			"name": "tokensReceivedCallback",
+			"inputs": [
+				{"name":"token_wallet","type":"address"},
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"value3","type":"uint256"},
+				{"name":"value4","type":"address"},
+				{"name":"sender_wallet","type":"address"},
+				{"name":"original_gas_to","type":"address"},
+				{"name":"value7","type":"uint128"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdraw",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"token_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "transfer",
 			"inputs": [
 				{"name":"amount","type":"uint128"},
@@ -77,13 +103,25 @@
 			]
 		},
 		{
-			"name": "internalTransfer",
+			"name": "internalAccountTransfer",
 			"inputs": [
 				{"name":"call_id","type":"uint64"},
 				{"name":"amount","type":"uint128"},
 				{"name":"token_root","type":"address"},
 				{"name":"sender_owner","type":"address"},
 				{"name":"willing_to_deploy","type":"bool"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "internalPairTransfer",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"token_root","type":"address"},
+				{"name":"sender_left_root","type":"address"},
+				{"name":"sender_right_root","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -109,6 +147,18 @@
 				{"name":"right_root","type":"address"},
 				{"name":"right_amount","type":"uint128"},
 				{"name":"auto_change","type":"bool"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdrawLiquidity",
+			"inputs": [
+				{"name":"lp_amount","type":"uint128"},
+				{"name":"lp_root","type":"address"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -168,6 +218,13 @@
 			"name": "successCallback",
 			"inputs": [
 				{"name":"call_id","type":"uint64"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "gc",
+			"inputs": [
 			],
 			"outputs": [
 			]

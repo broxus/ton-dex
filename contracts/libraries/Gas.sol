@@ -23,14 +23,16 @@ library Gas {
     uint128 constant UPGRADE_ACCOUNT_MIN_VALUE      = 5 micro;
     uint128 constant UPGRADE_PAIR_MIN_VALUE         = 5 micro;
 
-    uint128 constant TRANSFER_MIN_VALUE             = 0.5 micro;
-    uint128 constant EXCHANGE_MIN_VALUE             = 0.5 micro;
+    uint128 constant WITHDRAW_MIN_VALUE             = 1 micro;
+    uint128 constant TRANSFER_MIN_VALUE             = 1 micro;
+    uint128 constant EXCHANGE_MIN_VALUE             = 1 micro;
     uint128 constant DEPOSIT_LIQUIDITY_MIN_VALUE    = 1 micro;
+    uint128 constant WITHDRAW_LIQUIDITY_MIN_VALUE   = 1 micro;
 
     uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.1 micro;
-    uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.05 micro;
+    uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 micro;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 micro;
 
-    uint128 constant ADD_PAIR_MIN_VALUE             = 5 micro;
+    uint128 constant ADD_PAIR_MIN_VALUE             = 3 micro;
 
 }
