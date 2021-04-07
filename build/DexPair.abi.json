@@ -92,8 +92,9 @@
 				{"name":"call_id","type":"uint64"},
 				{"name":"left_amount","type":"uint128"},
 				{"name":"right_amount","type":"uint128"},
+				{"name":"auto_change","type":"bool"},
 				{"name":"account_owner","type":"address"},
-				{"name":"account_version","type":"uint32"},
+				{"name":"value5","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -117,7 +118,7 @@
 				{"name":"lp_amount","type":"uint128"},
 				{"name":"expected_lp_root","type":"address"},
 				{"name":"account_owner","type":"address"},
-				{"name":"account_version","type":"uint32"},
+				{"name":"value4","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -144,7 +145,7 @@
 				{"name":"receive_token_root","type":"address"},
 				{"name":"expected_amount","type":"uint128"},
 				{"name":"account_owner","type":"address"},
-				{"name":"account_version","type":"uint32"},
+				{"name":"value6","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
@@ -192,5 +193,45 @@
 	"data": [
 	],
 	"events": [
+		{
+			"name": "DepositLiquidity",
+			"inputs": [
+				{"name":"left","type":"uint128"},
+				{"name":"right","type":"uint128"},
+				{"name":"lp","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "WithdrawLiquidity",
+			"inputs": [
+				{"name":"lp","type":"uint128"},
+				{"name":"left","type":"uint128"},
+				{"name":"right","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExchangeLeftToRight",
+			"inputs": [
+				{"name":"left","type":"uint128"},
+				{"name":"fee","type":"uint128"},
+				{"name":"right","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExchangeRightToLeft",
+			"inputs": [
+				{"name":"right","type":"uint128"},
+				{"name":"fee","type":"uint128"},
+				{"name":"left","type":"uint128"}
+			],
+			"outputs": [
+			]
+		}
 	]
 }

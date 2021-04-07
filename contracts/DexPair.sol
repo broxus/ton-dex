@@ -106,11 +106,73 @@ contract DexPair is IDexPair, IUpgradableByRequest, IAfterInitialize, IResetGas 
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        bool    auto_change,
         address account_owner,
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
-        // TODO
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+        DepositLiquidityResult r = _expectedDepositLiquidity(left_amount, right_amount, auto_change);
+        uint128 lp_tokens_amount = r.step_1_lp_reward + r.step_3_lp_reward;
+
+        uint128 transferValue = gasToValue(Gas.INTERNAL_PAIR_TRANSFER_VALUE, msg.sender.wid);
+
+        if (auto_change) {
+            left_balance = left_balance + left_amount;
+            right_balance = right_balance + right_amount;
+            lp_supply = lp_supply + lp_tokens_amount;
+        } else {
+            left_balance = left_balance + r.step_1_left_deposit;
+            right_balance = right_balance + r.step_1_right_deposit;
+            lp_supply = lp_supply + lp_tokens_amount;
+
+            if (r.step_1_left_deposit < left_amount) {
+                IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: 1 }(
+                    left_amount - r.step_1_left_deposit,
+                    left_root,
+                    left_root,
+                    right_root,
+                    send_gas_to
+                );
+            }
+
+            if (r.step_1_right_deposit < right_amount) {
+                IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: 1 }(
+                    right_amount - r.step_1_right_deposit,
+                    right_root,
+                    left_root,
+                    right_root,
+                    send_gas_to
+                );
+            }
+        }
+
+        if (r.step_1_lp_reward > 0) {
+            emit DepositLiquidity(r.step_1_left_deposit, r.step_1_right_deposit, r.step_1_lp_reward);
+        }
+
+        if (r.step_2_right_to_left) {
+            emit ExchangeRightToLeft(r.step_2_spent, r.step_2_fee, r.step_2_received);
+        } else if (r.step_2_left_to_right) {
+            emit ExchangeLeftToRight(r.step_2_spent, r.step_2_fee, r.step_2_received);
+        }
+
+        if (r.step_3_lp_reward > 0) {
+            emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
+        }
+
+        // TODO: mint LP tokens to vault
+
+        IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: 1 }(
+            lp_tokens_amount,
+            lp_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: 128 }(call_id);
     }
 
    function _expectedDepositLiquidity(
@@ -215,7 +277,33 @@ contract DexPair is IDexPair, IUpgradableByRequest, IAfterInitialize, IResetGas 
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
-        // TODO:
+        require(expected_lp_root == lp_root, DexErrors.NOT_LP_TOKEN_ROOT);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
+        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
+
+        uint128 transferValue = gasToValue(Gas.INTERNAL_PAIR_TRANSFER_VALUE, msg.sender.wid);
+
+        IDexAccount(msg.sender) .internalPairTransfer{ value: transferValue, flag: 1 }(
+            left_back_amount,
+            left_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: 1 }(
+            right_back_amount,
+            right_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        // TODO: burn LP tokens from vault
+
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: 128 }(call_id);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,6 +440,7 @@ contract DexPair is IDexPair, IUpgradableByRequest, IAfterInitialize, IResetGas 
 
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
         if (current_version == new_version || !active) {
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
             send_gas_to.transfer({ value: 0, flag: 128 });
         } else {
             TvmBuilder builder;

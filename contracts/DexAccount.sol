@@ -350,6 +350,7 @@ contract DexAccount is
             _nonce,
             left_root.value < right_root.value ? left_amount : right_amount,
             left_root.value < right_root.value ? right_amount : left_amount,
+            auto_change,
             owner,
             current_version,
             send_gas_to_
@@ -577,6 +578,7 @@ contract DexAccount is
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
         if (current_version == new_version || !_tmp_deploying_wallets.empty() || !_tmp_operations.empty() ||
             !_tmp_send_gas_to.empty() || !_tmp_expected_callback_sender.empty()) {
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
             send_gas_to.transfer({ value: 0, flag: 128 });
         } else {
             TvmBuilder builder;

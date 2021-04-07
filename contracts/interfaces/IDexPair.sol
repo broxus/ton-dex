@@ -2,6 +2,11 @@ pragma ton-solidity ^0.39.0;
 
 interface IDexPair {
 
+    event DepositLiquidity(uint128 left, uint128 right, uint128 lp);
+    event WithdrawLiquidity(uint128 lp, uint128 left, uint128 right);
+    event ExchangeLeftToRight(uint128 left, uint128 fee, uint128 right);
+    event ExchangeRightToLeft(uint128 right, uint128 fee, uint128 left);
+
     struct DepositLiquidityResult {
         uint128 step_1_left_deposit;
         uint128 step_1_right_deposit;
@@ -72,6 +77,7 @@ interface IDexPair {
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        bool    auto_change,
         address account_owner,
         uint32 account_version,
         address send_gas_to

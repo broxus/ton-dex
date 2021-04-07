@@ -3234,7 +3234,7 @@ STZEROES
 STSLICECONST 0
 STSLICECONST 1
 NEWC
-STSLICECONST x38ac05c1
+STSLICECONST x580a1cc6
 ;; call_id
 ;; push identifier _nonce
 GETGLOB 15
@@ -3289,6 +3289,10 @@ PUSHCONT {
 }
 IFELSE
 STUR 128
+;; auto_change
+;; push identifier auto_change
+PUSH S5
+STIR 1
 ;; account_owner
 ;; push identifier owner
 GETGLOB 14
@@ -5065,6 +5069,9 @@ PUSHCONT {
 }
 IFNOT
 PUSHCONT {
+	PUSHINT 1000000000
+	PUSHINT 2
+	RAWRESERVE
 	;; transfer()
 	;; push identifier send_gas_to
 	DUP
@@ -5587,7 +5594,7 @@ PUSHCONT {
 	;; push identifier functionId
 	DUP
 	;; ==
-	PUSHINT 950797761
+	PUSHINT 1477057734
 	EQUAL
 	;; short-circuiting ||
 	DUP
