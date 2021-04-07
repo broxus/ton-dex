@@ -12,6 +12,7 @@ import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interf
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
+import "./libraries/MsgFlag.sol";
 
 import "./structures/ITokenOperationStructure.sol";
 
@@ -79,33 +80,33 @@ contract DexAccount is
     // ...and allow user to get surplus gas
     function resetGas(address receiver) override external view onlyOwner {
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
-        receiver.transfer({ value: 0, flag: 128 });
+        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getters
 
     function getRoot() override external view responsible returns (address) {
-        return{ value: 0, bounce: false, flag: 64 } root;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } root;
     }
 
     function getOwner() override external view responsible returns (address) {
-        return{ value: 0, bounce: false, flag: 64 } owner;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner;
     }
 
     function getVersion() override external view responsible returns (uint32) {
-        return{ value: 0, bounce: false, flag: 64 } current_version;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } current_version;
     }
 
     function getVault() override external view responsible returns (address) {
-        return{ value: 0, bounce: false, flag: 64 } vault;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } vault;
     }
 
     function getWalletData(address token_root) override external view responsible returns (address wallet, uint128 balance) {
         if(_wallets.exists(token_root) && _balances.exists(token_root)) {
-            return{ value: 0, bounce: false, flag: 64 } (_wallets.at(token_root), _balances.at(token_root));
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (_wallets.at(token_root), _balances.at(token_root));
         } else {
-            return{ value: 0, bounce: false, flag: 64 } (address.makeAddrStd(0, 0), 0);
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (address.makeAddrStd(0, 0), 0);
         }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +186,11 @@ contract DexAccount is
         _tmp_withdrawals[token_root] = _nonce;
 
         IRootTokenContract(token_root)
-            .sendExpectedWalletAddress{ value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid), flag: 128}(
+            .sendExpectedWalletAddress{
+                value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid),
+                bounce: true,
+                flag: MsgFlag.ALL_NOT_RESERVED
+            }(
                 0,                              // wallet_public_key_
                 vault,                          // owner_address_
                 address(this)                   // to
@@ -218,7 +223,7 @@ contract DexAccount is
         _tmp_send_gas_to[_nonce] = send_gas_to_;
         _tmp_expected_callback_sender[_nonce] = to_dex_account;
 
-        IDexAccount(to_dex_account).internalAccountTransfer{ value: 0, flag: 128 }(
+        IDexAccount(to_dex_account).internalAccountTransfer{ value: 0, bounce: true, flag: MsgFlag.ALL_NOT_RESERVED }(
             _nonce,
             amount,
             token_root,
@@ -246,7 +251,7 @@ contract DexAccount is
             _deployWallet(token_root, send_gas_to);
         }
 
-        IDexAccount(msg.sender).successCallback{ value: 0, flag: 128 }(call_id);
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
     }
 
     function internalPairTransfer(
@@ -260,7 +265,7 @@ contract DexAccount is
 
         _balances[token_root] += amount;
 
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +300,7 @@ contract DexAccount is
         _tmp_send_gas_to[_nonce] = send_gas_to_;
         _tmp_expected_callback_sender[_nonce] = pair;
 
-        IDexPair(pair).exchange{value: 0, flag: 128}(
+        IDexPair(pair).exchange{ value: 0, bounce: true, flag: MsgFlag.ALL_NOT_RESERVED }(
             _nonce,
             spent_amount,
             spent_token_root,
@@ -346,7 +351,7 @@ contract DexAccount is
         _tmp_send_gas_to[_nonce] = send_gas_to_;
         _tmp_expected_callback_sender[_nonce] = pair;
 
-        IDexPair(pair).depositLiquidity{value: 0, flag: 128}(
+        IDexPair(pair).depositLiquidity{ value: 0, bounce: true, flag: MsgFlag.ALL_NOT_RESERVED }(
             _nonce,
             left_root.value < right_root.value ? left_amount : right_amount,
             left_root.value < right_root.value ? right_amount : left_amount,
@@ -388,7 +393,7 @@ contract DexAccount is
         _tmp_send_gas_to[_nonce] = send_gas_to_;
         _tmp_expected_callback_sender[_nonce] = pair;
 
-        IDexPair(pair).withdrawLiquidity{value: 0, flag: 128}(
+        IDexPair(pair).withdrawLiquidity{ value: 0, bounce: true, flag: MsgFlag.ALL_NOT_RESERVED }(
             _nonce,
             lp_amount,
             lp_root,
@@ -423,7 +428,7 @@ contract DexAccount is
         _nonce++;
         _tmp_send_gas_to[_nonce] = send_gas_to_;
 
-        IDexPair(expected).checkPair{ value: 0, flag: 128}(_nonce, owner, current_version, send_gas_to_);
+        IDexPair(expected).checkPair{ value: 0, bounce: true, flag: MsgFlag.ALL_NOT_RESERVED }(_nonce, owner, current_version, send_gas_to_);
     }
 
     function checkPairCallback(
@@ -448,20 +453,26 @@ contract DexAccount is
             _deployWallet(lp_root, send_gas_to);
         }
 
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function _deployWallet(address token_root, address send_gas_to) private {
         _tmp_deploying_wallets[token_root] = true;
         IRootTokenContract(token_root)
-            .deployEmptyWallet{ value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, token_root.wid), flag: 1}(
+            .deployEmptyWallet {
+                value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, token_root.wid),
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
                 Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
                 0,                              // wallet_public_key
                 address(this),                  // owner_address
                 send_gas_to                     // gas_back_address
             );
         IRootTokenContract(token_root)
-            .sendExpectedWalletAddress{ value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid), flag: 1}(
+            .sendExpectedWalletAddress{
+                value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid),
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
                 0,                              // wallet_public_key_
                 address(this),                  // owner_address_
                 address(this)                   // to
@@ -481,7 +492,7 @@ contract DexAccount is
             _wallets[msg.sender] = wallet;
             delete _tmp_deploying_wallets[msg.sender];
 
-            ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: 128}(address(this), false);
+            ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(address(this), false);
         } else if (owner_address == vault && _wallets.exists(msg.sender) && _tmp_withdrawals.exists(msg.sender)) {
             uint64 call_id = _tmp_withdrawals[msg.sender];
 
@@ -490,7 +501,7 @@ contract DexAccount is
 
             if (_tmp_expected_callback_sender[call_id] == vault && operation.root == msg.sender) {
                 delete _tmp_withdrawals[msg.sender];
-                IDexVault(vault).withdraw{ value: 0, flag: 128, bounce: true }(
+                IDexVault(vault).withdraw{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: true }(
                     call_id,
                     operation.amount,
                     operation.root,
@@ -500,7 +511,7 @@ contract DexAccount is
                     send_gas_to
                 );
             } else {
-                send_gas_to.transfer({ value: 0, flag: 128 });
+                send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
             }
         }
     }
@@ -572,14 +583,14 @@ contract DexAccount is
     function requestUpgrade(address send_gas_to) external view onlyOwner {
         require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
-        IDexRoot(root).requestUpgradeAccount{ value: 0, flag: 128 }(current_version, owner, send_gas_to);
+        IDexRoot(root).requestUpgradeAccount{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(current_version, owner, send_gas_to);
     }
 
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
         if (current_version == new_version || !_tmp_deploying_wallets.empty() || !_tmp_operations.empty() ||
             !_tmp_send_gas_to.empty() || !_tmp_expected_callback_sender.empty()) {
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-            send_gas_to.transfer({ value: 0, flag: 128 });
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else {
             TvmBuilder builder;
 
@@ -640,7 +651,7 @@ contract DexAccount is
         owner = data.decode(address);
 
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     // success
@@ -656,7 +667,7 @@ contract DexAccount is
         address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
         delete _tmp_send_gas_to[call_id];
 
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function gc() onlyOwner external {
@@ -693,14 +704,14 @@ contract DexAccount is
             address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
             delete _tmp_send_gas_to[call_id];
 
-            send_gas_to.transfer({ value: 0, flag: 128 });
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else if(functionId == tvm.functionId(IDexPair.checkPair)) {
             uint64 call_id = body.decode(uint64);
 
             address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
             delete _tmp_send_gas_to[call_id];
 
-            send_gas_to.transfer({ value: 0, flag: 128 });
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         }
     }
 }

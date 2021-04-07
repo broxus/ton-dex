@@ -29,6 +29,8 @@ library Gas {
     uint128 constant DEPOSIT_LIQUIDITY_MIN_VALUE    = 1 micro;
     uint128 constant WITHDRAW_LIQUIDITY_MIN_VALUE   = 1 micro;
     uint128 constant INTERNAL_PAIR_TRANSFER_VALUE   = 0.1 micro;
+    uint128 constant MINT_VALUE                     = 0.03 micro;
+    uint128 constant BURN_VALUE                     = 0.1 micro;
 
     uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.1 micro;
     uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 micro;
