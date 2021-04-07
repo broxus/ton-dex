@@ -1944,16 +1944,6 @@ THROWIFNOT 105
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-PUSHINT 100
-;; get member wid
-;; get member sender
-GETGLOB 9
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
-;; decl: transferValue
 PUSHINT 0
 ;; decl: lp_tokens_amount
 ;; if
@@ -1970,14 +1960,14 @@ PUSHCONT {
 	; expValue
 	; end expValue
 	;; push identifier left_amount
-	PUSH S9
+	PUSH S8
 	; colValue
 	SETGLOB 20
 	; end colValue
 	; expValue
 	; end expValue
 	;; push identifier right_amount
-	PUSH S8
+	PUSH S7
 	; colValue
 	SETGLOB 21
 	; end colValue
@@ -1990,11 +1980,11 @@ PUSHCONT {
 	STSLICECONST x56cf721f
 	;; left
 	;; push identifier left_amount
-	PUSH S10
+	PUSH S9
 	STUR 128
 	;; right
 	;; push identifier right_amount
-	PUSH S9
+	PUSH S8
 	STUR 128
 	;; lp
 	;; push identifier lp_tokens_amount
@@ -2006,11 +1996,11 @@ PUSHCONT {
 }
 PUSHCONT {
 	;; push identifier left_amount
-	PUSH S9
+	PUSH S8
 	;; push identifier right_amount
-	PUSH S9
+	PUSH S8
 	;; push identifier auto_change
-	PUSH S9
+	PUSH S8
 	;; param: left_amount
 	;; param: right_amount
 	;; param: auto_change
@@ -2888,7 +2878,7 @@ PUSHCONT {
 	; end colValue
 	;; if
 	;; push identifier auto_change
-	PUSH S8
+	PUSH S7
 	PUSHCONT {
 		; expValue
 		; end expValue
@@ -2896,7 +2886,7 @@ PUSHCONT {
 		GETGLOB 20
 		;; +
 		;; push identifier left_amount
-		PUSH S11
+		PUSH S10
 		ADD
 		UFITS 128
 		; colValue
@@ -2908,7 +2898,7 @@ PUSHCONT {
 		GETGLOB 21
 		;; +
 		;; push identifier right_amount
-		PUSH S10
+		PUSH S9
 		ADD
 		UFITS 128
 		; colValue
@@ -2951,28 +2941,24 @@ PUSHCONT {
 		INDEX 0
 		;; <
 		;; push identifier left_amount
-		PUSH S11
+		PUSH S10
 		LESS
 		PUSHCONT {
 			;; Remote call IDexAccount.internalPairTransfer
-			;; push identifier transferValue
-			PUSH S2
 			;; get member sender
 			GETGLOB 9
 			NEWC
 			STSLICECONST x62_
 			STSLICE
-			SWAP
-			STGRAMS
-			PUSHINT 105
-			STZEROES
+			PUSHSLICE x405f5e100000000000000000000000000004_
+			STSLICER
 			STSLICECONST 0
 			STSLICECONST 1
 			NEWC
 			STSLICECONST x629f3a85
 			;; amount
 			;; push identifier left_amount
-			PUSH S12
+			PUSH S11
 			;; -
 			;; get member step_1_left_deposit
 			;; push identifier r
@@ -2996,7 +2982,7 @@ PUSHCONT {
 			STSLICER
 			;; send_gas_to
 			;; push identifier send_gas_to
-			PUSH S8
+			PUSH S7
 			STSLICER
 			STBREFR
 			STBREFR
@@ -3013,28 +2999,24 @@ PUSHCONT {
 		INDEX 1
 		;; <
 		;; push identifier right_amount
-		PUSH S10
+		PUSH S9
 		LESS
 		PUSHCONT {
 			;; Remote call IDexAccount.internalPairTransfer
-			;; push identifier transferValue
-			PUSH S2
 			;; get member sender
 			GETGLOB 9
 			NEWC
 			STSLICECONST x62_
 			STSLICE
-			SWAP
-			STGRAMS
-			PUSHINT 105
-			STZEROES
+			PUSHSLICE x405f5e100000000000000000000000000004_
+			STSLICER
 			STSLICECONST 0
 			STSLICECONST 1
 			NEWC
 			STSLICECONST x629f3a85
 			;; amount
 			;; push identifier right_amount
-			PUSH S11
+			PUSH S10
 			;; -
 			;; get member step_1_right_deposit
 			;; push identifier r
@@ -3058,7 +3040,7 @@ PUSHCONT {
 			STSLICER
 			;; send_gas_to
 			;; push identifier send_gas_to
-			PUSH S8
+			PUSH S7
 			STSLICER
 			STBREFR
 			STBREFR
@@ -3240,24 +3222,13 @@ UFITS 128
 SETGLOB 19
 ; end colValue
 ;; Remote call IRootTokenContract.mint
-PUSHINT 30
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
 ;; push identifier lp_root
 GETGLOB 17
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x401c9c380000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 0
 STSLICECONST x723dc4ce
@@ -3273,17 +3244,13 @@ ENDC
 PUSHINT 1
 SENDRAWMSG
 ;; Remote call IDexAccount.internalPairTransfer
-;; push identifier transferValue
-PUSH S1
 ;; get member sender
 GETGLOB 9
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC
@@ -3307,7 +3274,7 @@ GETGLOB 15
 STSLICER
 ;; send_gas_to
 ;; push identifier send_gas_to
-PUSH S7
+PUSH S6
 STSLICER
 STBREFR
 STBREFR
@@ -3327,12 +3294,12 @@ STSLICECONST 0
 STSLICECONST x11132606
 ;; call_id
 ;; push identifier call_id
-PUSH S11
+PUSH S10
 STUR 64
 ENDC
 PUSHINT 128
 SENDRAWMSG
-DROP2
+DROP
 ; end function depositLiquidity
 DROP
 DROP
@@ -3662,35 +3629,57 @@ GETGLOB 19
 MULDIV
 UFITS 128
 ;; decl: right_back_amount
-PUSHINT 100
-;; get member wid
-;; get member sender
-GETGLOB 9
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
-;; decl: transferValue
-;; Remote call IDexAccount.internalPairTransfer
-;; push identifier transferValue
+;; push identifier left_back_amount
+PUSH S1
+; expValue
+;; fetch left_balance
+GETGLOB 20
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 20
+; end colValue
+;; push identifier right_back_amount
 DUP
+; expValue
+;; fetch right_balance
+GETGLOB 21
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 21
+; end colValue
+;; push identifier lp_amount
+PUSH S8
+; expValue
+;; fetch lp_supply
+GETGLOB 19
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 19
+; end colValue
+;; Remote call IDexAccount.internalPairTransfer
 ;; get member sender
 GETGLOB 9
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC
 STSLICECONST x629f3a85
 ;; amount
 ;; push identifier left_back_amount
-PUSH S4
+PUSH S3
 STUR 128
 ;; token_root
 ;; push identifier left_root
@@ -3707,7 +3696,7 @@ GETGLOB 15
 STSLICER
 ;; send_gas_to
 ;; push identifier send_gas_to
-PUSH S8
+PUSH S7
 STSLICER
 STBREFR
 STBREFR
@@ -3715,24 +3704,20 @@ ENDC
 PUSHINT 1
 SENDRAWMSG
 ;; Remote call IDexAccount.internalPairTransfer
-;; push identifier transferValue
-DUP
 ;; get member sender
 GETGLOB 9
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC
 STSLICECONST x629f3a85
 ;; amount
 ;; push identifier right_back_amount
-PUSH S3
+PUSH S2
 STUR 128
 ;; token_root
 ;; push identifier right_root
@@ -3749,7 +3734,7 @@ GETGLOB 15
 STSLICER
 ;; send_gas_to
 ;; push identifier send_gas_to
-PUSH S8
+PUSH S7
 STSLICER
 STBREFR
 STBREFR
@@ -3760,31 +3745,20 @@ NEWC
 ENDC
 ;; decl: empty
 ;; Remote call IBurnableByRootTokenRootContract.proxyBurn
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
 ;; push identifier lp_root
 GETGLOB 17
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC
 STSLICECONST x1df868a9
 ;; tokens
 ;; push identifier lp_amount
-PUSH S12
+PUSH S11
 STUR 128
 ;; sender_address
 ;; push identifier vault
@@ -3792,7 +3766,7 @@ GETGLOB 11
 STSLICER
 ;; send_gas_to
 ;; push identifier send_gas_to
-PUSH S8
+PUSH S7
 STSLICER
 NEWC
 ;; callback_address
@@ -3821,12 +3795,12 @@ STSLICECONST 0
 STSLICECONST x11132606
 ;; call_id
 ;; push identifier call_id
-PUSH S12
+PUSH S11
 STUR 64
 ENDC
 PUSHINT 128
 SENDRAWMSG
-BLKDROP 4
+BLKDROP 3
 ; end function withdrawLiquidity
 DROP
 DROP
@@ -5031,24 +5005,13 @@ PUSH S1
 SETGLOB 17
 ; end colValue
 ;; Remote call IRootTokenContract.sendExpectedWalletAddress
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
 ;; push identifier lp_root
 GETGLOB 17
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC

@@ -113,7 +113,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     function upgrade(TvmCell code) override external onlyOwner {
 
-        require(msg.value > gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value > Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
 
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
 
@@ -157,7 +157,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         address account_owner,
         address send_gas_to
     ) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Account,
@@ -170,7 +170,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         address right_root,
         address send_gas_to
     ) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.UPGRADE_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Pair,
@@ -281,22 +281,22 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     // Deploy child contracts
 
     function deployAccount(address account_owner, address send_gas_to) external onlyActive {
-        require(msg.value >= gasToValue(Gas.DEPLOY_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.DEPLOY_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(account_owner.value != 0, DexErrors.INVALID_ADDRESS);
 
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
         DexPlatform platform = new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Account, _buildAccountParams(account_owner)),
-            value: gasToValue(Gas.PLATFORM_DEPLOY_VALUE, address(this).wid),
+            value: Gas.PLATFORM_DEPLOY_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }();
         platform.setPlatformCode{
-            value: gasToValue(Gas.SET_PLATFORM_CODE_VALUE, address(this).wid),
+            value: Gas.SET_PLATFORM_CODE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(platform_code);
         platform.initialize{
-            value: gasToValue(Gas.ACCOUNT_INITIALIZE_VALUE, address(this).wid),
+            value: Gas.ACCOUNT_INITIALIZE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             account_code,
@@ -308,7 +308,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     }
 
     function deployPair(address left_root, address right_root, address send_gas_to) external onlyActive {
-        require(msg.value >= gasToValue(Gas.DEPLOY_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.DEPLOY_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
         require(left_root.value != 0, DexErrors.WRONG_PAIR);
         require(right_root.value != 0, DexErrors.WRONG_PAIR);
@@ -317,15 +317,15 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
         address platform = new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Pair, _buildPairParams(left_root, right_root)),
-            value: gasToValue(Gas.PLATFORM_DEPLOY_VALUE, address(this).wid),
+            value: Gas.PLATFORM_DEPLOY_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }();
         DexPlatform(platform).setPlatformCode{
-            value: gasToValue(Gas.SET_PLATFORM_CODE_VALUE, address(this).wid),
+            value: Gas.SET_PLATFORM_CODE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(platform_code);
         DexPlatform(platform).initialize{
-            value: gasToValue(Gas.PAIR_INITIALIZE_VALUE, address(this).wid),
+            value: Gas.PAIR_INITIALIZE_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             pair_code,

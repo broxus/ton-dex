@@ -169,7 +169,7 @@ contract DexAccount is
     ) override external onlyOwner {
         require(!_tmp_withdrawals.exists(token_root), DexErrors.ANOTHER_WITHDRAWAL_IN_PROGRESS);
         require(amount > 0, DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= gasToValue(Gas.WITHDRAW_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.WITHDRAW_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(token_root) && _balances.exists(token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[token_root] >= amount, DexErrors.NOT_ENOUGH_FUNDS);
 
@@ -187,7 +187,7 @@ contract DexAccount is
 
         IRootTokenContract(token_root)
             .sendExpectedWalletAddress{
-                value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid),
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
                 bounce: true,
                 flag: MsgFlag.ALL_NOT_RESERVED
             }(
@@ -208,7 +208,7 @@ contract DexAccount is
         address send_gas_to
     ) override external onlyOwner {
         require(amount > 0, DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= gasToValue(Gas.TRANSFER_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.TRANSFER_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(token_root) && _balances.exists(token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[token_root] >= amount, DexErrors.NOT_ENOUGH_FUNDS);
 
@@ -279,7 +279,7 @@ contract DexAccount is
         address send_gas_to
     ) override external onlyOwner {
         require(spent_amount > 0, DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= gasToValue(Gas.EXCHANGE_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.EXCHANGE_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(spent_token_root) && _balances.exists(spent_token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_wallets.exists(receive_token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[spent_token_root] >= spent_amount, DexErrors.NOT_ENOUGH_FUNDS);
@@ -325,7 +325,7 @@ contract DexAccount is
         require(right_root.value != 0, DexErrors.WRONG_PAIR);
         require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
                 DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= gasToValue(Gas.DEPOSIT_LIQUIDITY_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.DEPOSIT_LIQUIDITY_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(left_root) && _balances.exists(left_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_wallets.exists(right_root) && _balances.exists(right_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[left_root] >= left_amount, DexErrors.NOT_ENOUGH_FUNDS);
@@ -371,7 +371,7 @@ contract DexAccount is
     ) override external onlyOwner {
 
         require(lp_amount > 0, DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= gasToValue(Gas.WITHDRAW_LIQUIDITY_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.WITHDRAW_LIQUIDITY_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(lp_root) && _balances.exists(lp_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_wallets.exists(left_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_wallets.exists(right_root), DexErrors.UNKNOWN_TOKEN_ROOT);
@@ -414,7 +414,7 @@ contract DexAccount is
         require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
         require(left_root.value != 0, DexErrors.WRONG_PAIR);
         require(right_root.value != 0, DexErrors.WRONG_PAIR);
-        require(msg.value >= gasToValue(Gas.ADD_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.ADD_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
 
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
 
@@ -460,7 +460,7 @@ contract DexAccount is
         _tmp_deploying_wallets[token_root] = true;
         IRootTokenContract(token_root)
             .deployEmptyWallet {
-                value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, token_root.wid),
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
                 Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
@@ -470,7 +470,7 @@ contract DexAccount is
             );
         IRootTokenContract(token_root)
             .sendExpectedWalletAddress{
-                value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, token_root.wid),
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
                 0,                              // wallet_public_key_
@@ -581,7 +581,7 @@ contract DexAccount is
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Code upgrade
     function requestUpgrade(address send_gas_to) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
         IDexRoot(root).requestUpgradeAccount{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(current_version, owner, send_gas_to);
     }

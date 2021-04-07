@@ -128,8 +128,6 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     ) override external onlyActive onlyAccount(account_owner) {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
 
-        uint128 transferValue = gasToValue(Gas.INTERNAL_PAIR_TRANSFER_VALUE, msg.sender.wid);
-
         uint128 lp_tokens_amount;
 
         if (lp_supply == 0) {
@@ -150,7 +148,10 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
                 right_balance = right_balance + r.step_1_right_deposit;
 
                 if (r.step_1_left_deposit < left_amount) {
-                    IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: MsgFlag.SENDER_PAYS_FEES }(
+                    IDexAccount(msg.sender).internalPairTransfer{
+                        value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
                         left_amount - r.step_1_left_deposit,
                         left_root,
                         left_root,
@@ -160,7 +161,10 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
                 }
 
                 if (r.step_1_right_deposit < right_amount) {
-                    IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: MsgFlag.SENDER_PAYS_FEES }(
+                    IDexAccount(msg.sender).internalPairTransfer{
+                        value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
                         right_amount - r.step_1_right_deposit,
                         right_root,
                         left_root,
@@ -188,16 +192,13 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
 
         lp_supply = lp_supply + lp_tokens_amount;
 
-        IRootTokenContract(lp_root).mint{
-            value: gasToValue(Gas.MINT_VALUE, lp_root.wid),
-            flag: MsgFlag.SENDER_PAYS_FEES
-        }(
+        IRootTokenContract(lp_root).mint{ value: Gas.MINT_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
             lp_tokens_amount,
             lp_vault_wallet
         );
 
         IDexAccount(msg.sender).internalPairTransfer{
-            value: transferValue,
+            value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             lp_tokens_amount,
@@ -318,9 +319,11 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
         uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
 
-        uint128 transferValue = gasToValue(Gas.INTERNAL_PAIR_TRANSFER_VALUE, msg.sender.wid);
+        left_balance -= left_back_amount;
+        right_balance -= right_back_amount;
+        lp_supply -= lp_amount;
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: MsgFlag.SENDER_PAYS_FEES }(
+        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
             left_back_amount,
             left_root,
             left_root,
@@ -328,7 +331,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
             send_gas_to
         );
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: transferValue, flag: MsgFlag.SENDER_PAYS_FEES }(
+        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
             right_back_amount,
             right_root,
             left_root,
@@ -339,7 +342,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         TvmCell empty;
 
         IBurnableByRootTokenRootContract(lp_root).proxyBurn{
-            value: gasToValue(Gas.BURN_VALUE, lp_root.wid),
+            value: Gas.BURN_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             lp_amount,
@@ -591,7 +594,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
 
         IRootTokenContract(lp_root)
             .sendExpectedWalletAddress{
-                value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, lp_root.wid),
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
                 0,                              // wallet_public_key_
