@@ -3665,6 +3665,28 @@ UFITS 128
 ; colValue
 SETGLOB 19
 ; end colValue
+;; emit WithdrawLiquidity
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x0246b540
+;; lp
+;; push identifier lp_amount
+PUSH S9
+STUR 128
+;; left
+;; push identifier left_back_amount
+PUSH S2
+STUR 128
+;; right
+;; push identifier right_back_amount
+PUSH S1
+STUR 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; Remote call IDexAccount.internalPairTransfer
 ;; get member sender
 GETGLOB 9
@@ -4251,6 +4273,415 @@ PUSH S1
 SDEQ
 THROWIFNOT 105
 ; function exchange
+;; if
+;; push identifier spent_token_root
+PUSH S7
+;; push identifier left_root
+GETGLOB 14
+SDEQ
+;; short-circuiting &&
+DUP
+PUSHCONT {
+	DROP
+	;; push identifier receive_token_root
+	PUSH S6
+	;; push identifier right_root
+	GETGLOB 15
+	SDEQ
+}
+IF
+PUSHCONT {
+	;; push identifier spent_amount
+	PUSH S8
+	;; push identifier left_balance
+	GETGLOB 20
+	;; push identifier right_balance
+	GETGLOB 21
+	;; param: a_amount
+	;; param: a_pool
+	;; param: b_pool
+	; function _expectedExchange
+	;; push identifier a_amount
+	PUSH S2
+	;; push identifier fee_nominator
+	GETGLOB 22
+	;; push identifier fee_denominator
+	GETGLOB 23
+	MULDIV
+	UFITS 128
+	;; decl: a_fee
+	;; push identifier a_pool
+	PUSH S2
+	;; +
+	;; push identifier a_amount
+	PUSH S4
+	ADD
+	UFITS 128
+	;; decl: new_a_pool
+	;; push identifier a_pool
+	PUSH S3
+	;; push identifier b_pool
+	PUSH S3
+	;; push identifier new_a_pool
+	PUSH S2
+	;; -
+	;; push identifier a_fee
+	PUSH S4
+	SUB
+	UFITS 128
+	MULDIV
+	UFITS 128
+	;; decl: new_b_pool
+	;; push identifier b_pool
+	PUSH S3
+	;; -
+	;; push identifier new_b_pool
+	PUSH S1
+	SUB
+	UFITS 128
+	;; decl: expected_b_amount
+	;; return
+	;; push identifier expected_b_amount
+	DUP
+	;; push identifier a_fee
+	PUSH S4
+	BLKDROP2 4, 2
+	; end function _expectedExchange
+	BLKDROP2 3, 2
+	SWAP
+	SWAP
+	;; decl: expected_right_amount
+	;; decl: expected_left_fee
+	;; push identifier expected_right_amount
+	PUSH S1
+	;; <=
+	;; push identifier right_balance
+	GETGLOB 21
+	LEQ
+	THROWIFNOT 118
+	;; push identifier expected_right_amount
+	PUSH S1
+	;; >=
+	;; push identifier expected_amount
+	PUSH S8
+	GEQ
+	THROWIFNOT 123
+	PUSHINT 1000000000
+	PUSHINT 2
+	RAWRESERVE
+	;; push identifier spent_amount
+	PUSH S10
+	; expValue
+	;; fetch left_balance
+	GETGLOB 20
+	; end expValue
+	SWAP
+	ADD
+	UFITS 128
+	; colValue
+	SETGLOB 20
+	; end colValue
+	;; push identifier expected_right_amount
+	PUSH S1
+	; expValue
+	;; fetch right_balance
+	GETGLOB 21
+	; end expValue
+	SWAP
+	SUB
+	UFITS 128
+	; colValue
+	SETGLOB 21
+	; end colValue
+	;; emit ExchangeLeftToRight
+	NEWC
+	PUSHSLICE xc0000000000000000000000002_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x2d589b1b
+	;; left
+	;; push identifier spent_amount
+	PUSH S11
+	STUR 128
+	;; fee
+	;; push identifier expected_left_fee
+	PUSH S1
+	STUR 128
+	;; right
+	;; push identifier expected_right_amount
+	PUSH S2
+	STUR 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+	;; Remote call IDexAccount.internalPairTransfer
+	;; get member sender
+	GETGLOB 9
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHSLICE x405f5e100000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST x629f3a85
+	;; amount
+	;; push identifier expected_right_amount
+	PUSH S3
+	STUR 128
+	;; token_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	;; sender_left_root
+	;; push identifier left_root
+	GETGLOB 14
+	STSLICER
+	NEWC
+	;; sender_right_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	;; send_gas_to
+	;; push identifier send_gas_to
+	PUSH S7
+	STSLICER
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+	;; Remote call IDexAccount.successCallback
+	;; get member sender
+	GETGLOB 9
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHINT 109
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x11132606
+	;; call_id
+	;; push identifier call_id
+	PUSH S12
+	STUR 64
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+	DROP2
+}
+PUSHCONT {
+	;; if
+	;; push identifier spent_token_root
+	PUSH S7
+	;; push identifier right_root
+	GETGLOB 15
+	SDEQ
+	;; short-circuiting &&
+	DUP
+	PUSHCONT {
+		DROP
+		;; push identifier receive_token_root
+		PUSH S6
+		;; push identifier left_root
+		GETGLOB 14
+		SDEQ
+	}
+	IF
+	PUSHCONT {
+		;; push identifier spent_amount
+		PUSH S8
+		;; push identifier right_balance
+		GETGLOB 21
+		;; push identifier left_balance
+		GETGLOB 20
+		;; param: a_amount
+		;; param: a_pool
+		;; param: b_pool
+		; function _expectedExchange
+		;; push identifier a_amount
+		PUSH S2
+		;; push identifier fee_nominator
+		GETGLOB 22
+		;; push identifier fee_denominator
+		GETGLOB 23
+		MULDIV
+		UFITS 128
+		;; decl: a_fee
+		;; push identifier a_pool
+		PUSH S2
+		;; +
+		;; push identifier a_amount
+		PUSH S4
+		ADD
+		UFITS 128
+		;; decl: new_a_pool
+		;; push identifier a_pool
+		PUSH S3
+		;; push identifier b_pool
+		PUSH S3
+		;; push identifier new_a_pool
+		PUSH S2
+		;; -
+		;; push identifier a_fee
+		PUSH S4
+		SUB
+		UFITS 128
+		MULDIV
+		UFITS 128
+		;; decl: new_b_pool
+		;; push identifier b_pool
+		PUSH S3
+		;; -
+		;; push identifier new_b_pool
+		PUSH S1
+		SUB
+		UFITS 128
+		;; decl: expected_b_amount
+		;; return
+		;; push identifier expected_b_amount
+		DUP
+		;; push identifier a_fee
+		PUSH S4
+		BLKDROP2 4, 2
+		; end function _expectedExchange
+		BLKDROP2 3, 2
+		SWAP
+		SWAP
+		;; decl: expected_left_amount
+		;; decl: expected_right_fee
+		;; push identifier expected_left_amount
+		PUSH S1
+		;; <=
+		;; push identifier left_balance
+		GETGLOB 20
+		LEQ
+		THROWIFNOT 118
+		;; push identifier expected_left_amount
+		PUSH S1
+		;; >=
+		;; push identifier expected_amount
+		PUSH S8
+		GEQ
+		THROWIFNOT 123
+		PUSHINT 1000000000
+		PUSHINT 2
+		RAWRESERVE
+		;; push identifier spent_amount
+		PUSH S10
+		; expValue
+		;; fetch right_balance
+		GETGLOB 21
+		; end expValue
+		SWAP
+		ADD
+		UFITS 128
+		; colValue
+		SETGLOB 21
+		; end colValue
+		;; push identifier expected_left_amount
+		PUSH S1
+		; expValue
+		;; fetch left_balance
+		GETGLOB 20
+		; end expValue
+		SWAP
+		SUB
+		UFITS 128
+		; colValue
+		SETGLOB 20
+		; end colValue
+		;; emit ExchangeRightToLeft
+		NEWC
+		PUSHSLICE xc0000000000000000000000002_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x1f2c7e24
+		;; right
+		;; push identifier spent_amount
+		PUSH S11
+		STUR 128
+		;; fee
+		;; push identifier expected_right_fee
+		PUSH S1
+		STUR 128
+		;; left
+		;; push identifier expected_left_amount
+		PUSH S2
+		STUR 128
+		ENDC
+		PUSHINT 0
+		SENDRAWMSG
+		;; Remote call IDexAccount.internalPairTransfer
+		;; get member sender
+		GETGLOB 9
+		NEWC
+		STSLICECONST x62_
+		STSLICE
+		PUSHSLICE x405f5e100000000000000000000000000004_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 1
+		NEWC
+		STSLICECONST x629f3a85
+		;; amount
+		;; push identifier expected_left_amount
+		PUSH S3
+		STUR 128
+		;; token_root
+		;; push identifier left_root
+		GETGLOB 14
+		STSLICER
+		;; sender_left_root
+		;; push identifier left_root
+		GETGLOB 14
+		STSLICER
+		NEWC
+		;; sender_right_root
+		;; push identifier right_root
+		GETGLOB 15
+		STSLICER
+		;; send_gas_to
+		;; push identifier send_gas_to
+		PUSH S7
+		STSLICER
+		STBREFR
+		STBREFR
+		ENDC
+		PUSHINT 1
+		SENDRAWMSG
+		;; Remote call IDexAccount.successCallback
+		;; get member sender
+		GETGLOB 9
+		NEWC
+		STSLICECONST x62_
+		STSLICE
+		PUSHINT 109
+		STZEROES
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x11132606
+		;; call_id
+		;; push identifier call_id
+		PUSH S12
+		STUR 64
+		ENDC
+		PUSHINT 128
+		SENDRAWMSG
+		DROP2
+	}
+	PUSHCONT {
+		THROW 100
+	}
+	IFELSE
+	;; end if
+}
+IFELSE
+;; end if
 ; end function exchange
 DROP
 DROP
