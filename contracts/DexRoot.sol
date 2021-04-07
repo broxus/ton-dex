@@ -7,6 +7,7 @@ pragma AbiHeader pubkey;
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
+import "./libraries/MsgFlag.sol";
 
 import "./DexPlatform.sol";
 import "./interfaces/IUpgradable.sol";
@@ -45,29 +46,29 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         require(!has_platform_code, DexErrors.PLATFORM_CODE_NON_EMPTY);
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         platform_code = code;
-        owner.transfer({ value: 0, flag: 128 });
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function installOrUpdateAccountCode(TvmCell code) external onlyOwner {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         account_code = code;
         account_version++;
-        owner.transfer({ value: 0, flag: 128 });
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function installOrUpdatePairCode(TvmCell code) external onlyOwner {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         pair_code = code;
         pair_version++;
-        owner.transfer({ value: 0, flag: 128 });
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function getAccountVersion() external view responsible returns (uint32) {
-        return{ value: 0, bounce: false, flag: 64 } account_version;
+        return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } account_version;
     }
 
     function getPairVersion() external view responsible returns (uint32) {
-        return{ value: 0, bounce: false, flag: 64 } pair_version;
+        return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pair_version;
     }
 
     // Vault
@@ -75,11 +76,11 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     function setVault(address new_vault) external onlyOwner {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         vault = new_vault;
-        owner.transfer({ value: 0, flag: 128 });
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function getVault() external view responsible returns (address) {
-        return{ value: 0, bounce: false, flag: 64 } vault;
+        return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } vault;
     }
 
     modifier onlyVault() {
@@ -96,11 +97,11 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         } else {
             active = false;
         }
-        owner.transfer({ value: 0, flag: 128 });
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function isActive() external view responsible returns (bool) {
-        return{ value: 0, bounce: false, flag: 64 } active;
+        return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } active;
     }
 
     modifier onlyActive() {
@@ -112,7 +113,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     function upgrade(TvmCell code) override external onlyOwner {
 
-        require(msg.value > gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value > Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
 
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
 
@@ -142,9 +143,13 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     ) override external onlyAccount(account_owner) {
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         if (current_version == account_version || !active) {
-            send_gas_to.transfer({ value: 0, flag: 128 });
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else {
-            IUpgradableByRequest(msg.sender).upgrade{ value: 0, flag: 128 }(account_code, account_version, send_gas_to);
+            IUpgradableByRequest(msg.sender).upgrade{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                account_code,
+                account_version,
+                send_gas_to
+            );
         }
     }
 
@@ -152,12 +157,12 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         address account_owner,
         address send_gas_to
     ) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Account,
             _buildAccountParams(account_owner)
-        )))).upgrade{ value: 0, flag: 128 }(account_code, account_version, send_gas_to);
+        )))).upgrade{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(account_code, account_version, send_gas_to);
     }
 
     function upgradePair(
@@ -165,24 +170,24 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         address right_root,
         address send_gas_to
     ) external view onlyOwner {
-        require(msg.value >= gasToValue(Gas.UPGRADE_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.UPGRADE_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Pair,
             _buildPairParams(left_root, right_root)
         ))))
-        .upgrade{ value: 0, flag: 128 }(pair_code, pair_version, send_gas_to);
+        .upgrade{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(pair_code, pair_version, send_gas_to);
     }
 
     // Reset balance to ROOT_INITIAL_BALANCE
     function resetGas(address receiver) override external view onlyOwner {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
-        receiver.transfer({ value: 0, flag: 128 });
+        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function resetTargetGas(address target, address receiver) external view onlyOwner {
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
-        IResetGas(target).resetGas{ value: 0, flag: 128 }(receiver);
+        IResetGas(target).resetGas{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(receiver);
     }
 
     // Owner
@@ -229,14 +234,14 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     }
 
     function getExpectedAccountAddress(address account_owner) external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: 64 } address(tvm.hash(_buildInitData(
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
             PlatformTypes.Account,
             _buildAccountParams(account_owner)
         )));
     }
 
     function getExpectedPairAddress(address left_root, address right_root) external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: 64 } address(tvm.hash(_buildInitData(
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
             PlatformTypes.Pair,
             _buildPairParams(left_root, right_root)
         )));
@@ -276,28 +281,34 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     // Deploy child contracts
 
     function deployAccount(address account_owner, address send_gas_to) external onlyActive {
-        require(msg.value >= gasToValue(Gas.DEPLOY_ACCOUNT_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.DEPLOY_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(account_owner.value != 0, DexErrors.INVALID_ADDRESS);
 
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
         DexPlatform platform = new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Account, _buildAccountParams(account_owner)),
-            value: gasToValue(Gas.PLATFORM_DEPLOY_VALUE, address(this).wid),
-            flag: 1
+            value: Gas.PLATFORM_DEPLOY_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
         }();
-        platform.setPlatformCode{value: gasToValue(Gas.SET_PLATFORM_CODE_VALUE, address(this).wid), flag: 1}(platform_code);
-        platform.initialize{value: gasToValue(Gas.ACCOUNT_INITIALIZE_VALUE, address(this).wid), flag: 1 }(
+        platform.setPlatformCode{
+            value: Gas.SET_PLATFORM_CODE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(platform_code);
+        platform.initialize{
+            value: Gas.ACCOUNT_INITIALIZE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(
             account_code,
             account_version,
             vault,
             send_gas_to
         );
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function deployPair(address left_root, address right_root, address send_gas_to) external onlyActive {
-        require(msg.value >= gasToValue(Gas.DEPLOY_PAIR_MIN_VALUE, address(this).wid), DexErrors.VALUE_TOO_LOW);
+        require(msg.value >= Gas.DEPLOY_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
         require(left_root.value != 0, DexErrors.WRONG_PAIR);
         require(right_root.value != 0, DexErrors.WRONG_PAIR);
@@ -306,17 +317,23 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
         address platform = new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Pair, _buildPairParams(left_root, right_root)),
-            value: gasToValue(Gas.PLATFORM_DEPLOY_VALUE, address(this).wid),
-            flag: 1
+            value: Gas.PLATFORM_DEPLOY_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
         }();
-        DexPlatform(platform).setPlatformCode{value: gasToValue(Gas.SET_PLATFORM_CODE_VALUE, address(this).wid), flag: 1}(platform_code);
-        DexPlatform(platform).initialize{value: gasToValue(Gas.PAIR_INITIALIZE_VALUE, address(this).wid), flag: 1 }(
+        DexPlatform(platform).setPlatformCode{
+            value: Gas.SET_PLATFORM_CODE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(platform_code);
+        DexPlatform(platform).initialize{
+            value: Gas.PAIR_INITIALIZE_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(
             pair_code,
             pair_version,
             vault,
             send_gas_to
         );
-        IAfterInitialize(platform).afterInitialize{ value: 0, flag: 128 }(send_gas_to);
+        IAfterInitialize(platform).afterInitialize{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(send_gas_to);
     }
 
 }

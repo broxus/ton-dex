@@ -4,14 +4,15 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol';
-import '../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol';
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokensReceivedCallback.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol";
 import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IExpectedWalletAddressCallback.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IBurnableByRootTokenRootContract.sol";
 
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
+import "./libraries/MsgFlag.sol";
 
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
@@ -42,7 +43,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     bool active;
     // Liquidity tokens
     address lp_root;
-    address lp_wallet;
+    address lp_vault_wallet;
     uint128 lp_supply;
     // Balances
     uint128 left_balance;
@@ -66,37 +67,35 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     // ...and allow root to get surplus gas
     function resetGas(address receiver) override external view onlyRoot {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        receiver.transfer({ value: 0, flag: 128 });
+        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getters
 
     function getRoot() override external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: 64 } root;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } root;
     }
 
     function getTokenRoots() override external view responsible returns (address left, address right, address lp) {
-        return { value: 0, bounce: false, flag: 64 } (left_root, right_root, lp_root);
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (left_root, right_root, lp_root);
     }
 
     function getVersion() override external view responsible returns (uint32) {
-        return { value: 0, bounce: false, flag: 64 } current_version;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } current_version;
     }
 
     function getVault() override external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: 64 } vault;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } vault;
     }
 
     function getFeeParams() override external view responsible returns (uint16 nominator, uint16 denominator) {
-        return { value: 0, bounce: false, flag: 64 } (fee_nominator, fee_denominator);
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (fee_nominator, fee_denominator);
     }
 
     function isActive() override external view responsible returns (bool) {
-        return { value: 0, bounce: false, flag: 64 } active;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } active;
     }
-
-    // TODO:
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Deposit liquidity
@@ -106,18 +105,110 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         uint128 right_amount,
         bool auto_change
     ) override external view responsible returns (DepositLiquidityResult) {
-        return { value: 0, bounce: false, flag: 64 } _expectedDepositLiquidity(left_amount, right_amount, auto_change);
+        if (lp_supply == 0) {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } DepositLiquidityResult(
+                left_amount,
+                right_amount,
+                10**11,
+                false, false, 0, 0, 0, 0, 0, 0
+            );
+        } else {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedDepositLiquidity(left_amount, right_amount, auto_change);
+        }
     }
 
     function depositLiquidity(
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        bool    auto_change,
         address account_owner,
-        uint32 account_version,
+        uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
-        // TODO
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+        uint128 lp_tokens_amount;
+
+        if (lp_supply == 0) {
+            lp_tokens_amount = 10**11;
+            left_balance = left_amount;
+            right_balance = right_amount;
+
+            emit DepositLiquidity(left_amount, right_amount, lp_tokens_amount);
+        } else {
+            DepositLiquidityResult r = _expectedDepositLiquidity(left_amount, right_amount, auto_change);
+            lp_tokens_amount = r.step_1_lp_reward + r.step_3_lp_reward;
+
+            if (auto_change) {
+                left_balance = left_balance + left_amount;
+                right_balance = right_balance + right_amount;
+            } else {
+                left_balance = left_balance + r.step_1_left_deposit;
+                right_balance = right_balance + r.step_1_right_deposit;
+
+                if (r.step_1_left_deposit < left_amount) {
+                    IDexAccount(msg.sender).internalPairTransfer{
+                        value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        left_amount - r.step_1_left_deposit,
+                        left_root,
+                        left_root,
+                        right_root,
+                        send_gas_to
+                    );
+                }
+
+                if (r.step_1_right_deposit < right_amount) {
+                    IDexAccount(msg.sender).internalPairTransfer{
+                        value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        right_amount - r.step_1_right_deposit,
+                        right_root,
+                        left_root,
+                        right_root,
+                        send_gas_to
+                    );
+                }
+            }
+
+            if (r.step_1_lp_reward > 0) {
+                emit DepositLiquidity(r.step_1_left_deposit, r.step_1_right_deposit, r.step_1_lp_reward);
+            }
+
+            if (r.step_2_right_to_left) {
+                emit ExchangeRightToLeft(r.step_2_spent, r.step_2_fee, r.step_2_received);
+            } else if (r.step_2_left_to_right) {
+                emit ExchangeLeftToRight(r.step_2_spent, r.step_2_fee, r.step_2_received);
+            }
+
+            if (r.step_3_lp_reward > 0) {
+                emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
+            }
+
+        }
+
+        lp_supply = lp_supply + lp_tokens_amount;
+
+        IRootTokenContract(lp_root).mint{ value: Gas.MINT_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+            lp_tokens_amount,
+            lp_vault_wallet
+        );
+
+        IDexAccount(msg.sender).internalPairTransfer{
+            value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(
+            lp_tokens_amount,
+            lp_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
     }
 
    function _expectedDepositLiquidity(
@@ -204,17 +295,78 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Withdraw liquidity
-    // TODO:
+
+    function expectedWithdrawLiquidity(
+        uint128 lp_amount
+    ) override external view responsible returns (uint128 expected_left_amount, uint128 expected_right_amount) {
+        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
+        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
+
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (left_back_amount, right_back_amount);
+    }
+
+    function withdrawLiquidity(
+        uint64 call_id,
+        uint128 lp_amount,
+        address expected_lp_root,
+        address account_owner,
+        uint32 /*account_version*/,
+        address send_gas_to
+    ) override external onlyActive onlyAccount(account_owner) {
+        require(expected_lp_root == lp_root, DexErrors.NOT_LP_TOKEN_ROOT);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
+        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
+
+        left_balance -= left_back_amount;
+        right_balance -= right_back_amount;
+        lp_supply -= lp_amount;
+
+        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+            left_back_amount,
+            left_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+            right_back_amount,
+            right_root,
+            left_root,
+            right_root,
+            send_gas_to
+        );
+
+        TvmCell empty;
+
+        IBurnableByRootTokenRootContract(lp_root).proxyBurn{
+            value: Gas.BURN_VALUE,
+            flag: MsgFlag.SENDER_PAYS_FEES
+        }(
+            lp_amount,
+            vault,
+            send_gas_to,
+            address.makeAddrStd(0, 0),
+            empty
+        );
+
+        IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Exchange
 
-    function expectedLeftToRight(uint128 left_amount) external view returns (uint128 expected_right_amount, uint128 expected_left_fee) {
-        return _expectedExchange(left_amount, left_balance, right_balance);
-    }
-
-    function expectedRightToLeft(uint128 right_amount) external view returns (uint128 expected_left_amount, uint128 expected_right_fee) {
-        return _expectedExchange(right_amount, right_balance, left_balance);
+    function expectedExchange(
+        uint128 amount,
+        bool is_left_to_right
+    ) override external view responsible returns (uint128 expected_amount, uint128 expected_fee) {
+        if (is_left_to_right) {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedExchange(amount, left_balance, right_balance);
+        } else {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedExchange(amount, right_balance, left_balance);
+        }
     }
 
     function exchange(
@@ -224,7 +376,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         address receive_token_root,
         uint128 expected_amount,
         address account_owner,
-        uint32 account_version,
+        uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
         // TODO:
@@ -248,16 +400,15 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         address account_owner,
         uint32 /*account_version*/,
         address send_gas_to
-    ) override external onlyActive {
-        address expected = address(tvm.hash(_buildInitData(
-                PlatformTypes.Account,
-                _buildAccountParams(account_owner)
-            )));
-        require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
-
+    ) override external onlyAccount(account_owner) {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-
-        IDexAccount(expected).checkPairCallback{value: 0, flag: 128}(call_id, left_root, right_root, lp_root, send_gas_to);
+        IDexAccount(msg.sender).checkPairCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+            call_id,
+            left_root,
+            right_root,
+            lp_root,
+            send_gas_to
+        );
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,8 +494,9 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     // Code upgrade
 
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
-        if (current_version == new_version) {
-            send_gas_to.transfer({ value: 0, flag: 128 });
+        if (current_version == new_version || !active) {
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else {
             TvmBuilder builder;
 
@@ -359,8 +511,19 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
             TvmBuilder dataBuilder;        // ref2:
             dataBuilder.store(left_root);
             dataBuilder.store(right_root);
+
+            // Liquidity tokens
             dataBuilder.store(lp_root);
-            // TODO:
+            dataBuilder.store(lp_vault_wallet);
+            dataBuilder.store(lp_supply);
+            // Balances
+            dataBuilder.store(left_balance);
+            dataBuilder.store(right_balance);
+            // Fee
+            dataBuilder.store(fee_nominator);
+            dataBuilder.store(fee_denominator);
+
+
             builder.storeRef(dataBuilder);
 
             // set code after complete this method
@@ -407,37 +570,39 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         right_root = data.decode(address);
 
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function afterInitialize(address send_gas_to) override external onlyRoot {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         if (lp_root.value == 0) {
-            IDexVault(vault).addLiquidityToken{ value: 0, flag: 128 }(address(this), left_root, right_root, send_gas_to);
+            IDexVault(vault).addLiquidityToken{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                address(this),
+                left_root,
+                right_root,
+                send_gas_to
+            );
         } else {
-            send_gas_to.transfer({ value: 0, flag: 128 });
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         }
     }
 
     function liquidityTokenRootDeployed(address lp_root_, address send_gas_to) override external onlyVault {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
         lp_root = lp_root_;
 
         IRootTokenContract(lp_root)
-        .deployEmptyWallet{ value: gasToValue(Gas.DEPLOY_EMPTY_WALLET_VALUE, lp_root.wid), flag: 1}(
-            Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
-            0,                              // wallet_public_key
-            address(this),                  // owner_address
-            send_gas_to                     // gas_back_address
-        );
-        IRootTokenContract(lp_root)
-        .sendExpectedWalletAddress{ value: gasToValue(Gas.SEND_EXPECTED_WALLET_VALUE, lp_root.wid), flag: 1}(
-            0,                              // wallet_public_key_
-            address(this),                  // owner_address_
-            address(this)                   // to
-        );
+            .sendExpectedWalletAddress{
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                0,                              // wallet_public_key_
+                vault,                          // owner_address_
+                address(this)                   // to
+            );
 
-        send_gas_to.transfer({ value: 0, flag: 128 });
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     // callback for IRootTokenContract(...).sendExpectedWalletAddress
@@ -447,13 +612,10 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         address owner_address
     ) override external {
         require(msg.sender == lp_root);
-        require(lp_wallet.value == 0);
         require(wallet_public_key == 0);
-        require(owner_address == address(this));
+        require(owner_address == vault);
 
-        lp_wallet = wallet;
-
-        ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: 128}(address(this), false);
+        lp_vault_wallet = wallet;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -724,489 +724,1394 @@ ENDS
 ;; param: left_amount
 ;; param: right_amount
 ;; param: auto_change
+;; ret param: retParam@0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+PUSHINT 0
+TUPLE 11
 ; function expectedDepositLiquidity
-;; return
-GETGLOB 4
-PUSHINT 0
-SETINDEXQ 2
-FALSE
-SETINDEXQ 1
-PUSHINT 64
-SETINDEXQ 4
-SETGLOB 4
-;; push identifier left_amount
-PUSH S2
-;; push identifier right_amount
-PUSH S2
-;; push identifier auto_change
-PUSH S2
-;; param: left_amount
-;; param: right_amount
-;; param: auto_change
-; function _expectedDepositLiquidity
-;; push identifier left_amount
-PUSH S2
-;; push identifier left_balance
-GETGLOB 20
-;; push identifier right_amount
-PUSH S3
-;; push identifier right_balance
-GETGLOB 21
-MULDIV
-UFITS 128
-MIN
-;; decl: step_1_left_deposit
-;; push identifier right_amount
-PUSH S2
-;; push identifier right_balance
-GETGLOB 21
-;; push identifier left_amount
-PUSH S5
-;; push identifier left_balance
-GETGLOB 20
-MULDIV
-UFITS 128
-MIN
-;; decl: step_1_right_deposit
-;; push identifier step_1_right_deposit
-DUP
-;; push identifier lp_supply
-GETGLOB 19
-;; push identifier right_balance
-GETGLOB 21
-MULDIV
-UFITS 128
-;; push identifier step_1_left_deposit
-PUSH S2
-;; push identifier lp_supply
-GETGLOB 19
-;; push identifier left_balance
-GETGLOB 20
-MULDIV
-UFITS 128
-MAX
-;; decl: step_1_lp_reward
-;; push identifier left_amount
-PUSH S5
-;; -
-;; push identifier step_1_left_deposit
-PUSH S3
-SUB
-UFITS 128
-;; decl: current_left_amount
-;; push identifier right_amount
-PUSH S5
-;; -
-;; push identifier step_1_right_deposit
-PUSH S3
-SUB
-UFITS 128
-;; decl: current_right_amount
-;; push identifier left_balance
-GETGLOB 20
-;; +
-;; push identifier step_1_left_deposit
-PUSH S5
-ADD
-UFITS 128
-;; decl: current_left_balance
-;; push identifier right_balance
-GETGLOB 21
-;; +
-;; push identifier step_1_right_deposit
-PUSH S5
-ADD
-UFITS 128
-;; decl: current_right_balance
-;; push identifier lp_supply
-GETGLOB 19
-;; +
-;; push identifier step_1_lp_reward
-PUSH S5
-ADD
-UFITS 128
-;; decl: current_lp_supply
-FALSE
-;; decl: step_2_left_to_right
-FALSE
-;; decl: step_2_right_to_left
-PUSHINT 0
-;; decl: step_2_spent
-PUSHINT 0
-;; decl: step_2_fee
-PUSHINT 0
-;; decl: step_2_received
-PUSHINT 0
-;; decl: step_3_left_deposit
-PUSHINT 0
-;; decl: step_3_right_deposit
-PUSHINT 0
-;; decl: step_3_lp_reward
-;; push identifier fee_denominator
-GETGLOB 23
-;; -
-;; push identifier fee_nominator
-GETGLOB 22
-SUB
-UFITS 16
-;; uint256
-;; decl: fee_d_minus_n
-;; if
-;; push identifier auto_change
-PUSH S17
-;; short-circuiting &&
-DUP
 PUSHCONT {
-	DROP
-	;; push identifier current_right_amount
-	PUSH S12
-	GTINT 0
-}
-IF
-PUSHCONT {
-	; expValue
-	; end expValue
-	TRUE
-	; colValue
-	POP S8
-	; end colValue
-	;; push identifier current_right_balance
-	PUSH S10
-	;; push identifier fee_d_minus_n
-	PUSH S1
-	;; +
-	;; push identifier fee_denominator
-	GETGLOB 23
-	ADD
-	;; push identifier fee_d_minus_n
-	PUSH S2
-	MULDIV
-	UFITS 256
-	;; decl: p
-	;; push identifier current_right_amount
-	PUSH S13
-	;; *
-	;; push identifier current_right_balance
-	PUSH S12
-	MUL
-	UFITS 128
-	;; push identifier fee_denominator
-	GETGLOB 23
-	;; push identifier fee_d_minus_n
-	PUSH S3
-	MULDIV
-	UFITS 256
-	;; decl: q
-	;; push identifier p
-	PUSH S1
-	;; push identifier q
-	PUSH S1
-	;; param: p
-	;; param: q
-	;; ret param: retParam@0
-	PUSHINT 0
-	; function _solveQuadraticEquationPQ
+	;; if
+	;; push identifier lp_supply
+	GETGLOB 19
+	EQINT 0
 	PUSHCONT {
-		;; push identifier p
-		PUSH S2
-		;; push identifier p
-		PUSH S3
-		PUSHINT 4
-		MULDIV
-		UFITS 256
-		;; +
-		;; push identifier q
-		PUSH S2
-		ADD
-		;; decl: D
-		;; push identifier D
-		DUP
-		;; param: x
-		;; ret param: retParam@0
+		;; return
+		GETGLOB 4
 		PUSHINT 0
-		; function _sqrt
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier left_amount
+		PUSH S3
+		;; push identifier right_amount
+		PUSH S3
+		PUSHINT 100000000000
+		FALSE
+		FALSE
+		PUSHINT 0
+		PUSHINT 0
+		PUSHINT 0
+		PUSHINT 0
+		PUSHINT 0
+		PUSHINT 0
+		TUPLE 11
+		NIP
+		RET
+	}
+	PUSHCONT {
+		;; return
+		GETGLOB 4
+		PUSHINT 0
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier left_amount
+		PUSH S3
+		;; push identifier right_amount
+		PUSH S3
+		;; push identifier auto_change
+		PUSH S3
+		;; param: left_amount
+		;; param: right_amount
+		;; param: auto_change
+		; function _expectedDepositLiquidity
+		;; push identifier left_amount
+		PUSH S2
+		;; push identifier left_balance
+		GETGLOB 20
+		;; push identifier right_amount
+		PUSH S3
+		;; push identifier right_balance
+		GETGLOB 21
+		MULDIV
+		UFITS 128
+		MIN
+		;; decl: step_1_left_deposit
+		;; push identifier right_amount
+		PUSH S2
+		;; push identifier right_balance
+		GETGLOB 21
+		;; push identifier left_amount
+		PUSH S5
+		;; push identifier left_balance
+		GETGLOB 20
+		MULDIV
+		UFITS 128
+		MIN
+		;; decl: step_1_right_deposit
+		;; push identifier step_1_right_deposit
+		DUP
+		;; push identifier lp_supply
+		GETGLOB 19
+		;; push identifier right_balance
+		GETGLOB 21
+		MULDIV
+		UFITS 128
+		;; push identifier step_1_left_deposit
+		PUSH S2
+		;; push identifier lp_supply
+		GETGLOB 19
+		;; push identifier left_balance
+		GETGLOB 20
+		MULDIV
+		UFITS 128
+		MAX
+		;; decl: step_1_lp_reward
+		;; push identifier left_amount
+		PUSH S5
+		;; -
+		;; push identifier step_1_left_deposit
+		PUSH S3
+		SUB
+		UFITS 128
+		;; decl: current_left_amount
+		;; push identifier right_amount
+		PUSH S5
+		;; -
+		;; push identifier step_1_right_deposit
+		PUSH S3
+		SUB
+		UFITS 128
+		;; decl: current_right_amount
+		;; push identifier left_balance
+		GETGLOB 20
+		;; +
+		;; push identifier step_1_left_deposit
+		PUSH S5
+		ADD
+		UFITS 128
+		;; decl: current_left_balance
+		;; push identifier right_balance
+		GETGLOB 21
+		;; +
+		;; push identifier step_1_right_deposit
+		PUSH S5
+		ADD
+		UFITS 128
+		;; decl: current_right_balance
+		;; push identifier lp_supply
+		GETGLOB 19
+		;; +
+		;; push identifier step_1_lp_reward
+		PUSH S5
+		ADD
+		UFITS 128
+		;; decl: current_lp_supply
+		FALSE
+		;; decl: step_2_left_to_right
+		FALSE
+		;; decl: step_2_right_to_left
+		PUSHINT 0
+		;; decl: step_2_spent
+		PUSHINT 0
+		;; decl: step_2_fee
+		PUSHINT 0
+		;; decl: step_2_received
+		PUSHINT 0
+		;; decl: step_3_left_deposit
+		PUSHINT 0
+		;; decl: step_3_right_deposit
+		PUSHINT 0
+		;; decl: step_3_lp_reward
+		;; push identifier fee_denominator
+		GETGLOB 23
+		;; -
+		;; push identifier fee_nominator
+		GETGLOB 22
+		SUB
+		UFITS 16
+		;; uint256
+		;; decl: fee_d_minus_n
+		;; if
+		;; push identifier auto_change
+		PUSH S17
+		;; short-circuiting &&
+		DUP
 		PUSHCONT {
-			;; if
-			FALSE ; decl return flag
-			;; push identifier x
-			PUSH S2
-			EQINT 0
-			PUSHCONT {
-				;; return
-				PUSHINT 0
-				BLKDROP2 1, 2
-				SWAP
-				DROP
-				PUSHINT 4
-				RET
-			}
-			PUSHCONT {
-				;; if
-				;; push identifier x
-				PUSH S2
-				;; <=
-				PUSHINT 3
-				LEQ
-				PUSHCONT {
-					;; return
-					PUSHINT 1
-					BLKDROP2 1, 2
-					SWAP
-					DROP
-					PUSHINT 4
-					RET
-				}
-				IFJMP
-				;; end if
-			}
-			IFELSE
-			EQINT 4
-			IFRET
-			;; end if
-			;; push identifier x
+			DROP
+			;; push identifier current_right_amount
+			PUSH S12
+			GTINT 0
+		}
+		IF
+		PUSHCONT {
+			; expValue
+			; end expValue
+			TRUE
+			; colValue
+			POP S8
+			; end colValue
+			;; push identifier current_right_balance
+			PUSH S10
+			;; push identifier fee_d_minus_n
 			PUSH S1
 			;; +
-			PUSHINT 1
+			;; push identifier fee_denominator
+			GETGLOB 23
 			ADD
-			;; /
-			PUSHINT 2
-			DIV
-			;; decl: z
-			;; push identifier x
+			;; push identifier fee_d_minus_n
 			PUSH S2
-			;; decl: y
-			; while
+			MULDIV
+			UFITS 256
+			;; decl: p
+			;; push identifier current_right_amount
+			PUSH S13
+			;; *
+			;; push identifier current_right_balance
+			PUSH S12
+			MUL
+			UFITS 128
+			;; push identifier fee_denominator
+			GETGLOB 23
+			;; push identifier fee_d_minus_n
+			PUSH S3
+			MULDIV
+			UFITS 256
+			;; decl: q
+			;; push identifier p
+			PUSH S1
+			;; push identifier q
+			PUSH S1
+			;; param: p
+			;; param: q
+			;; ret param: retParam@0
+			PUSHINT 0
+			; function _solveQuadraticEquationPQ
 			PUSHCONT {
-				;; push identifier z
-				PUSH S1
-				;; <
-				;; push identifier y
-				PUSH S1
-				LESS
-			}
-			PUSHCONT {
-				; expValue
-				; end expValue
-				;; push identifier z
-				PUSH S1
-				; colValue
-				NIP
-				; end colValue
-				; expValue
-				; end expValue
-				;; push identifier x
-				PUSH S3
-				;; /
-				;; push identifier z
+				;; push identifier p
 				PUSH S2
-				DIV
+				;; push identifier p
+				PUSH S3
+				PUSHINT 4
+				MULDIV
+				UFITS 256
 				;; +
-				;; push identifier z
+				;; push identifier q
 				PUSH S2
 				ADD
+				;; decl: D
+				;; push identifier D
+				DUP
+				;; param: x
+				;; ret param: retParam@0
+				PUSHINT 0
+				; function _sqrt
+				PUSHCONT {
+					;; if
+					FALSE ; decl return flag
+					;; push identifier x
+					PUSH S2
+					EQINT 0
+					PUSHCONT {
+						;; return
+						PUSHINT 0
+						BLKDROP2 1, 2
+						SWAP
+						DROP
+						PUSHINT 4
+						RET
+					}
+					PUSHCONT {
+						;; if
+						;; push identifier x
+						PUSH S2
+						;; <=
+						PUSHINT 3
+						LEQ
+						PUSHCONT {
+							;; return
+							PUSHINT 1
+							BLKDROP2 1, 2
+							SWAP
+							DROP
+							PUSHINT 4
+							RET
+						}
+						IFJMP
+						;; end if
+					}
+					IFELSE
+					EQINT 4
+					IFRET
+					;; end if
+					;; push identifier x
+					PUSH S1
+					;; +
+					PUSHINT 1
+					ADD
+					;; /
+					PUSHINT 2
+					DIV
+					;; decl: z
+					;; push identifier x
+					PUSH S2
+					;; decl: y
+					; while
+					PUSHCONT {
+						;; push identifier z
+						PUSH S1
+						;; <
+						;; push identifier y
+						PUSH S1
+						LESS
+					}
+					PUSHCONT {
+						; expValue
+						; end expValue
+						;; push identifier z
+						PUSH S1
+						; colValue
+						NIP
+						; end colValue
+						; expValue
+						; end expValue
+						;; push identifier x
+						PUSH S3
+						;; /
+						;; push identifier z
+						PUSH S2
+						DIV
+						;; +
+						;; push identifier z
+						PUSH S2
+						ADD
+						;; /
+						PUSHINT 2
+						DIV
+						; colValue
+						POP S2
+						; end colValue
+					}
+					WHILE
+					; end while
+					;; return
+					;; push identifier y
+					DUP
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+				}
+				CALLX
+				; end function _sqrt
+				NIP
+				;; decl: Dsqrt
+				;; if
+				;; push identifier Dsqrt
+				DUP
+				;; >
+				;; push identifier p
+				PUSH S5
 				;; /
 				PUSHINT 2
 				DIV
-				; colValue
-				POP S2
-				; end colValue
+				GREATER
+				PUSHCONT {
+					;; return
+					;; push identifier Dsqrt
+					DUP
+					;; -
+					;; push identifier p
+					PUSH S5
+					;; /
+					PUSHINT 2
+					DIV
+					SUB
+					UFITS 256
+					;; uint128
+					UFITS 128
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+					RET
+				}
+				PUSHCONT {
+					;; return
+					;; push identifier p
+					PUSH S4
+					;; /
+					PUSHINT 2
+					DIV
+					;; -
+					;; push identifier Dsqrt
+					PUSH S1
+					SUB
+					UFITS 256
+					;; uint128
+					UFITS 128
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+					RET
+				}
+				CONDSEL
+				JMPX
+				;; end if
+				DROP2
 			}
-			WHILE
-			; end while
-			;; return
-			;; push identifier y
-			DUP
-			BLKDROP2 1, 3
-			ROTREV
-			DROP2
-		}
-		CALLX
-		; end function _sqrt
-		NIP
-		;; decl: Dsqrt
-		;; if
-		;; push identifier Dsqrt
-		DUP
-		;; >
-		;; push identifier p
-		PUSH S5
-		;; /
-		PUSHINT 2
-		DIV
-		GREATER
-		PUSHCONT {
-			;; return
-			;; push identifier Dsqrt
-			DUP
-			;; -
-			;; push identifier p
-			PUSH S5
-			;; /
-			PUSHINT 2
-			DIV
-			SUB
-			UFITS 256
-			;; uint128
+			CALLX
+			; end function _solveQuadraticEquationPQ
+			BLKDROP2 2, 1
+			; expValue
+			; end expValue
+			; colValue
+			POP S9
+			; end colValue
+			;; push identifier step_2_spent
+			PUSH S8
+			;; push identifier current_right_balance
+			PUSH S13
+			;; push identifier current_left_balance
+			PUSH S15
+			;; param: a_amount
+			;; param: a_pool
+			;; param: b_pool
+			; function _expectedExchange
+			;; push identifier a_amount
+			PUSH S2
+			;; push identifier fee_nominator
+			GETGLOB 22
+			;; push identifier fee_denominator
+			GETGLOB 23
+			MULDIV
 			UFITS 128
-			BLKDROP2 1, 3
-			ROTREV
-			DROP2
-			RET
-		}
-		PUSHCONT {
-			;; return
-			;; push identifier p
+			;; decl: a_fee
+			;; push identifier a_pool
+			PUSH S2
+			;; +
+			;; push identifier a_amount
 			PUSH S4
-			;; /
-			PUSHINT 2
-			DIV
+			ADD
+			UFITS 128
+			;; decl: new_a_pool
+			;; push identifier a_pool
+			PUSH S3
+			;; push identifier b_pool
+			PUSH S3
+			;; push identifier new_a_pool
+			PUSH S2
 			;; -
-			;; push identifier Dsqrt
+			;; push identifier a_fee
+			PUSH S4
+			SUB
+			UFITS 128
+			MULDIV
+			UFITS 128
+			;; decl: new_b_pool
+			;; push identifier b_pool
+			PUSH S3
+			;; -
+			;; push identifier new_b_pool
 			PUSH S1
 			SUB
-			UFITS 256
-			;; uint128
 			UFITS 128
-			BLKDROP2 1, 3
-			ROTREV
+			;; decl: expected_b_amount
+			;; return
+			;; push identifier expected_b_amount
+			DUP
+			;; push identifier a_fee
+			PUSH S4
+			BLKDROP2 4, 2
+			; end function _expectedExchange
+			BLKDROP2 3, 2
+			SWAP
+			; expValue
+			; end expValue
+			; colValue
+			POP S8
+			; end colValue
+			; expValue
+			; end expValue
+			; colValue
+			POP S8
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_right_amount
+			PUSH S14
+			;; -
+			;; push identifier step_2_spent
+			PUSH S9
+			SUB
+			UFITS 128
+			; colValue
+			POP S15
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_right_balance
+			PUSH S12
+			;; +
+			;; push identifier step_2_spent
+			PUSH S9
+			ADD
+			UFITS 128
+			; colValue
+			POP S13
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_right_amount
+			PUSH S14
+			; colValue
+			POP S5
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier step_2_received
+			PUSH S6
+			; colValue
+			POP S6
+			; end colValue
+			;; push identifier current_right_amount
+			PUSH S14
+			;; push identifier current_lp_supply
+			PUSH S12
+			;; push identifier current_right_balance
+			PUSH S14
+			MULDIV
+			UFITS 128
+			; expValue
+			; end expValue
+			; colValue
+			POP S4
+			; end colValue
 			DROP2
-			RET
 		}
-		CONDSEL
-		JMPX
+		PUSHCONT {
+			;; if
+			;; push identifier auto_change
+			PUSH S17
+			;; short-circuiting &&
+			DUP
+			PUSHCONT {
+				DROP
+				;; push identifier current_left_amount
+				PUSH S13
+				GTINT 0
+			}
+			IF
+			PUSHCONT {
+				; expValue
+				; end expValue
+				TRUE
+				; colValue
+				POP S9
+				; end colValue
+				;; push identifier current_left_balance
+				PUSH S11
+				;; push identifier fee_d_minus_n
+				PUSH S1
+				;; +
+				;; push identifier fee_denominator
+				GETGLOB 23
+				ADD
+				;; push identifier fee_d_minus_n
+				PUSH S2
+				MULDIV
+				UFITS 256
+				;; decl: p
+				;; push identifier current_left_amount
+				PUSH S14
+				;; *
+				;; push identifier current_left_balance
+				PUSH S13
+				MUL
+				UFITS 128
+				;; push identifier fee_denominator
+				GETGLOB 23
+				;; push identifier fee_d_minus_n
+				PUSH S3
+				MULDIV
+				UFITS 256
+				;; decl: q
+				;; push identifier p
+				PUSH S1
+				;; push identifier q
+				PUSH S1
+				;; param: p
+				;; param: q
+				;; ret param: retParam@0
+				PUSHINT 0
+				; function _solveQuadraticEquationPQ
+				PUSHCONT {
+					;; push identifier p
+					PUSH S2
+					;; push identifier p
+					PUSH S3
+					PUSHINT 4
+					MULDIV
+					UFITS 256
+					;; +
+					;; push identifier q
+					PUSH S2
+					ADD
+					;; decl: D
+					;; push identifier D
+					DUP
+					;; param: x
+					;; ret param: retParam@0
+					PUSHINT 0
+					; function _sqrt
+					PUSHCONT {
+						;; if
+						FALSE ; decl return flag
+						;; push identifier x
+						PUSH S2
+						EQINT 0
+						PUSHCONT {
+							;; return
+							PUSHINT 0
+							BLKDROP2 1, 2
+							SWAP
+							DROP
+							PUSHINT 4
+							RET
+						}
+						PUSHCONT {
+							;; if
+							;; push identifier x
+							PUSH S2
+							;; <=
+							PUSHINT 3
+							LEQ
+							PUSHCONT {
+								;; return
+								PUSHINT 1
+								BLKDROP2 1, 2
+								SWAP
+								DROP
+								PUSHINT 4
+								RET
+							}
+							IFJMP
+							;; end if
+						}
+						IFELSE
+						EQINT 4
+						IFRET
+						;; end if
+						;; push identifier x
+						PUSH S1
+						;; +
+						PUSHINT 1
+						ADD
+						;; /
+						PUSHINT 2
+						DIV
+						;; decl: z
+						;; push identifier x
+						PUSH S2
+						;; decl: y
+						; while
+						PUSHCONT {
+							;; push identifier z
+							PUSH S1
+							;; <
+							;; push identifier y
+							PUSH S1
+							LESS
+						}
+						PUSHCONT {
+							; expValue
+							; end expValue
+							;; push identifier z
+							PUSH S1
+							; colValue
+							NIP
+							; end colValue
+							; expValue
+							; end expValue
+							;; push identifier x
+							PUSH S3
+							;; /
+							;; push identifier z
+							PUSH S2
+							DIV
+							;; +
+							;; push identifier z
+							PUSH S2
+							ADD
+							;; /
+							PUSHINT 2
+							DIV
+							; colValue
+							POP S2
+							; end colValue
+						}
+						WHILE
+						; end while
+						;; return
+						;; push identifier y
+						DUP
+						BLKDROP2 1, 3
+						ROTREV
+						DROP2
+					}
+					CALLX
+					; end function _sqrt
+					NIP
+					;; decl: Dsqrt
+					;; if
+					;; push identifier Dsqrt
+					DUP
+					;; >
+					;; push identifier p
+					PUSH S5
+					;; /
+					PUSHINT 2
+					DIV
+					GREATER
+					PUSHCONT {
+						;; return
+						;; push identifier Dsqrt
+						DUP
+						;; -
+						;; push identifier p
+						PUSH S5
+						;; /
+						PUSHINT 2
+						DIV
+						SUB
+						UFITS 256
+						;; uint128
+						UFITS 128
+						BLKDROP2 1, 3
+						ROTREV
+						DROP2
+						RET
+					}
+					PUSHCONT {
+						;; return
+						;; push identifier p
+						PUSH S4
+						;; /
+						PUSHINT 2
+						DIV
+						;; -
+						;; push identifier Dsqrt
+						PUSH S1
+						SUB
+						UFITS 256
+						;; uint128
+						UFITS 128
+						BLKDROP2 1, 3
+						ROTREV
+						DROP2
+						RET
+					}
+					CONDSEL
+					JMPX
+					;; end if
+					DROP2
+				}
+				CALLX
+				; end function _solveQuadraticEquationPQ
+				BLKDROP2 2, 1
+				; expValue
+				; end expValue
+				; colValue
+				POP S9
+				; end colValue
+				;; push identifier step_2_spent
+				PUSH S8
+				;; push identifier current_left_balance
+				PUSH S14
+				;; push identifier current_right_balance
+				PUSH S14
+				;; param: a_amount
+				;; param: a_pool
+				;; param: b_pool
+				; function _expectedExchange
+				;; push identifier a_amount
+				PUSH S2
+				;; push identifier fee_nominator
+				GETGLOB 22
+				;; push identifier fee_denominator
+				GETGLOB 23
+				MULDIV
+				UFITS 128
+				;; decl: a_fee
+				;; push identifier a_pool
+				PUSH S2
+				;; +
+				;; push identifier a_amount
+				PUSH S4
+				ADD
+				UFITS 128
+				;; decl: new_a_pool
+				;; push identifier a_pool
+				PUSH S3
+				;; push identifier b_pool
+				PUSH S3
+				;; push identifier new_a_pool
+				PUSH S2
+				;; -
+				;; push identifier a_fee
+				PUSH S4
+				SUB
+				UFITS 128
+				MULDIV
+				UFITS 128
+				;; decl: new_b_pool
+				;; push identifier b_pool
+				PUSH S3
+				;; -
+				;; push identifier new_b_pool
+				PUSH S1
+				SUB
+				UFITS 128
+				;; decl: expected_b_amount
+				;; return
+				;; push identifier expected_b_amount
+				DUP
+				;; push identifier a_fee
+				PUSH S4
+				BLKDROP2 4, 2
+				; end function _expectedExchange
+				BLKDROP2 3, 2
+				SWAP
+				; expValue
+				; end expValue
+				; colValue
+				POP S8
+				; end colValue
+				; expValue
+				; end expValue
+				; colValue
+				POP S8
+				; end colValue
+				; expValue
+				; end expValue
+				;; push identifier current_left_amount
+				PUSH S15
+				;; -
+				;; push identifier step_2_spent
+				PUSH S9
+				SUB
+				UFITS 128
+				; colValue
+				POP S16
+				; end colValue
+				; expValue
+				; end expValue
+				;; push identifier current_left_balance
+				PUSH S13
+				;; +
+				;; push identifier step_2_spent
+				PUSH S9
+				ADD
+				UFITS 128
+				; colValue
+				POP S14
+				; end colValue
+				; expValue
+				; end expValue
+				;; push identifier current_left_amount
+				PUSH S15
+				; colValue
+				POP S6
+				; end colValue
+				; expValue
+				; end expValue
+				;; push identifier step_2_received
+				PUSH S6
+				; colValue
+				POP S5
+				; end colValue
+				;; push identifier current_left_amount
+				PUSH S15
+				;; push identifier current_lp_supply
+				PUSH S12
+				;; push identifier current_left_balance
+				PUSH S15
+				MULDIV
+				UFITS 128
+				; expValue
+				; end expValue
+				; colValue
+				POP S4
+				; end colValue
+				DROP2
+			}
+			IF
+			;; end if
+		}
+		IFELSE
 		;; end if
-		DROP2
+		;; return
+		;; push identifier step_1_left_deposit
+		PUSH S16
+		;; push identifier step_1_right_deposit
+		PUSH S16
+		;; push identifier step_1_lp_reward
+		PUSH S16
+		;; push identifier step_2_left_to_right
+		PUSH S11
+		;; push identifier step_2_right_to_left
+		PUSH S11
+		;; push identifier step_2_spent
+		PUSH S11
+		;; push identifier step_2_fee
+		PUSH S11
+		;; push identifier step_2_received
+		PUSH S11
+		;; push identifier step_3_left_deposit
+		PUSH S11
+		;; push identifier step_3_right_deposit
+		PUSH S11
+		;; push identifier step_3_lp_reward
+		PUSH S11
+		TUPLE 11
+		PUSHINT 17
+		PUSHINT 1
+		BLKSWX
+		PUSHINT 17
+		DROPX
+		; end function _expectedDepositLiquidity
+		BLKDROP2 3, 1
+		NIP
+		RET
 	}
-	CALLX
-	; end function _solveQuadraticEquationPQ
-	BLKDROP2 2, 1
-	; expValue
-	; end expValue
-	; colValue
-	POP S9
-	; end colValue
-	;; push identifier step_2_spent
+	CONDSEL
+	JMPX
+	;; end if
+}
+CALLX
+; end function expectedDepositLiquidity
+BLKDROP2 3, 1
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST xd5d19ce5
+	PUSH S2
+	UNTUPLE 11
+	BLKSWAP 1, 11
+	PUSH S11
+	STUR 128
+	PUSH S10
+	STUR 128
+	PUSH S9
+	STUR 128
 	PUSH S8
-	;; push identifier current_right_balance
-	PUSH S13
-	;; push identifier current_left_balance
-	PUSH S15
-	;; param: a_amount
-	;; param: a_pool
-	;; param: b_pool
-	; function _expectedExchange
-	;; push identifier a_amount
-	PUSH S2
-	;; push identifier fee_nominator
-	GETGLOB 22
-	;; push identifier fee_denominator
-	GETGLOB 23
-	MULDIV
-	UFITS 128
-	;; decl: a_fee
-	;; push identifier a_pool
-	PUSH S2
-	;; +
-	;; push identifier a_amount
-	PUSH S4
-	ADD
-	UFITS 128
-	;; decl: new_a_pool
-	;; push identifier a_pool
-	PUSH S3
-	;; push identifier b_pool
-	PUSH S3
-	;; push identifier new_a_pool
-	PUSH S2
-	;; -
-	;; push identifier a_fee
-	PUSH S4
-	SUB
-	UFITS 128
-	MULDIV
-	UFITS 128
-	;; decl: new_b_pool
-	;; push identifier b_pool
-	PUSH S3
-	;; -
-	;; push identifier new_b_pool
-	PUSH S1
-	SUB
-	UFITS 128
-	;; decl: expected_b_amount
-	;; return
-	;; push identifier expected_b_amount
-	DUP
-	;; push identifier a_fee
-	PUSH S4
-	BLKDROP2 4, 2
-	; end function _expectedExchange
-	BLKDROP2 3, 2
-	SWAP
-	; expValue
-	; end expValue
-	; colValue
-	POP S8
-	; end colValue
-	; expValue
-	; end expValue
-	; colValue
-	POP S8
-	; end colValue
-	; expValue
-	; end expValue
-	;; push identifier current_right_amount
-	PUSH S14
-	;; -
-	;; push identifier step_2_spent
-	PUSH S9
-	SUB
-	UFITS 128
-	; colValue
-	POP S15
-	; end colValue
-	; expValue
-	; end expValue
-	;; push identifier current_right_balance
-	PUSH S12
-	;; +
-	;; push identifier step_2_spent
-	PUSH S9
-	ADD
-	UFITS 128
-	; colValue
-	POP S13
-	; end colValue
-	; expValue
-	; end expValue
-	;; push identifier current_right_amount
-	PUSH S14
-	; colValue
-	POP S5
-	; end colValue
-	; expValue
-	; end expValue
-	;; push identifier step_2_received
+	STIR 1
+	PUSH S7
+	STIR 1
 	PUSH S6
-	; colValue
-	POP S6
-	; end colValue
-	;; push identifier current_right_amount
-	PUSH S14
-	;; push identifier current_lp_supply
-	PUSH S12
-	;; push identifier current_right_balance
-	PUSH S14
-	MULDIV
-	UFITS 128
-	; expValue
-	; end expValue
-	; colValue
-	POP S4
-	; end colValue
-	DROP2
+	STUR 128
+	PUSH S5
+	STUR 128
+	PUSH S4
+	STUR 128
+	PUSH S3
+	STUR 128
+	NEWC
+	PUSH S3
+	STUR 128
+	PUSH S2
+	STUR 128
+	BLKDROP2 11, 2
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
 }
 PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S2
+	UNTUPLE 11
+	BLKSWAP 1, 11
+	PUSH S11
+	STUR 128
+	PUSH S10
+	STUR 128
+	PUSH S9
+	STUR 128
+	PUSH S8
+	STIR 1
+	PUSH S7
+	STIR 1
+	PUSH S6
+	STUR 128
+	PUSH S5
+	STUR 128
+	PUSH S4
+	STUR 128
+	PUSH S3
+	STUR 128
+	NEWC
+	PUSH S3
+	STUR 128
+	PUSH S2
+	STUR 128
+	BLKDROP2 11, 2
+	STBREFR
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro depositLiquidity
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode call_id
+LDU 64
+; Decode left_amount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode right_amount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+; Decode auto_change
+LDIQ 1
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDI 1
+}
+IFNOT
+; Decode account_owner
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode 
+LDUQ 32
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 32
+}
+IFNOT
+; Decode send_gas_to
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: call_id
+;; param: left_amount
+;; param: right_amount
+;; param: auto_change
+;; param: account_owner
+;; param: 
+;; param: send_gas_to
+; modifier onlyActive
+;; push identifier active
+GETGLOB 16
+THROWIFNOT 114
+; modifier onlyAccount
+;; push identifier account_owner
+PUSH S2
+PUSHINT 1
+;; push identifier account_owner
+PUSH S1
+;; param: account_owner
+; function _buildAccountParams
+NEWC
+;; decl: builder
+; expValue
+DUP
+; end expValue
+;; push identifier account_owner
+PUSH S2
+STSLICER
+; colValue
+NIP
+; end colValue
+;; return
+;; push identifier builder
+DUP
+ENDC
+NIP
+; end function _buildAccountParams
+NIP
+;; param: type_id
+;; param: params
+; function _buildInitData
+;; return
+NEWDICT
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+ROT
+PUSHINT 64
+DICTUSETB
+MYADDR
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+;; push identifier type_id
+PUSH S2
+NEWC
+STU 8
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSETB
+;; push identifier params
+PUSH S1
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+;; push identifier platform_code
+GETGLOB 13
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+; end function _buildInitData
+BLKDROP2 2, 1
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+;; decl: expected
+;; get member sender
+GETGLOB 9
+;; push identifier expected
+PUSH S1
+SDEQ
+THROWIFNOT 105
+; function depositLiquidity
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
+PUSHINT 0
+;; decl: lp_tokens_amount
+;; if
+;; push identifier lp_supply
+GETGLOB 19
+EQINT 0
+PUSHCONT {
+	; expValue
+	; end expValue
+	PUSHINT 100000000000
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	; end expValue
+	;; push identifier left_amount
+	PUSH S8
+	; colValue
+	SETGLOB 20
+	; end colValue
+	; expValue
+	; end expValue
+	;; push identifier right_amount
+	PUSH S7
+	; colValue
+	SETGLOB 21
+	; end colValue
+	;; emit DepositLiquidity
+	NEWC
+	PUSHSLICE xc0000000000000000000000002_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x56cf721f
+	;; left
+	;; push identifier left_amount
+	PUSH S9
+	STUR 128
+	;; right
+	;; push identifier right_amount
+	PUSH S8
+	STUR 128
+	;; lp
+	;; push identifier lp_tokens_amount
+	PUSH S1
+	STUR 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	;; push identifier left_amount
+	PUSH S8
+	;; push identifier right_amount
+	PUSH S8
+	;; push identifier auto_change
+	PUSH S8
+	;; param: left_amount
+	;; param: right_amount
+	;; param: auto_change
+	; function _expectedDepositLiquidity
+	;; push identifier left_amount
+	PUSH S2
+	;; push identifier left_balance
+	GETGLOB 20
+	;; push identifier right_amount
+	PUSH S3
+	;; push identifier right_balance
+	GETGLOB 21
+	MULDIV
+	UFITS 128
+	MIN
+	;; decl: step_1_left_deposit
+	;; push identifier right_amount
+	PUSH S2
+	;; push identifier right_balance
+	GETGLOB 21
+	;; push identifier left_amount
+	PUSH S5
+	;; push identifier left_balance
+	GETGLOB 20
+	MULDIV
+	UFITS 128
+	MIN
+	;; decl: step_1_right_deposit
+	;; push identifier step_1_right_deposit
+	DUP
+	;; push identifier lp_supply
+	GETGLOB 19
+	;; push identifier right_balance
+	GETGLOB 21
+	MULDIV
+	UFITS 128
+	;; push identifier step_1_left_deposit
+	PUSH S2
+	;; push identifier lp_supply
+	GETGLOB 19
+	;; push identifier left_balance
+	GETGLOB 20
+	MULDIV
+	UFITS 128
+	MAX
+	;; decl: step_1_lp_reward
+	;; push identifier left_amount
+	PUSH S5
+	;; -
+	;; push identifier step_1_left_deposit
+	PUSH S3
+	SUB
+	UFITS 128
+	;; decl: current_left_amount
+	;; push identifier right_amount
+	PUSH S5
+	;; -
+	;; push identifier step_1_right_deposit
+	PUSH S3
+	SUB
+	UFITS 128
+	;; decl: current_right_amount
+	;; push identifier left_balance
+	GETGLOB 20
+	;; +
+	;; push identifier step_1_left_deposit
+	PUSH S5
+	ADD
+	UFITS 128
+	;; decl: current_left_balance
+	;; push identifier right_balance
+	GETGLOB 21
+	;; +
+	;; push identifier step_1_right_deposit
+	PUSH S5
+	ADD
+	UFITS 128
+	;; decl: current_right_balance
+	;; push identifier lp_supply
+	GETGLOB 19
+	;; +
+	;; push identifier step_1_lp_reward
+	PUSH S5
+	ADD
+	UFITS 128
+	;; decl: current_lp_supply
+	FALSE
+	;; decl: step_2_left_to_right
+	FALSE
+	;; decl: step_2_right_to_left
+	PUSHINT 0
+	;; decl: step_2_spent
+	PUSHINT 0
+	;; decl: step_2_fee
+	PUSHINT 0
+	;; decl: step_2_received
+	PUSHINT 0
+	;; decl: step_3_left_deposit
+	PUSHINT 0
+	;; decl: step_3_right_deposit
+	PUSHINT 0
+	;; decl: step_3_lp_reward
+	;; push identifier fee_denominator
+	GETGLOB 23
+	;; -
+	;; push identifier fee_nominator
+	GETGLOB 22
+	SUB
+	UFITS 16
+	;; uint256
+	;; decl: fee_d_minus_n
 	;; if
 	;; push identifier auto_change
 	PUSH S17
@@ -1214,8 +2119,8 @@ PUSHCONT {
 	DUP
 	PUSHCONT {
 		DROP
-		;; push identifier current_left_amount
-		PUSH S13
+		;; push identifier current_right_amount
+		PUSH S12
 		GTINT 0
 	}
 	IF
@@ -1224,10 +2129,10 @@ PUSHCONT {
 		; end expValue
 		TRUE
 		; colValue
-		POP S9
+		POP S8
 		; end colValue
-		;; push identifier current_left_balance
-		PUSH S11
+		;; push identifier current_right_balance
+		PUSH S10
 		;; push identifier fee_d_minus_n
 		PUSH S1
 		;; +
@@ -1239,11 +2144,11 @@ PUSHCONT {
 		MULDIV
 		UFITS 256
 		;; decl: p
-		;; push identifier current_left_amount
-		PUSH S14
-		;; *
-		;; push identifier current_left_balance
+		;; push identifier current_right_amount
 		PUSH S13
+		;; *
+		;; push identifier current_right_balance
+		PUSH S12
 		MUL
 		UFITS 128
 		;; push identifier fee_denominator
@@ -1443,10 +2348,10 @@ PUSHCONT {
 		; end colValue
 		;; push identifier step_2_spent
 		PUSH S8
-		;; push identifier current_left_balance
-		PUSH S14
 		;; push identifier current_right_balance
-		PUSH S14
+		PUSH S13
+		;; push identifier current_left_balance
+		PUSH S15
 		;; param: a_amount
 		;; param: a_pool
 		;; param: b_pool
@@ -1511,48 +2416,48 @@ PUSHCONT {
 		; end colValue
 		; expValue
 		; end expValue
-		;; push identifier current_left_amount
-		PUSH S15
+		;; push identifier current_right_amount
+		PUSH S14
 		;; -
 		;; push identifier step_2_spent
 		PUSH S9
 		SUB
 		UFITS 128
 		; colValue
-		POP S16
+		POP S15
 		; end colValue
 		; expValue
 		; end expValue
-		;; push identifier current_left_balance
-		PUSH S13
+		;; push identifier current_right_balance
+		PUSH S12
 		;; +
 		;; push identifier step_2_spent
 		PUSH S9
 		ADD
 		UFITS 128
 		; colValue
-		POP S14
+		POP S13
 		; end colValue
 		; expValue
 		; end expValue
-		;; push identifier current_left_amount
-		PUSH S15
+		;; push identifier current_right_amount
+		PUSH S14
 		; colValue
-		POP S6
+		POP S5
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier step_2_received
 		PUSH S6
 		; colValue
-		POP S5
+		POP S6
 		; end colValue
-		;; push identifier current_left_amount
-		PUSH S15
+		;; push identifier current_right_amount
+		PUSH S14
 		;; push identifier current_lp_supply
 		PUSH S12
-		;; push identifier current_left_balance
-		PUSH S15
+		;; push identifier current_right_balance
+		PUSH S14
 		MULDIV
 		UFITS 128
 		; expValue
@@ -1562,49 +2467,922 @@ PUSHCONT {
 		; end colValue
 		DROP2
 	}
+	PUSHCONT {
+		;; if
+		;; push identifier auto_change
+		PUSH S17
+		;; short-circuiting &&
+		DUP
+		PUSHCONT {
+			DROP
+			;; push identifier current_left_amount
+			PUSH S13
+			GTINT 0
+		}
+		IF
+		PUSHCONT {
+			; expValue
+			; end expValue
+			TRUE
+			; colValue
+			POP S9
+			; end colValue
+			;; push identifier current_left_balance
+			PUSH S11
+			;; push identifier fee_d_minus_n
+			PUSH S1
+			;; +
+			;; push identifier fee_denominator
+			GETGLOB 23
+			ADD
+			;; push identifier fee_d_minus_n
+			PUSH S2
+			MULDIV
+			UFITS 256
+			;; decl: p
+			;; push identifier current_left_amount
+			PUSH S14
+			;; *
+			;; push identifier current_left_balance
+			PUSH S13
+			MUL
+			UFITS 128
+			;; push identifier fee_denominator
+			GETGLOB 23
+			;; push identifier fee_d_minus_n
+			PUSH S3
+			MULDIV
+			UFITS 256
+			;; decl: q
+			;; push identifier p
+			PUSH S1
+			;; push identifier q
+			PUSH S1
+			;; param: p
+			;; param: q
+			;; ret param: retParam@0
+			PUSHINT 0
+			; function _solveQuadraticEquationPQ
+			PUSHCONT {
+				;; push identifier p
+				PUSH S2
+				;; push identifier p
+				PUSH S3
+				PUSHINT 4
+				MULDIV
+				UFITS 256
+				;; +
+				;; push identifier q
+				PUSH S2
+				ADD
+				;; decl: D
+				;; push identifier D
+				DUP
+				;; param: x
+				;; ret param: retParam@0
+				PUSHINT 0
+				; function _sqrt
+				PUSHCONT {
+					;; if
+					FALSE ; decl return flag
+					;; push identifier x
+					PUSH S2
+					EQINT 0
+					PUSHCONT {
+						;; return
+						PUSHINT 0
+						BLKDROP2 1, 2
+						SWAP
+						DROP
+						PUSHINT 4
+						RET
+					}
+					PUSHCONT {
+						;; if
+						;; push identifier x
+						PUSH S2
+						;; <=
+						PUSHINT 3
+						LEQ
+						PUSHCONT {
+							;; return
+							PUSHINT 1
+							BLKDROP2 1, 2
+							SWAP
+							DROP
+							PUSHINT 4
+							RET
+						}
+						IFJMP
+						;; end if
+					}
+					IFELSE
+					EQINT 4
+					IFRET
+					;; end if
+					;; push identifier x
+					PUSH S1
+					;; +
+					PUSHINT 1
+					ADD
+					;; /
+					PUSHINT 2
+					DIV
+					;; decl: z
+					;; push identifier x
+					PUSH S2
+					;; decl: y
+					; while
+					PUSHCONT {
+						;; push identifier z
+						PUSH S1
+						;; <
+						;; push identifier y
+						PUSH S1
+						LESS
+					}
+					PUSHCONT {
+						; expValue
+						; end expValue
+						;; push identifier z
+						PUSH S1
+						; colValue
+						NIP
+						; end colValue
+						; expValue
+						; end expValue
+						;; push identifier x
+						PUSH S3
+						;; /
+						;; push identifier z
+						PUSH S2
+						DIV
+						;; +
+						;; push identifier z
+						PUSH S2
+						ADD
+						;; /
+						PUSHINT 2
+						DIV
+						; colValue
+						POP S2
+						; end colValue
+					}
+					WHILE
+					; end while
+					;; return
+					;; push identifier y
+					DUP
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+				}
+				CALLX
+				; end function _sqrt
+				NIP
+				;; decl: Dsqrt
+				;; if
+				;; push identifier Dsqrt
+				DUP
+				;; >
+				;; push identifier p
+				PUSH S5
+				;; /
+				PUSHINT 2
+				DIV
+				GREATER
+				PUSHCONT {
+					;; return
+					;; push identifier Dsqrt
+					DUP
+					;; -
+					;; push identifier p
+					PUSH S5
+					;; /
+					PUSHINT 2
+					DIV
+					SUB
+					UFITS 256
+					;; uint128
+					UFITS 128
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+					RET
+				}
+				PUSHCONT {
+					;; return
+					;; push identifier p
+					PUSH S4
+					;; /
+					PUSHINT 2
+					DIV
+					;; -
+					;; push identifier Dsqrt
+					PUSH S1
+					SUB
+					UFITS 256
+					;; uint128
+					UFITS 128
+					BLKDROP2 1, 3
+					ROTREV
+					DROP2
+					RET
+				}
+				CONDSEL
+				JMPX
+				;; end if
+				DROP2
+			}
+			CALLX
+			; end function _solveQuadraticEquationPQ
+			BLKDROP2 2, 1
+			; expValue
+			; end expValue
+			; colValue
+			POP S9
+			; end colValue
+			;; push identifier step_2_spent
+			PUSH S8
+			;; push identifier current_left_balance
+			PUSH S14
+			;; push identifier current_right_balance
+			PUSH S14
+			;; param: a_amount
+			;; param: a_pool
+			;; param: b_pool
+			; function _expectedExchange
+			;; push identifier a_amount
+			PUSH S2
+			;; push identifier fee_nominator
+			GETGLOB 22
+			;; push identifier fee_denominator
+			GETGLOB 23
+			MULDIV
+			UFITS 128
+			;; decl: a_fee
+			;; push identifier a_pool
+			PUSH S2
+			;; +
+			;; push identifier a_amount
+			PUSH S4
+			ADD
+			UFITS 128
+			;; decl: new_a_pool
+			;; push identifier a_pool
+			PUSH S3
+			;; push identifier b_pool
+			PUSH S3
+			;; push identifier new_a_pool
+			PUSH S2
+			;; -
+			;; push identifier a_fee
+			PUSH S4
+			SUB
+			UFITS 128
+			MULDIV
+			UFITS 128
+			;; decl: new_b_pool
+			;; push identifier b_pool
+			PUSH S3
+			;; -
+			;; push identifier new_b_pool
+			PUSH S1
+			SUB
+			UFITS 128
+			;; decl: expected_b_amount
+			;; return
+			;; push identifier expected_b_amount
+			DUP
+			;; push identifier a_fee
+			PUSH S4
+			BLKDROP2 4, 2
+			; end function _expectedExchange
+			BLKDROP2 3, 2
+			SWAP
+			; expValue
+			; end expValue
+			; colValue
+			POP S8
+			; end colValue
+			; expValue
+			; end expValue
+			; colValue
+			POP S8
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_left_amount
+			PUSH S15
+			;; -
+			;; push identifier step_2_spent
+			PUSH S9
+			SUB
+			UFITS 128
+			; colValue
+			POP S16
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_left_balance
+			PUSH S13
+			;; +
+			;; push identifier step_2_spent
+			PUSH S9
+			ADD
+			UFITS 128
+			; colValue
+			POP S14
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier current_left_amount
+			PUSH S15
+			; colValue
+			POP S6
+			; end colValue
+			; expValue
+			; end expValue
+			;; push identifier step_2_received
+			PUSH S6
+			; colValue
+			POP S5
+			; end colValue
+			;; push identifier current_left_amount
+			PUSH S15
+			;; push identifier current_lp_supply
+			PUSH S12
+			;; push identifier current_left_balance
+			PUSH S15
+			MULDIV
+			UFITS 128
+			; expValue
+			; end expValue
+			; colValue
+			POP S4
+			; end colValue
+			DROP2
+		}
+		IF
+		;; end if
+	}
+	IFELSE
+	;; end if
+	;; return
+	;; push identifier step_1_left_deposit
+	PUSH S16
+	;; push identifier step_1_right_deposit
+	PUSH S16
+	;; push identifier step_1_lp_reward
+	PUSH S16
+	;; push identifier step_2_left_to_right
+	PUSH S11
+	;; push identifier step_2_right_to_left
+	PUSH S11
+	;; push identifier step_2_spent
+	PUSH S11
+	;; push identifier step_2_fee
+	PUSH S11
+	;; push identifier step_2_received
+	PUSH S11
+	;; push identifier step_3_left_deposit
+	PUSH S11
+	;; push identifier step_3_right_deposit
+	PUSH S11
+	;; push identifier step_3_lp_reward
+	PUSH S11
+	TUPLE 11
+	PUSHINT 17
+	PUSHINT 1
+	BLKSWX
+	PUSHINT 17
+	DROPX
+	; end function _expectedDepositLiquidity
+	BLKDROP2 3, 1
+	;; decl: r
+	; expValue
+	; end expValue
+	;; get member step_1_lp_reward
+	;; push identifier r
+	DUP
+	INDEX 2
+	;; +
+	;; get member step_3_lp_reward
+	;; push identifier r
+	PUSH S1
+	INDEX 10
+	ADD
+	UFITS 128
+	; colValue
+	POP S2
+	; end colValue
+	;; if
+	;; push identifier auto_change
+	PUSH S7
+	PUSHCONT {
+		; expValue
+		; end expValue
+		;; push identifier left_balance
+		GETGLOB 20
+		;; +
+		;; push identifier left_amount
+		PUSH S10
+		ADD
+		UFITS 128
+		; colValue
+		SETGLOB 20
+		; end colValue
+		; expValue
+		; end expValue
+		;; push identifier right_balance
+		GETGLOB 21
+		;; +
+		;; push identifier right_amount
+		PUSH S9
+		ADD
+		UFITS 128
+		; colValue
+		SETGLOB 21
+		; end colValue
+	}
+	PUSHCONT {
+		; expValue
+		; end expValue
+		;; push identifier left_balance
+		GETGLOB 20
+		;; +
+		;; get member step_1_left_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 0
+		ADD
+		UFITS 128
+		; colValue
+		SETGLOB 20
+		; end colValue
+		; expValue
+		; end expValue
+		;; push identifier right_balance
+		GETGLOB 21
+		;; +
+		;; get member step_1_right_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 1
+		ADD
+		UFITS 128
+		; colValue
+		SETGLOB 21
+		; end colValue
+		;; if
+		;; get member step_1_left_deposit
+		;; push identifier r
+		DUP
+		INDEX 0
+		;; <
+		;; push identifier left_amount
+		PUSH S10
+		LESS
+		PUSHCONT {
+			;; Remote call IDexAccount.internalPairTransfer
+			;; get member sender
+			GETGLOB 9
+			NEWC
+			STSLICECONST x62_
+			STSLICE
+			PUSHSLICE x405f5e100000000000000000000000000004_
+			STSLICER
+			STSLICECONST 0
+			STSLICECONST 1
+			NEWC
+			STSLICECONST x629f3a85
+			;; amount
+			;; push identifier left_amount
+			PUSH S11
+			;; -
+			;; get member step_1_left_deposit
+			;; push identifier r
+			PUSH S3
+			INDEX 0
+			SUB
+			UFITS 128
+			STUR 128
+			;; token_root
+			;; push identifier left_root
+			GETGLOB 14
+			STSLICER
+			;; sender_left_root
+			;; push identifier left_root
+			GETGLOB 14
+			STSLICER
+			NEWC
+			;; sender_right_root
+			;; push identifier right_root
+			GETGLOB 15
+			STSLICER
+			;; send_gas_to
+			;; push identifier send_gas_to
+			PUSH S7
+			STSLICER
+			STBREFR
+			STBREFR
+			ENDC
+			PUSHINT 1
+			SENDRAWMSG
+		}
+		IF
+		;; end if
+		;; if
+		;; get member step_1_right_deposit
+		;; push identifier r
+		DUP
+		INDEX 1
+		;; <
+		;; push identifier right_amount
+		PUSH S9
+		LESS
+		PUSHCONT {
+			;; Remote call IDexAccount.internalPairTransfer
+			;; get member sender
+			GETGLOB 9
+			NEWC
+			STSLICECONST x62_
+			STSLICE
+			PUSHSLICE x405f5e100000000000000000000000000004_
+			STSLICER
+			STSLICECONST 0
+			STSLICECONST 1
+			NEWC
+			STSLICECONST x629f3a85
+			;; amount
+			;; push identifier right_amount
+			PUSH S10
+			;; -
+			;; get member step_1_right_deposit
+			;; push identifier r
+			PUSH S3
+			INDEX 1
+			SUB
+			UFITS 128
+			STUR 128
+			;; token_root
+			;; push identifier right_root
+			GETGLOB 15
+			STSLICER
+			;; sender_left_root
+			;; push identifier left_root
+			GETGLOB 14
+			STSLICER
+			NEWC
+			;; sender_right_root
+			;; push identifier right_root
+			GETGLOB 15
+			STSLICER
+			;; send_gas_to
+			;; push identifier send_gas_to
+			PUSH S7
+			STSLICER
+			STBREFR
+			STBREFR
+			ENDC
+			PUSHINT 1
+			SENDRAWMSG
+		}
+		IF
+		;; end if
+	}
+	IFELSE
+	;; end if
+	;; if
+	;; get member step_1_lp_reward
+	;; push identifier r
+	DUP
+	INDEX 2
+	GTINT 0
+	PUSHCONT {
+		;; emit DepositLiquidity
+		NEWC
+		PUSHSLICE xc0000000000000000000000002_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x56cf721f
+		;; left
+		;; get member step_1_left_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 0
+		STUR 128
+		;; right
+		;; get member step_1_right_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 1
+		STUR 128
+		;; lp
+		;; get member step_1_lp_reward
+		;; push identifier r
+		PUSH S1
+		INDEX 2
+		STUR 128
+		ENDC
+		PUSHINT 0
+		SENDRAWMSG
+	}
 	IF
 	;; end if
+	;; if
+	;; get member step_2_right_to_left
+	;; push identifier r
+	DUP
+	INDEX 4
+	PUSHCONT {
+		;; emit ExchangeRightToLeft
+		NEWC
+		PUSHSLICE xc0000000000000000000000002_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x1f2c7e24
+		;; right
+		;; get member step_2_spent
+		;; push identifier r
+		PUSH S1
+		INDEX 5
+		STUR 128
+		;; fee
+		;; get member step_2_fee
+		;; push identifier r
+		PUSH S1
+		INDEX 6
+		STUR 128
+		;; left
+		;; get member step_2_received
+		;; push identifier r
+		PUSH S1
+		INDEX 7
+		STUR 128
+		ENDC
+		PUSHINT 0
+		SENDRAWMSG
+	}
+	PUSHCONT {
+		;; if
+		;; get member step_2_left_to_right
+		;; push identifier r
+		DUP
+		INDEX 3
+		PUSHCONT {
+			;; emit ExchangeLeftToRight
+			NEWC
+			PUSHSLICE xc0000000000000000000000002_
+			STSLICER
+			STSLICECONST 0
+			STSLICECONST 0
+			STSLICECONST x2d589b1b
+			;; left
+			;; get member step_2_spent
+			;; push identifier r
+			PUSH S1
+			INDEX 5
+			STUR 128
+			;; fee
+			;; get member step_2_fee
+			;; push identifier r
+			PUSH S1
+			INDEX 6
+			STUR 128
+			;; right
+			;; get member step_2_received
+			;; push identifier r
+			PUSH S1
+			INDEX 7
+			STUR 128
+			ENDC
+			PUSHINT 0
+			SENDRAWMSG
+		}
+		IF
+		;; end if
+	}
+	IFELSE
+	;; end if
+	;; if
+	;; get member step_3_lp_reward
+	;; push identifier r
+	DUP
+	INDEX 10
+	GTINT 0
+	PUSHCONT {
+		;; emit DepositLiquidity
+		NEWC
+		PUSHSLICE xc0000000000000000000000002_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x56cf721f
+		;; left
+		;; get member step_3_left_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 8
+		STUR 128
+		;; right
+		;; get member step_3_right_deposit
+		;; push identifier r
+		PUSH S1
+		INDEX 9
+		STUR 128
+		;; lp
+		;; get member step_3_lp_reward
+		;; push identifier r
+		PUSH S1
+		INDEX 10
+		STUR 128
+		ENDC
+		PUSHINT 0
+		SENDRAWMSG
+	}
+	IF
+	;; end if
+	DROP
 }
 IFELSE
 ;; end if
-;; return
-;; push identifier step_1_left_deposit
-PUSH S16
-;; push identifier step_1_right_deposit
-PUSH S16
-;; push identifier step_1_lp_reward
-PUSH S16
-;; push identifier step_2_left_to_right
-PUSH S11
-;; push identifier step_2_right_to_left
-PUSH S11
-;; push identifier step_2_spent
-PUSH S11
-;; push identifier step_2_fee
-PUSH S11
-;; push identifier step_2_received
-PUSH S11
-;; push identifier step_3_left_deposit
-PUSH S11
-;; push identifier step_3_right_deposit
-PUSH S11
-;; push identifier step_3_lp_reward
-PUSH S11
-TUPLE 11
-PUSHINT 17
-PUSHINT 1
-BLKSWX
-PUSHINT 17
-DROPX
-; end function _expectedDepositLiquidity
-BLKDROP2 3, 1
-; end function expectedDepositLiquidity
-BLKDROP2 3, 1
-;; emitting 1 value(s)
+; expValue
+; end expValue
+;; push identifier lp_supply
+GETGLOB 19
+;; +
+;; push identifier lp_tokens_amount
 PUSH S1
+ADD
+UFITS 128
+; colValue
+SETGLOB 19
+; end colValue
+;; Remote call IRootTokenContract.mint
+;; push identifier lp_root
+GETGLOB 17
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x401c9c380000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x723dc4ce
+;; tokens
+;; push identifier lp_tokens_amount
+PUSH S1
+STUR 128
+;; to
+;; push identifier lp_vault_wallet
+GETGLOB 18
+STSLICER
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IDexAccount.internalPairTransfer
+;; get member sender
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x629f3a85
+;; amount
+;; push identifier lp_tokens_amount
+PUSH S2
+STUR 128
+;; token_root
+;; push identifier lp_root
+GETGLOB 17
+STSLICER
+;; sender_left_root
+;; push identifier left_root
+GETGLOB 14
+STSLICER
+NEWC
+;; sender_right_root
+;; push identifier right_root
+GETGLOB 15
+STSLICER
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S6
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IDexAccount.successCallback
+;; get member sender
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x11132606
+;; call_id
+;; push identifier call_id
+PUSH S10
+STUR 64
+ENDC
+PUSHINT 128
+SENDRAWMSG
+DROP
+; end function depositLiquidity
+DROP
+DROP
+; end modifier onlyAccount
+; end modifier onlyActive
+BLKDROP 7
+CALLREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro expectedWithdrawLiquidity
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+; Decode lp_amount
+LDUQ 128
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+IFNOT
+ENDS
+;; param: lp_amount
+;; ret param: expected_left_amount
+PUSHINT 0
+;; ret param: expected_right_amount
+PUSHINT 0
+; function expectedWithdrawLiquidity
+;; push identifier left_balance
+GETGLOB 20
+;; push identifier lp_amount
+PUSH S3
+;; push identifier lp_supply
+GETGLOB 19
+MULDIV
+UFITS 128
+;; decl: left_back_amount
+;; push identifier right_balance
+GETGLOB 21
+;; push identifier lp_amount
+PUSH S4
+;; push identifier lp_supply
+GETGLOB 19
+MULDIV
+UFITS 128
+;; decl: right_back_amount
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier left_back_amount
+PUSH S1
+;; push identifier right_back_amount
+PUSH S1
+BLKDROP2 2, 4
+SWAP2
+DROP2
+; end function expectedWithdrawLiquidity
+BLKDROP2 1, 2
+;; emitting 2 value(s)
+PUSH S2
 EQINT -1
 PUSHCONT {
-	PUSH S3
+	PUSH S4
 	CTOS
 	LDU 2
 	LDMSGADDR
@@ -1616,38 +3394,12 @@ PUSHCONT {
 	PUSHINT 96
 	STZEROES
 	STSLICECONST 0
-	STSLICECONST 1
-	NEWC
-	STSLICECONST xd5d19ce5
-	PUSH S2
-	UNTUPLE 11
-	BLKSWAP 1, 11
-	PUSH S11
-	STUR 128
-	PUSH S10
-	STUR 128
-	PUSH S9
-	STUR 128
-	PUSH S8
-	STIR 1
-	PUSH S7
-	STIR 1
-	PUSH S6
-	STUR 128
-	PUSH S5
-	STUR 128
-	PUSH S4
-	STUR 128
-	PUSH S3
-	STUR 128
-	NEWC
-	PUSH S3
-	STUR 128
+	STSLICECONST 0
+	STSLICECONST x909f3e11
 	PUSH S2
 	STUR 128
-	BLKDROP2 11, 2
-	STBREFR
-	STBREFR
+	PUSH S1
+	STUR 128
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -1674,54 +3426,28 @@ PUSHCONT {
 	PUSHINT 104
 	STZEROES
 	STSLICECONST 0
-	STSLICECONST 1
-	NEWC
+	STSLICECONST 0
 	GETGLOB 4
 	INDEX 5
 	STUR 32
 	PUSH S2
-	UNTUPLE 11
-	BLKSWAP 1, 11
-	PUSH S11
 	STUR 128
-	PUSH S10
+	PUSH S1
 	STUR 128
-	PUSH S9
-	STUR 128
-	PUSH S8
-	STIR 1
-	PUSH S7
-	STIR 1
-	PUSH S6
-	STUR 128
-	PUSH S5
-	STUR 128
-	PUSH S4
-	STUR 128
-	PUSH S3
-	STUR 128
-	NEWC
-	PUSH S3
-	STUR 128
-	PUSH S2
-	STUR 128
-	BLKDROP2 11, 2
-	STBREFR
-	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
+DROP2
 IFREF {
 	CALL $c7_to_c4$
 }
 TRUE
 SETGLOB 7
 
-.macro depositLiquidity
+.macro withdrawLiquidity
 DROP
 GETGLOB 1
 ISNULL
@@ -1731,7 +3457,7 @@ IFREF {
 ; Decode input parameters
 ; Decode call_id
 LDU 64
-; Decode left_amount
+; Decode lp_amount
 LDUQ 128
 PUSHCONT {
 	;; load next cell
@@ -1741,14 +3467,14 @@ PUSHCONT {
 	LDU 128
 }
 IFNOT
-; Decode right_amount
-LDUQ 128
+; Decode expected_lp_root
+LDMSGADDRQ
 PUSHCONT {
 	;; load next cell
 	LDREF
 	ENDS
 	CTOS
-	LDU 128
+	LDMSGADDR
 }
 IFNOT
 ; Decode account_owner
@@ -1761,7 +3487,7 @@ PUSHCONT {
 	LDMSGADDR
 }
 IFNOT
-; Decode account_version
+; Decode 
 LDUQ 32
 PUSHCONT {
 	;; load next cell
@@ -1783,10 +3509,10 @@ PUSHCONT {
 IFNOT
 ENDS
 ;; param: call_id
-;; param: left_amount
-;; param: right_amount
+;; param: lp_amount
+;; param: expected_lp_root
 ;; param: account_owner
-;; param: account_version
+;; param: 
 ;; param: send_gas_to
 ; modifier onlyActive
 ;; push identifier active
@@ -1875,8 +3601,207 @@ GETGLOB 9
 PUSH S1
 SDEQ
 THROWIFNOT 105
-; function depositLiquidity
-; end function depositLiquidity
+; function withdrawLiquidity
+;; push identifier expected_lp_root
+PUSH S5
+;; push identifier lp_root
+GETGLOB 17
+SDEQ
+THROWIFNOT 113
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
+;; push identifier left_balance
+GETGLOB 20
+;; push identifier lp_amount
+PUSH S7
+;; push identifier lp_supply
+GETGLOB 19
+MULDIV
+UFITS 128
+;; decl: left_back_amount
+;; push identifier right_balance
+GETGLOB 21
+;; push identifier lp_amount
+PUSH S8
+;; push identifier lp_supply
+GETGLOB 19
+MULDIV
+UFITS 128
+;; decl: right_back_amount
+;; push identifier left_back_amount
+PUSH S1
+; expValue
+;; fetch left_balance
+GETGLOB 20
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 20
+; end colValue
+;; push identifier right_back_amount
+DUP
+; expValue
+;; fetch right_balance
+GETGLOB 21
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 21
+; end colValue
+;; push identifier lp_amount
+PUSH S8
+; expValue
+;; fetch lp_supply
+GETGLOB 19
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 19
+; end colValue
+;; Remote call IDexAccount.internalPairTransfer
+;; get member sender
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x629f3a85
+;; amount
+;; push identifier left_back_amount
+PUSH S3
+STUR 128
+;; token_root
+;; push identifier left_root
+GETGLOB 14
+STSLICER
+;; sender_left_root
+;; push identifier left_root
+GETGLOB 14
+STSLICER
+NEWC
+;; sender_right_root
+;; push identifier right_root
+GETGLOB 15
+STSLICER
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S7
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IDexAccount.internalPairTransfer
+;; get member sender
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x629f3a85
+;; amount
+;; push identifier right_back_amount
+PUSH S2
+STUR 128
+;; token_root
+;; push identifier right_root
+GETGLOB 15
+STSLICER
+;; sender_left_root
+;; push identifier left_root
+GETGLOB 14
+STSLICER
+NEWC
+;; sender_right_root
+;; push identifier right_root
+GETGLOB 15
+STSLICER
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S7
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+NEWC
+ENDC
+;; decl: empty
+;; Remote call IBurnableByRootTokenRootContract.proxyBurn
+;; push identifier lp_root
+GETGLOB 17
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x1df868a9
+;; tokens
+;; push identifier lp_amount
+PUSH S11
+STUR 128
+;; sender_address
+;; push identifier vault
+GETGLOB 11
+STSLICER
+;; send_gas_to
+;; push identifier send_gas_to
+PUSH S7
+STSLICER
+NEWC
+;; callback_address
+;; address.makeAddrStd()
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+STSLICER
+;; callback_payload
+;; push identifier empty
+PUSH S3
+STREFR
+STBREFR
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IDexAccount.successCallback
+;; get member sender
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x11132606
+;; call_id
+;; push identifier call_id
+PUSH S11
+STUR 64
+ENDC
+PUSHINT 128
+SENDRAWMSG
+BLKDROP 3
+; end function withdrawLiquidity
 DROP
 DROP
 ; end modifier onlyAccount
@@ -1888,15 +3813,20 @@ CALLREF {
 TRUE
 SETGLOB 7
 
-.macro expectedLeftToRight
+.macro expectedExchange
 DROP
 GETGLOB 1
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
 ; Decode input parameters
-; Decode left_amount
+; Decode amount
 LDUQ 128
 PUSHCONT {
 	;; load next cell
@@ -1906,74 +3836,175 @@ PUSHCONT {
 	LDU 128
 }
 IFNOT
+; Decode is_left_to_right
+LDIQ 1
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDI 1
+}
+IFNOT
 ENDS
-;; param: left_amount
-;; ret param: expected_right_amount
+;; param: amount
+;; param: is_left_to_right
+;; ret param: expected_amount
 PUSHINT 0
-;; ret param: expected_left_fee
+;; ret param: expected_fee
 PUSHINT 0
-; function expectedLeftToRight
-;; return
-;; push identifier left_amount
-PUSH S2
-;; push identifier left_balance
-GETGLOB 20
-;; push identifier right_balance
-GETGLOB 21
-;; param: a_amount
-;; param: a_pool
-;; param: b_pool
-; function _expectedExchange
-;; push identifier a_amount
-PUSH S2
-;; push identifier fee_nominator
-GETGLOB 22
-;; push identifier fee_denominator
-GETGLOB 23
-MULDIV
-UFITS 128
-;; decl: a_fee
-;; push identifier a_pool
-PUSH S2
-;; +
-;; push identifier a_amount
-PUSH S4
-ADD
-UFITS 128
-;; decl: new_a_pool
-;; push identifier a_pool
-PUSH S3
-;; push identifier b_pool
-PUSH S3
-;; push identifier new_a_pool
-PUSH S2
-;; -
-;; push identifier a_fee
-PUSH S4
-SUB
-UFITS 128
-MULDIV
-UFITS 128
-;; decl: new_b_pool
-;; push identifier b_pool
-PUSH S3
-;; -
-;; push identifier new_b_pool
-PUSH S1
-SUB
-UFITS 128
-;; decl: expected_b_amount
-;; return
-;; push identifier expected_b_amount
-DUP
-;; push identifier a_fee
-PUSH S4
-BLKDROP2 4, 2
-; end function _expectedExchange
-BLKDROP2 3, 2
+; function expectedExchange
+PUSHCONT {
+	;; if
+	;; push identifier is_left_to_right
+	PUSH S2
+	PUSHCONT {
+		;; return
+		GETGLOB 4
+		PUSHINT 0
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier amount
+		PUSH S3
+		;; push identifier left_balance
+		GETGLOB 20
+		;; push identifier right_balance
+		GETGLOB 21
+		;; param: a_amount
+		;; param: a_pool
+		;; param: b_pool
+		; function _expectedExchange
+		;; push identifier a_amount
+		PUSH S2
+		;; push identifier fee_nominator
+		GETGLOB 22
+		;; push identifier fee_denominator
+		GETGLOB 23
+		MULDIV
+		UFITS 128
+		;; decl: a_fee
+		;; push identifier a_pool
+		PUSH S2
+		;; +
+		;; push identifier a_amount
+		PUSH S4
+		ADD
+		UFITS 128
+		;; decl: new_a_pool
+		;; push identifier a_pool
+		PUSH S3
+		;; push identifier b_pool
+		PUSH S3
+		;; push identifier new_a_pool
+		PUSH S2
+		;; -
+		;; push identifier a_fee
+		PUSH S4
+		SUB
+		UFITS 128
+		MULDIV
+		UFITS 128
+		;; decl: new_b_pool
+		;; push identifier b_pool
+		PUSH S3
+		;; -
+		;; push identifier new_b_pool
+		PUSH S1
+		SUB
+		UFITS 128
+		;; decl: expected_b_amount
+		;; return
+		;; push identifier expected_b_amount
+		DUP
+		;; push identifier a_fee
+		PUSH S4
+		BLKDROP2 4, 2
+		; end function _expectedExchange
+		BLKDROP2 3, 2
+		BLKDROP2 2, 2
+		RET
+	}
+	PUSHCONT {
+		;; return
+		GETGLOB 4
+		PUSHINT 0
+		SETINDEXQ 2
+		FALSE
+		SETINDEXQ 1
+		PUSHINT 64
+		SETINDEXQ 4
+		SETGLOB 4
+		;; push identifier amount
+		PUSH S3
+		;; push identifier right_balance
+		GETGLOB 21
+		;; push identifier left_balance
+		GETGLOB 20
+		;; param: a_amount
+		;; param: a_pool
+		;; param: b_pool
+		; function _expectedExchange
+		;; push identifier a_amount
+		PUSH S2
+		;; push identifier fee_nominator
+		GETGLOB 22
+		;; push identifier fee_denominator
+		GETGLOB 23
+		MULDIV
+		UFITS 128
+		;; decl: a_fee
+		;; push identifier a_pool
+		PUSH S2
+		;; +
+		;; push identifier a_amount
+		PUSH S4
+		ADD
+		UFITS 128
+		;; decl: new_a_pool
+		;; push identifier a_pool
+		PUSH S3
+		;; push identifier b_pool
+		PUSH S3
+		;; push identifier new_a_pool
+		PUSH S2
+		;; -
+		;; push identifier a_fee
+		PUSH S4
+		SUB
+		UFITS 128
+		MULDIV
+		UFITS 128
+		;; decl: new_b_pool
+		;; push identifier b_pool
+		PUSH S3
+		;; -
+		;; push identifier new_b_pool
+		PUSH S1
+		SUB
+		UFITS 128
+		;; decl: expected_b_amount
+		;; return
+		;; push identifier expected_b_amount
+		DUP
+		;; push identifier a_fee
+		PUSH S4
+		BLKDROP2 4, 2
+		; end function _expectedExchange
+		BLKDROP2 3, 2
+		BLKDROP2 2, 2
+		RET
+	}
+	CONDSEL
+	JMPX
+	;; end if
+}
+CALLX
+; end function expectedExchange
 BLKDROP2 2, 2
-; end function expectedLeftToRight
-BLKDROP2 1, 2
 ;; emitting 2 value(s)
 PUSH S2
 EQINT -1
@@ -1991,7 +4022,7 @@ PUSHCONT {
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
-	STSLICECONST xa0d8b5ed
+	STSLICECONST xb614a297
 	PUSH S2
 	STUR 128
 	PUSH S1
@@ -2000,127 +4031,42 @@ PUSHCONT {
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP2
-IFREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.macro expectedRightToLeft
-DROP
-GETGLOB 1
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-; Decode input parameters
-; Decode right_amount
-LDUQ 128
 PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDU 128
-}
-IFNOT
-ENDS
-;; param: right_amount
-;; ret param: expected_left_amount
-PUSHINT 0
-;; ret param: expected_right_fee
-PUSHINT 0
-; function expectedRightToLeft
-;; return
-;; push identifier right_amount
-PUSH S2
-;; push identifier right_balance
-GETGLOB 21
-;; push identifier left_balance
-GETGLOB 20
-;; param: a_amount
-;; param: a_pool
-;; param: b_pool
-; function _expectedExchange
-;; push identifier a_amount
-PUSH S2
-;; push identifier fee_nominator
-GETGLOB 22
-;; push identifier fee_denominator
-GETGLOB 23
-MULDIV
-UFITS 128
-;; decl: a_fee
-;; push identifier a_pool
-PUSH S2
-;; +
-;; push identifier a_amount
-PUSH S4
-ADD
-UFITS 128
-;; decl: new_a_pool
-;; push identifier a_pool
-PUSH S3
-;; push identifier b_pool
-PUSH S3
-;; push identifier new_a_pool
-PUSH S2
-;; -
-;; push identifier a_fee
-PUSH S4
-SUB
-UFITS 128
-MULDIV
-UFITS 128
-;; decl: new_b_pool
-;; push identifier b_pool
-PUSH S3
-;; -
-;; push identifier new_b_pool
-PUSH S1
-SUB
-UFITS 128
-;; decl: expected_b_amount
-;; return
-;; push identifier expected_b_amount
-DUP
-;; push identifier a_fee
-PUSH S4
-BLKDROP2 4, 2
-; end function _expectedExchange
-BLKDROP2 3, 2
-BLKDROP2 2, 2
-; end function expectedRightToLeft
-BLKDROP2 1, 2
-;; emitting 2 value(s)
-PUSH S2
-EQINT -1
-PUSHCONT {
-	PUSH S4
-	CTOS
-	LDU 2
-	LDMSGADDR
-	DROP
-	NIP
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
 	NEWC
-	STSLICECONST xc
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
 	STSLICE
-	PUSHINT 96
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
-	STSLICECONST xfc597178
+	GETGLOB 4
+	INDEX 5
+	STUR 32
 	PUSH S2
 	STUR 128
 	PUSH S1
 	STUR 128
 	ENDC
-	PUSHINT 0
+	GETGLOB 4
+	INDEX 4
 	SENDRAWMSG
 }
-IF
+IFELSE
 DROP2
 IFREF {
 	CALL $c7_to_c4$
@@ -2188,7 +4134,7 @@ PUSHCONT {
 	LDMSGADDR
 }
 IFNOT
-; Decode account_version
+; Decode 
 LDUQ 32
 PUSHCONT {
 	;; load next cell
@@ -2215,7 +4161,7 @@ ENDS
 ;; param: receive_token_root
 ;; param: expected_amount
 ;; param: account_owner
-;; param: account_version
+;; param: 
 ;; param: send_gas_to
 ; modifier onlyActive
 ;; push identifier active
@@ -2362,14 +4308,12 @@ ENDS
 ;; param: account_owner
 ;; param: 
 ;; param: send_gas_to
-; modifier onlyActive
-;; push identifier active
-GETGLOB 16
-THROWIFNOT 114
-; function checkPair
+; modifier onlyAccount
+;; push identifier account_owner
+PUSH S2
 PUSHINT 1
 ;; push identifier account_owner
-PUSH S3
+PUSH S1
 ;; param: account_owner
 ; function _buildAccountParams
 NEWC
@@ -2447,12 +4391,13 @@ GETGLOB 9
 PUSH S1
 SDEQ
 THROWIFNOT 105
+; function checkPair
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
 ;; Remote call IDexAccount.checkPairCallback
-;; push identifier expected
-DUP
+;; get member sender
+GETGLOB 9
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -2464,7 +4409,7 @@ NEWC
 STSLICECONST x19eb9bf2
 ;; original_call_id
 ;; push identifier call_id
-PUSH S6
+PUSH S7
 STUR 64
 ;; left_root
 ;; push identifier left_root
@@ -2481,16 +4426,17 @@ STSLICER
 NEWC
 ;; send_gas_to
 ;; push identifier send_gas_to
-PUSH S4
+PUSH S5
 STSLICER
 STBREFR
 STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-DROP
 ; end function checkPair
-; end modifier onlyActive
+DROP
+DROP
+; end modifier onlyAccount
 BLKDROP 4
 CALLREF {
 	CALL $c7_to_c4$
@@ -2540,7 +4486,20 @@ GETGLOB 12
 ;; push identifier new_version
 PUSH S2
 EQUAL
+;; short-circuiting ||
+DUP
 PUSHCONT {
+	DROP
+	;; !
+	;; push identifier active
+	GETGLOB 16
+	NOT
+}
+IFNOT
+PUSHCONT {
+	PUSHINT 1000000000
+	PUSHINT 2
+	RAWRESERVE
 	;; transfer()
 	;; push identifier send_gas_to
 	DUP
@@ -2638,6 +4597,60 @@ PUSHCONT {
 	;; push identifier lp_root
 	GETGLOB 17
 	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier lp_vault_wallet
+	GETGLOB 18
+	STSLICER
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier lp_supply
+	GETGLOB 19
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier left_balance
+	GETGLOB 20
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier right_balance
+	GETGLOB 21
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier fee_nominator
+	GETGLOB 22
+	STUR 16
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier fee_denominator
+	GETGLOB 23
+	STUR 16
 	; colValue
 	NIP
 	; end colValue
@@ -2991,65 +5004,14 @@ PUSH S1
 ; colValue
 SETGLOB 17
 ; end colValue
-;; Remote call IRootTokenContract.deployEmptyWallet
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
-;; push identifier lp_root
-GETGLOB 17
-NEWC
-STSLICECONST x62_
-STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
-NEWC
-STSLICECONST x542b1672
-;; deploy_grams
-PUSHINT 50
-STUR 128
-;; wallet_public_key
-PUSHINT 0
-STUR 256
-;; owner_address
-MYADDR
-STSLICER
-;; gas_back_address
-;; push identifier send_gas_to
-PUSH S2
-STSLICER
-STBREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
 ;; Remote call IRootTokenContract.sendExpectedWalletAddress
-PUSHINT 100
-;; get member wid
-;; push identifier lp_root
-GETGLOB 17
-PARSEMSGADDR
-INDEX 2
-CALLREF {
-	CALL $__gasToTon_macro$
-}
 ;; push identifier lp_root
 GETGLOB 17
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 1
 NEWC
@@ -3058,7 +5020,8 @@ STSLICECONST x55b3a9fb
 PUSHINT 0
 STUR 256
 ;; owner_address_
-MYADDR
+;; push identifier vault
+GETGLOB 11
 STSLICER
 ;; to
 MYADDR
@@ -3138,21 +5101,14 @@ GETGLOB 9
 GETGLOB 17
 SDEQ
 THROWIFNOT 100
-;; get member value
-;; push identifier lp_wallet
-GETGLOB 18
-PARSEMSGADDR
-INDEX 3
-PLDU 256
-EQINT 0
-THROWIFNOT 100
 ;; push identifier wallet_public_key
 PUSH S1
 EQINT 0
 THROWIFNOT 100
 ;; push identifier owner_address
 DUP
-MYADDR
+;; push identifier vault
+GETGLOB 11
 SDEQ
 THROWIFNOT 100
 ; expValue
@@ -3162,26 +5118,6 @@ PUSH S2
 ; colValue
 SETGLOB 18
 ; end colValue
-;; Remote call ITONTokenWallet.setReceiveCallback
-;; push identifier wallet
-PUSH S2
-NEWC
-STSLICECONST x62_
-STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x71eee875
-;; receive_callback
-MYADDR
-STSLICER
-;; allow_non_notifiable
-FALSE
-STIR 1
-ENDC
-PUSHINT 128
-SENDRAWMSG
 ; end function expectedWalletAddressCallback
 BLKDROP 3
 CALLREF {
@@ -3349,7 +5285,7 @@ PUSHCONT {
 	; init lp_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 17
-	; init lp_wallet
+	; init lp_vault_wallet
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 18
 	; init lp_supply
@@ -3526,7 +5462,7 @@ PUSHINT 565050858
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 292780380
+	PUSHINT 278871569
 	LEQ
 	PUSHCONT {
 		DUP
@@ -3536,28 +5472,28 @@ PUSHCONT {
 			CALL $resetGas$
 		}
 		DUP
+		PUSHINT 278871569
+		EQUAL
+		IFJMPREF {
+			CALL $expectedWithdrawLiquidity$
+		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 439353572
+	LEQ
+	PUSHCONT {
+		DUP
 		PUSHINT 292780380
 		EQUAL
 		IFJMPREF {
 			CALL $expectedWalletAddressCallback$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 551073261
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 439353572
 		EQUAL
 		IFJMPREF {
 			CALL $getTokenRoots$
-		}
-		DUP
-		PUSHINT 551073261
-		EQUAL
-		IFJMPREF {
-			CALL $expectedLeftToRight$
 		}
 	}
 	IFJMP
@@ -3596,10 +5532,10 @@ PUSHCONT {
 	LEQ
 	PUSHCONT {
 		DUP
-		PUSHINT 950797761
+		PUSHINT 907322007
 		EQUAL
 		IFJMPREF {
-			CALL $depositLiquidity$
+			CALL $expectedExchange$
 		}
 		DUP
 		PUSHINT 1025233701
@@ -3618,18 +5554,36 @@ PUSHCONT {
 }
 IFJMP
 DUP
-PUSHINT 1789196393
+PUSHINT 1688565960
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 1490576934
+	PUSHINT 1439800549
 	LEQ
 	PUSHCONT {
+		DUP
+		PUSHINT 1417804635
+		EQUAL
+		IFJMPREF {
+			CALL $withdrawLiquidity$
+		}
 		DUP
 		PUSHINT 1439800549
 		EQUAL
 		IFJMPREF {
 			CALL $expectedDepositLiquidity$
+		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 1490576934
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1477057734
+		EQUAL
+		IFJMPREF {
+			CALL $depositLiquidity$
 		}
 		DUP
 		PUSHINT 1490576934
@@ -3640,35 +5594,29 @@ PUSHCONT {
 	}
 	IFJMP
 	DUP
-	PUSHINT 1756716863
-	LEQ
-	PUSHCONT {
-		DUP
-		PUSHINT 1688565960
-		EQUAL
-		IFJMPREF {
-			CALL $upgrade$
-		}
-		DUP
-		PUSHINT 1756716863
-		EQUAL
-		IFJMPREF {
-			CALL $constructor$
-		}
+	PUSHINT 1688565960
+	EQUAL
+	IFJMPREF {
+		CALL $upgrade$
 	}
-	IFJMP
+}
+IFJMP
+DUP
+PUSHINT 2066445604
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 1756716863
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
 	DUP
 	PUSHINT 1789196393
 	EQUAL
 	IFJMPREF {
 		CALL $exchange$
 	}
-}
-IFJMP
-DUP
-PUSHINT 2086236536
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1950458398
 	EQUAL
@@ -3680,12 +5628,6 @@ PUSHCONT {
 	EQUAL
 	IFJMPREF {
 		CALL $checkPair$
-	}
-	DUP
-	PUSHINT 2086236536
-	EQUAL
-	IFJMPREF {
-		CALL $expectedRightToLeft$
 	}
 }
 IFJMP
