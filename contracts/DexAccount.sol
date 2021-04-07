@@ -125,7 +125,7 @@ contract DexAccount is
     ) override external {
 
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
-        
+
         TvmSlice payloadSlice = payload.toSlice();
         bool notify_cancel = payloadSlice.refs() >= 2;
         TvmCell success_payload;
@@ -139,7 +139,6 @@ contract DexAccount is
 
         if (_wallets.exists(token_root) && msg.sender == _wallets[token_root] && msg.sender == token_wallet) {
             _balances[token_root] += tokens_amount;
-            // TODO:
             ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 0,                          // recipient_public_key
                 vault,                      // recipient_address
@@ -151,7 +150,6 @@ contract DexAccount is
                 success_payload
             );
         } else {
-            // TODO:
             ITONTokenWallet(token_wallet).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 sender_wallet,
                 tokens_amount,
