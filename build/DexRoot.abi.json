@@ -54,7 +54,7 @@
 			]
 		},
 		{
-			"name": "setVault",
+			"name": "setVaultOnce",
 			"inputs": [
 				{"name":"new_vault","type":"address"}
 			],

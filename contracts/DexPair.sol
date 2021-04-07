@@ -432,7 +432,7 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
             );
 
             IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
-            
+
         } else {
             revert();
         }
@@ -669,9 +669,11 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     ) override external {
         require(msg.sender == lp_root);
         require(wallet_public_key == 0);
+        require(lp_vault_wallet.value == 0);
         require(owner_address == vault);
 
         lp_vault_wallet = wallet;
+        active = true;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

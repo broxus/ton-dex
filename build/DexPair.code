@@ -5536,6 +5536,14 @@ THROWIFNOT 100
 PUSH S1
 EQINT 0
 THROWIFNOT 100
+;; get member value
+;; push identifier lp_vault_wallet
+GETGLOB 18
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+EQINT 0
+THROWIFNOT 100
 ;; push identifier owner_address
 DUP
 ;; push identifier vault
@@ -5548,6 +5556,12 @@ THROWIFNOT 100
 PUSH S2
 ; colValue
 SETGLOB 18
+; end colValue
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 16
 ; end colValue
 ; end function expectedWalletAddressCallback
 BLKDROP 3
