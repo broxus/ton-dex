@@ -78,6 +78,12 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
         pending_messages+=2;
     }
 
+    function terminate() public view {
+        require(msg.sender == send_gas_to, DexErrors.NOT_MY_OWNER);
+        tvm.accept();
+        _onLiquidityTokenNotDeployed();
+    }
+
     function onGetDetails(IRootTokenContract.IRootTokenContractDetails details) public onlyExpectedToken {
         pending_messages--;
         if (msg.sender == left_root) {
