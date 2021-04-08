@@ -73,7 +73,8 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     // Vault
 
-    function setVault(address new_vault) external onlyOwner {
+    function setVaultOnce(address new_vault) external onlyOwner {
+        require(vault.value == 0, DexErrors.PLATFORM_CODE_NON_EMPTY);
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         vault = new_vault;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });

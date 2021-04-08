@@ -323,6 +323,8 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         right_balance -= right_back_amount;
         lp_supply -= lp_amount;
 
+        emit WithdrawLiquidity(lp_amount, left_back_amount, right_back_amount);
+
         IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
             left_back_amount,
             left_root,
@@ -379,7 +381,61 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
-        // TODO:
+        if (spent_token_root == left_root && receive_token_root == right_root) {
+            (uint128 expected_right_amount, uint128 expected_left_fee) =
+                _expectedExchange(spent_amount, left_balance, right_balance);
+            require(expected_right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
+            require(expected_right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+            left_balance += spent_amount;
+            right_balance -= expected_right_amount;
+
+            emit ExchangeLeftToRight(spent_amount, expected_left_fee, expected_right_amount);
+
+            IDexAccount(msg.sender).internalPairTransfer{
+                value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                expected_right_amount,
+                right_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+
+            IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+
+        } else if (spent_token_root == right_root && receive_token_root == left_root){
+            (uint128 expected_left_amount, uint128 expected_right_fee) =
+                _expectedExchange(spent_amount, right_balance, left_balance);
+            require(expected_left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
+            require(expected_left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+
+            right_balance += spent_amount;
+            left_balance -= expected_left_amount;
+
+            emit ExchangeRightToLeft(spent_amount, expected_right_fee, expected_left_amount);
+
+            IDexAccount(msg.sender).internalPairTransfer{
+                value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                expected_left_amount,
+                left_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+
+            IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+
+        } else {
+            revert();
+        }
     }
 
     function _expectedExchange(uint128 a_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
@@ -613,9 +669,11 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
     ) override external {
         require(msg.sender == lp_root);
         require(wallet_public_key == 0);
+        require(lp_vault_wallet.value == 0);
         require(owner_address == vault);
 
         lp_vault_wallet = wallet;
+        active = true;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

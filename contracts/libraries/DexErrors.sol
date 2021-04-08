@@ -24,4 +24,5 @@ library DexErrors {
     uint8 constant INVALID_CALLBACK_SENDER          = 120;
     uint8 constant WRONG_PAIR                       = 121;
     uint8 constant ANOTHER_WITHDRAWAL_IN_PROGRESS   = 122;
+    uint8 constant LOW_EXCHANGE_RATE                = 123;
 }

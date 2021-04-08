@@ -30,9 +30,12 @@ library Gas {
     uint128 constant DEPOSIT_LIQUIDITY_MIN_VALUE    = 1 ton;
     uint128 constant WITHDRAW_LIQUIDITY_MIN_VALUE   = 1 ton;
     uint128 constant INTERNAL_PAIR_TRANSFER_VALUE   = 0.1 ton;
+
+    // TOKENS
+    uint128 constant TRANSFER_VALUE                 = 0.1 ton;
+    uint128 constant TRANSFER_TO_RECIPIENT_VALUE    = 0.2 ton;
     uint128 constant MINT_VALUE                     = 0.03 ton;
     uint128 constant BURN_VALUE                     = 0.1 ton;
-
     uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.1 ton;
     uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 ton;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 ton;
