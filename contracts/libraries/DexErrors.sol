@@ -25,4 +25,7 @@ library DexErrors {
     uint8 constant WRONG_PAIR                       = 121;
     uint8 constant ANOTHER_WITHDRAWAL_IN_PROGRESS   = 122;
     uint8 constant LOW_EXCHANGE_RATE                = 123;
+    uint8 constant NOT_LP_PENDING_CONTRACT          = 124;
+    uint8 constant NOT_TOKEN_FACTORY                = 125;
+    uint8 constant NOT_EXPECTED_TOKEN               = 126;
 }

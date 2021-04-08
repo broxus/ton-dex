@@ -43,22 +43,6 @@
 			]
 		},
 		{
-			"name": "updateRootCode",
-			"inputs": [
-				{"name":"new_root_code","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "updateWalletCode",
-			"inputs": [
-				{"name":"new_wallet_code","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "Token",
 			"inputs": [
 				{"name":"answer_id","type":"uint32"},
@@ -134,6 +118,22 @@
 			],
 			"outputs": [
 				{"name":"storage_code","type":"cell"}
+			]
+		},
+		{
+			"name": "owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "pending_owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"pending_owner","type":"address"}
 			]
 		}
 	],

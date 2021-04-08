@@ -61,6 +61,7 @@ interface IDexPair {
     ) external;
 
     function liquidityTokenRootDeployed(address lp_root, address send_gas_to) external;
+    function liquidityTokenRootNotDeployed(address lp_root, address send_gas_to) external;
 
     function exchange(
         uint64 call_id,

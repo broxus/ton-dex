@@ -191,7 +191,7 @@ IFREF {
 ; Decode input parameters
 ; Decode answer_id
 LDU 32
-; Decode root
+; Decode token_root
 LDMSGADDRQ
 PUSHCONT {
 	;; load next cell
@@ -203,7 +203,7 @@ PUSHCONT {
 IFNOT
 ENDS
 ;; param: answer_id
-;; param: root
+;; param: token_root
 CALLREF {
 	CALL $notifyTokenRootDeployed_internal_macro$
 }
@@ -219,7 +219,7 @@ CALL $notifyTokenRootDeployed_internal_macro$
 
 .macro notifyTokenRootDeployed_internal_macro
 ;; param: answer_id
-;; param: root
+;; param: token_root
 ; function notifyTokenRootDeployed
 ;; get member sender
 GETGLOB 9
@@ -235,7 +235,7 @@ STSLICECONST 0
 STSLICECONST 0
 STSLICECONST x2f9065a1
 ;; root
-;; push identifier root
+;; push identifier token_root
 PUSH S1
 STSLICER
 ENDC
@@ -248,7 +248,7 @@ GETGLOB 12
 PUSH S2
 SWAP
 ; end expValue
-;; push identifier root
+;; push identifier token_root
 PUSH S2
 ; colValue
 ROTREV
@@ -269,7 +269,7 @@ IFREF {
 ; Decode input parameters
 ; Decode answer_id
 LDU 32
-; Decode root
+; Decode token_root
 LDMSGADDRQ
 PUSHCONT {
 	;; load next cell
@@ -281,7 +281,7 @@ PUSHCONT {
 IFNOT
 ENDS
 ;; param: answer_id
-;; param: root
+;; param: token_root
 CALLREF {
 	CALL $notifyTokenRootNotDeployed_internal_macro$
 }
@@ -297,7 +297,7 @@ CALL $notifyTokenRootNotDeployed_internal_macro$
 
 .macro notifyTokenRootNotDeployed_internal_macro
 ;; param: answer_id
-;; param: root
+;; param: token_root
 ; function notifyTokenRootNotDeployed
 ;; get member sender
 GETGLOB 9
@@ -317,7 +317,7 @@ STSLICECONST x68223ffd
 PUSH S2
 STUR 32
 ;; root
-;; push identifier root
+;; push identifier token_root
 PUSH S1
 STSLICER
 ENDC

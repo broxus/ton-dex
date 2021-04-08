@@ -21,6 +21,8 @@ let RootToken;
 let TONTokenWallet;
 let TokenFactoryCreateNewTokenFor;
 let tokenFactoryCreateNewTokenFor
+let Account;
+let account;
 
 describe('TokeFactory contract', async function() {
   describe('Contracts', async function() {
@@ -32,6 +34,7 @@ describe('TokeFactory contract', async function() {
       TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', tonTokenContractsPath);
 
       TokenFactoryCreateNewTokenFor = await locklift.factory.getContract('TokenFactoryCreateNewTokenFor');
+      Account = await locklift.factory.getAccount();
 
       expect(TokenFactory.code)
           .not.to.equal(undefined, 'TokenFactory Code should be available');
@@ -60,11 +63,20 @@ describe('TokeFactory contract', async function() {
 
       const [keyPair] = await locklift.keys.getKeyPairs();
 
+      account = await locklift.giver.deployContract({
+        contract: Account,
+        constructorParams: {},
+        initParams: {
+          _randomNonce: getRandomNonce(),
+        },
+        keyPair,
+      });
+
       tokenFactory = await locklift.giver.deployContract({
         contract: TokenFactory,
         constructorParams: {
           storage_code_: TokenFactoryStorage.code,
-          initial_owner: locklift.giver.giver.address
+          initial_owner: account.address
         },
         initParams: {
           _randomNonce: getRandomNonce(),
@@ -75,19 +87,20 @@ describe('TokeFactory contract', async function() {
 
       expect(tokenFactory.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
-      await sleep();
 
-      tokenFactory.run({
+      await account.runTarget({
+        contract: tokenFactory,
         method: 'setRootCode',
-        params: {root_code_: RootToken.code}
+        params: {root_code_: RootToken.code},
+        keyPair
       })
-      await sleep();
 
-      tokenFactory.run({
+      await account.runTarget({
+        contract: tokenFactory,
         method: 'setWalletCode',
-        params: {wallet_code_: TONTokenWallet.code}
+        params: {wallet_code_: TONTokenWallet.code},
+        keyPair
       })
-      await sleep();
 
       expect(await tokenFactory.call({method: 'root_code'}))
         .to
@@ -102,33 +115,75 @@ describe('TokeFactory contract', async function() {
         initParams: { _randomNonce: getRandomNonce()},
         keyPair,
       }, locklift.utils.convertCrystal(100, 'nano'));
+
       logger.log(`TokenFactoryCreateNewTokenFor address: ${tokenFactoryCreateNewTokenFor.address}`)
     });
 
     it('Interact with contract', async function() {
-      this.timeout(20000);
-      const answer_id = 0;
-      await tokenFactoryCreateNewTokenFor.run({
-        method: 'newToken',
-        params: {
-          answer_id: answer_id,
-          value: locklift.utils.convertCrystal(10, 'nano'),
+      this.timeout(200000);
+      let tokensToCreate = [
+        {
+          name: 'Test1',
+          symbol: 'TST1',
+          decimals: 3,
           owner: tokenFactoryCreateNewTokenFor.address,
-          name: stringToBytesArray('Test'),
-          symbol: stringToBytesArray('TST'),
-          decimals: 3
+          amount: 10
+        },
+        {
+          name: 'Test2',
+          symbol: 'TST2',
+          decimals: 4,
+          owner: tokenFactoryCreateNewTokenFor.address,
+          amount: 10
         }
+      ]
+      for (const tokenData of tokensToCreate) {
+        let index = tokensToCreate.indexOf(tokenData);
+        await tokenFactoryCreateNewTokenFor.run({
+          method: 'newToken',
+          params: {
+            answer_id: index,
+            value: locklift.utils.convertCrystal(tokenData.amount, 'nano'),
+            owner: tokenData.owner,
+            name: stringToBytesArray(tokenData.name),
+            symbol: stringToBytesArray(tokenData.symbol),
+            decimals: tokenData.decimals
+          }
+          })
+        await sleep();
+        const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
+          method: 'getDeployedToken',
+          params: {answer_id: index}
+        });
+        logger.log(`Deployed TokenRoot: ${deployedTokenRoot}`)
+
+        expect(deployedTokenRoot)
+          .to.be.a('string')
+          .and
+          .not.equal(locklift.ton.zero_address, 'Bad Token Root address');
+        let deployedTokenRootContract = RootToken;
+        deployedTokenRootContract.setAddress(deployedTokenRoot);
+        const deployedTokenRootDetails = await deployedTokenRootContract.call({
+          method: 'getDetails',
+          params: {'_answer_id': 0}
         })
-      await sleep();
-      const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
-        method: 'getDeployedToken',
-        params: {answer_id: answer_id}
-      });
-      logger.log(`Deployed TokenRoot: ${deployedTokenRoot}`)
-      expect(deployedTokenRoot)
-        .to.be.a('string')
-        .and
-        .not.equal('0:'+'0'.repeat(64), 'Bad Token Root address');
+        expect(deployedTokenRootDetails.name.toString())
+          .to
+          .equal(tokenData.name, 'Wrong Token name in deployed Token');
+        expect(deployedTokenRootDetails.symbol.toString())
+          .to
+          .equal(tokenData.symbol, 'Wrong Token symbol in deployed Token');
+        expect(deployedTokenRootDetails.decimals.toNumber())
+          .to
+          .equal(tokenData.decimals, 'Wrong Token decimals in deployed Token');
+        expect(deployedTokenRootDetails.wallet_code)
+          .to
+          .equal(TONTokenWallet.code, 'Wrong Token Wallet code in deployed Token');
+        expect(deployedTokenRootDetails.root_owner_address)
+          .to
+          .equal(tokenData.owner, 'Wrong Token owner in deployed Token');
+        // TODO: deploy wallet
+      }
     });
   });
 });

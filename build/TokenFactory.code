@@ -119,7 +119,7 @@ GETGLOB 9
 ;; push identifier pending_owner
 GETGLOB 15
 SDEQ
-THROWIFNOT 100
+THROWIFNOT 101
 ; expValue
 ; end expValue
 ;; push identifier pending_owner
@@ -163,26 +163,23 @@ CALL $setRootCode_internal_macro$
 
 .macro setRootCode_internal_macro
 ;; param: root_code_
-; modifier isEmpty
-;; push identifier root_code
-GETGLOB 11
-;; push identifier code
-DUP
-CDEPTH
-EQINT 0
-THROWIFNOT 115
-ACCEPT
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
 ; function setRootCode
 ; expValue
 ; end expValue
 ;; push identifier root_code_
-PUSH S1
+DUP
 ; colValue
 SETGLOB 11
 ; end colValue
 ; end function setRootCode
-DROP
-; end modifier isEmpty
+; end modifier onlyOwner
 DROP
 
 .macro setWalletCode
@@ -213,119 +210,22 @@ CALL $setWalletCode_internal_macro$
 
 .macro setWalletCode_internal_macro
 ;; param: wallet_code_
-; modifier isEmpty
-;; push identifier wallet_code
-GETGLOB 12
-;; push identifier code
-DUP
-CDEPTH
-EQINT 0
-THROWIFNOT 115
-ACCEPT
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
 ; function setWalletCode
 ; expValue
 ; end expValue
 ;; push identifier wallet_code_
-PUSH S1
+DUP
 ; colValue
 SETGLOB 12
 ; end colValue
 ; end function setWalletCode
-DROP
-; end modifier isEmpty
-DROP
-
-.macro updateRootCode
-DROP
-GETGLOB 1
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-; Decode input parameters
-; Decode new_root_code
-;; decode TvmCell
-LDREF
-ENDS
-;; param: new_root_code
-CALLREF {
-	CALL $updateRootCode_internal_macro$
-}
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.globl	updateRootCode_internal
-.type	updateRootCode_internal, @function
-CALL $updateRootCode_internal_macro$
-
-.macro updateRootCode_internal_macro
-;; param: new_root_code
-; modifier onlyOwner
-;; get member sender
-GETGLOB 9
-;; push identifier owner
-GETGLOB 14
-SDEQ
-THROWIFNOT 100
-; function updateRootCode
-; expValue
-; end expValue
-;; push identifier new_root_code
-DUP
-; colValue
-SETGLOB 11
-; end colValue
-; end function updateRootCode
-; end modifier onlyOwner
-DROP
-
-.macro updateWalletCode
-DROP
-GETGLOB 1
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-; Decode input parameters
-; Decode new_wallet_code
-;; decode TvmCell
-LDREF
-ENDS
-;; param: new_wallet_code
-CALLREF {
-	CALL $updateWalletCode_internal_macro$
-}
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.globl	updateWalletCode_internal
-.type	updateWalletCode_internal, @function
-CALL $updateWalletCode_internal_macro$
-
-.macro updateWalletCode_internal_macro
-;; param: new_wallet_code
-; modifier onlyOwner
-;; get member sender
-GETGLOB 9
-;; push identifier owner
-GETGLOB 14
-SDEQ
-THROWIFNOT 100
-; function updateWalletCode
-; expValue
-; end expValue
-;; push identifier new_wallet_code
-DUP
-; colValue
-SETGLOB 12
-; end colValue
-; end function updateWalletCode
 ; end modifier onlyOwner
 DROP
 
@@ -424,11 +324,11 @@ UFITS 128
 CALLREF {
 	CALL $message_balance_macro$
 }
-;; >
+;; >=
 ;; push identifier expecedValue
 PUSH S1
-GREATER
-THROWIFNOT 103
+GEQ
+THROWIFNOT 105
 ;; get member balance
 GETPARAM 7
 INDEX 0
@@ -552,19 +452,13 @@ SENDRAWMSG
 NIP
 ;; decl: tokenRoot
 ;; Remote call RootTokenContract.getDetails
-PUSHINT 1000000000
-;; /
-PUSHINT 2
-DIV
 ;; push identifier tokenRoot
-PUSH S1
+DUP
 NEWC
 STSLICECONST x62_
 STSLICE
-SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
+PUSHSLICE x41dcd6500000000000000000000000000004_
+STSLICER
 STSLICECONST 0
 STSLICECONST 0
 STSLICECONST x09ef20a0
@@ -888,7 +782,7 @@ GETGLOB 9
 ;; push identifier expected
 PUSH S1
 SDEQ
-THROWIFNOT 100
+THROWIFNOT 102
 ;; push identifier meta
 PUSH S1
 CTOS
@@ -1083,7 +977,7 @@ GETGLOB 9
 ;; push identifier expected
 PUSH S1
 SDEQ
-THROWIFNOT 100
+THROWIFNOT 102
 ;; Remote call ITokenRootDeployedCallback.notifyTokenRootDeployed
 ;; get member sender
 ;; push identifier data
@@ -1107,7 +1001,7 @@ STSLICECONST x2c60fdaf
 PUSH S2
 INDEX 0
 STUR 32
-;; root
+;; token_root
 ;; get member pending_token
 ;; push identifier data
 PUSH S2
@@ -1240,7 +1134,7 @@ GETGLOB 9
 ;; push identifier expected
 PUSH S1
 SDEQ
-THROWIFNOT 100
+THROWIFNOT 102
 ;; Remote call ITokenRootDeployedCallback.notifyTokenRootNotDeployed
 ;; get member sender
 ;; push identifier data
@@ -1264,7 +1158,7 @@ STSLICECONST x400134e1
 PUSH S2
 INDEX 0
 STUR 32
-;; root
+;; token_root
 ;; get member pending_token
 ;; push identifier data
 PUSH S2
@@ -1346,8 +1240,90 @@ CALL $upgrade_internal_macro$
 
 .macro upgrade_internal_macro
 ;; param: code
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
 ; function upgrade
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; -
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+NEWC
+;; decl: builder
+; expValue
+DUP
+; end expValue
+;; push identifier root_code
+GETGLOB 11
+STREFR
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier wallet_code
+GETGLOB 12
+STREFR
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier storage_code
+GETGLOB 13
+STREFR
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier owner
+GETGLOB 14
+STSLICER
+; colValue
+NIP
+; end colValue
+; expValue
+DUP
+; end expValue
+;; push identifier pending_owner
+GETGLOB 15
+STSLICER
+; colValue
+NIP
+; end colValue
+;; push identifier code
+PUSH S1
+SETCODE
+;; push identifier code
+PUSH S1
+CTOS
+BLESS
+POP c3
+;; push identifier builder
+DUP
+ENDC
+CALLREF {
+	CALL $:onCodeUpgrade$
+}
+DROP
 ; end function upgrade
+; end modifier onlyOwner
 DROP
 
 .internal-alias :onCodeUpgrade, 2
@@ -1611,17 +1587,49 @@ SENDRAWMSG
 TRUE
 SETGLOB 7
 
+.macro owner
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 14
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST xdf0bcfde
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
+TRUE
+SETGLOB 7
+
+.macro pending_owner
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 15
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST xbe875120
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
+TRUE
+SETGLOB 7
+
 .macro public_function_selector
 DUP
-PUSHINT 400631165
+PUSHINT 485612132
 LEQ
 PUSHCONT {
-	DUP
-	PUSHINT 30840528
-	EQUAL
-	IFJMPREF {
-		CALL $updateRootCode$
-	}
 	DUP
 	PUSHINT 209702378
 	EQUAL
@@ -1635,18 +1643,6 @@ PUSHCONT {
 		CALL $upgrade$
 	}
 	DUP
-	PUSHINT 400631165
-	EQUAL
-	IFJMPREF {
-		CALL $updateWalletCode$
-	}
-}
-IFJMP
-DUP
-PUSHINT 580327927
-LEQ
-PUSHCONT {
-	DUP
 	PUSHINT 453826860
 	EQUAL
 	IFJMPREF {
@@ -1658,6 +1654,12 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $onStorageReadWithDetails$
 	}
+}
+IFJMP
+DUP
+PUSHINT 1303150947
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 536367632
 	EQUAL
@@ -1670,18 +1672,24 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $wallet_code$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1690205927
-LEQ
-PUSHCONT {
+	DUP
+	PUSHINT 1049055520
+	EQUAL
+	IFJMPREF {
+		CALL $pending_owner$
+	}
 	DUP
 	PUSHINT 1303150947
 	EQUAL
 	IFJMPREF {
 		CALL $storage_code$
 	}
+}
+IFJMP
+DUP
+PUSHINT 1690205927
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 1541143449
 	EQUAL
@@ -1693,6 +1701,12 @@ PUSHCONT {
 	EQUAL
 	IFJMPREF {
 		CALL $setRootCode$
+	}
+	DUP
+	PUSHINT 1594609630
+	EQUAL
+	IFJMPREF {
+		CALL $owner$
 	}
 	DUP
 	PUSHINT 1690205927

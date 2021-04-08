@@ -35,14 +35,14 @@ contract TokenFactoryCreateNewTokenFor is ITokenRootDeployedCallback {
         ITokenFactory(_factory).Token{value: value}(answer_id, 0, owner, name, symbol, decimals);
     }
 
-    function notifyTokenRootDeployed(uint32 answer_id, address root) public override {
+    function notifyTokenRootDeployed(uint32 answer_id, address token_root) public override {
         require(msg.sender == _factory, 100);
-        emit RootDepoyed(root);
-        deployedTokens[answer_id] = root;
+        emit RootDepoyed(token_root);
+        deployedTokens[answer_id] = token_root;
     }
-    function notifyTokenRootNotDeployed(uint32 answer_id, address root) public override {
+    function notifyTokenRootNotDeployed(uint32 answer_id, address token_root) public override {
         require(msg.sender == _factory, 100);
-        emit RootNotDepoyed(answer_id, root);
+        emit RootNotDepoyed(answer_id, token_root);
     }
 
     function getDeployedToken(uint32 answer_id) public view returns (address) {

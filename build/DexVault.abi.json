@@ -1,0 +1,184 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"owner_","type":"address"},
+				{"name":"root_","type":"address"},
+				{"name":"token_factory_","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferOwner",
+			"inputs": [
+				{"name":"new_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "acceptOwner",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setTokenFactory",
+			"inputs": [
+				{"name":"new_token_factory","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "installPlatformOnce",
+			"inputs": [
+				{"name":"code","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "installOrUpdateLpTokenPendingCode",
+			"inputs": [
+				{"name":"code","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "addLiquidityToken",
+			"inputs": [
+				{"name":"pair","type":"address"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onLiquidityTokenDeployed",
+			"inputs": [
+				{"name":"nonce","type":"uint32"},
+				{"name":"pair","type":"address"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"lp_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onLiquidityTokenNotDeployed",
+			"inputs": [
+				{"name":"nonce","type":"uint32"},
+				{"name":"pair","type":"address"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"lp_root","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "notifyWalletDeployed",
+			"inputs": [
+				{"name":"token_root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdraw",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"amount","type":"uint128"},
+				{"name":"token_root","type":"address"},
+				{"name":"vault_wallet","type":"address"},
+				{"name":"account_owner","type":"address"},
+				{"name":"account_version","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"code","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "resetGas",
+			"inputs": [
+				{"name":"receiver","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "resetTargetGas",
+			"inputs": [
+				{"name":"target","type":"address"},
+				{"name":"receiver","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "lp_token_pending_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_token_pending_code","type":"cell"}
+			]
+		},
+		{
+			"name": "root",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"root","type":"address"}
+			]
+		},
+		{
+			"name": "owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "pending_owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"pending_owner","type":"address"}
+			]
+		},
+		{
+			"name": "token_factory",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"token_factory","type":"address"}
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"_randomNonce","type":"uint32"}
+	],
+	"events": [
+	]
+}

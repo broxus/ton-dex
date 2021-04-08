@@ -1,6 +1,7 @@
 pragma ton-solidity ^0.39.0;
 
 import "./interfaces/ITokenFactory.sol";
+import "./libraries/MsgFlag.sol";
 
 contract TokenFactoryStorage {
     address static root;
@@ -18,10 +19,10 @@ contract TokenFactoryStorage {
     }
 
     function getData(TvmCell meta) public responsible view returns (ITokenFactory.StorageData, TvmCell) {
-        return{value: 0, flag: 64} (_data, meta);
+        return{value: 0, flag: MsgFlag.REMAINING_GAS} (_data, meta);
     }
 
     function prune() public responsible view onlyRoot returns (ITokenFactory.StorageData) {
-        return{value: 0, flag: 160} _data;
+        return{value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.DESTROY_IF_ZERO} _data;
     }
 }

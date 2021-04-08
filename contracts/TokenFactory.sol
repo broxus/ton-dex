@@ -1,8 +1,10 @@
 pragma ton-solidity ^0.39.0;
 
 import "./TokenFactoryStorage.sol";
+
 import "./libraries/Gas.sol";
 import "./libraries/TokenFactoryErrors.sol";
+import "./libraries/MsgFlag.sol";
 
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/ITokenFactory.sol";
@@ -20,8 +22,8 @@ contract TokenFactory is ITokenFactory, IUpgradable {
 
     TvmCell public storage_code;
 
-    address owner;
-    address pending_owner;
+    address public owner;
+    address public pending_owner;
 
     constructor(TvmCell storage_code_, address initial_owner) public {
         tvm.accept();
@@ -50,20 +52,12 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         pending_owner = address(0);
     }
 
-    function setRootCode(TvmCell root_code_) public override isEmpty(root_code) {
+    function setRootCode(TvmCell root_code_) public override onlyOwner {
         root_code = root_code_;
     }
 
-    function setWalletCode(TvmCell wallet_code_) public override isEmpty(wallet_code) {
+    function setWalletCode(TvmCell wallet_code_) public override onlyOwner {
         wallet_code = wallet_code_;
-    }
-
-    function updateRootCode(TvmCell new_root_code) public override onlyOwner {
-        root_code = new_root_code;
-    }
-
-    function updateWalletCode(TvmCell new_wallet_code) public override onlyOwner {
-        wallet_code = new_wallet_code;
     }
 
     function Token(
@@ -74,23 +68,22 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         bytes symbol,
         uint8 decimals
     ) public override {
-        // TODO gasToValue
         uint128 expecedValue = Gas.TOKEN_FACTORY_FEE + Gas.DEPLOY_TOKEN_ROOT_MIN_VALUE;
-        require(msg.value > expecedValue, TokenFactoryErrors.VALUE_TOO_LOW);
+        require(msg.value >= expecedValue, TokenFactoryErrors.VALUE_TOO_LOW);
         tvm.rawReserve(address(this).balance - msg.value, 2);
 
         address tokenRoot = new RootTokenContract{
             stateInit: _buildInitData(name, symbol, decimals),
             value: msg.value - Gas.TOKEN_FACTORY_FEE,
-            flag: 1
+            flag: MsgFlag.SENDER_PAYS_FEES
         }(root_public_key, root_owner_address);
 
-        RootTokenContract(tokenRoot).getDetails{value: Gas.TOKEN_FACTORY_FEE/2, callback: onTokenGetDetails}();
+        RootTokenContract(tokenRoot).getDetails{value: Gas.GET_TOKEN_DETAILS_VALUE, callback: onTokenGetDetails}();
 
         new TokenFactoryStorage{
             stateInit: _buildStorageInitData(tokenRoot),
             value: 0,
-            flag: 128
+            flag: MsgFlag.ALL_NOT_RESERVED
         }(StorageData({
             answer_id: answer_id,
             pending_token: tokenRoot,
@@ -108,7 +101,11 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         TvmBuilder b;
         b.store(details.root_public_key, details.root_owner_address);
         address tfStorage = address(tvm.hash(_buildStorageInitData(msg.sender)));
-        TokenFactoryStorage(tfStorage).getData{value: 0, flag: 64, callback: onStorageReadWithDetails}(b.toCell());
+        TokenFactoryStorage(tfStorage).getData{
+            value: 0,
+            flag: MsgFlag.REMAINING_GAS,
+            callback: onStorageReadWithDetails
+        }(b.toCell());
     }
 
     function onStorageReadWithDetails(StorageData data, TvmCell meta) public view override {
@@ -116,9 +113,17 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
         (uint256 root_public_key, address root_owner_address) = meta.toSlice().decode(uint256, address);
         if (root_public_key == data.root_public_key && root_owner_address == data.root_owner_address) {
-            TokenFactoryStorage(msg.sender).prune{value: 0, flag: 64, callback: onStoragePruneNotify}();
+            TokenFactoryStorage(msg.sender).prune{
+                value: 0,
+                flag: MsgFlag.REMAINING_GAS,
+                callback: onStoragePruneNotify
+            }();
         } else {
-            TokenFactoryStorage(msg.sender).prune{value: 0, flag: 64, callback: onStoragePruneReturn}();
+            TokenFactoryStorage(msg.sender).prune{
+                value: 0,
+                flag: MsgFlag.REMAINING_GAS,
+                callback: onStoragePruneReturn
+            }();
         }
     }
 
@@ -127,7 +132,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
         ITokenRootDeployedCallback(data.sender).notifyTokenRootDeployed{
             value: 0,
-            flag: 64,
+            flag: MsgFlag.REMAINING_GAS,
             bounce: false
         }(data.answer_id, data.pending_token);
     }
@@ -137,7 +142,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
         ITokenRootDeployedCallback(data.sender).notifyTokenRootNotDeployed{
             value: 0,
-            flag: 64,
+            flag: MsgFlag.REMAINING_GAS,
             bounce: false
         }(data.answer_id, data.pending_token);
     }
@@ -175,11 +180,22 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         });
     }
 
-    function upgrade(TvmCell code) public override {
-        //TODO
+    function upgrade(TvmCell code) public override onlyOwner {
+        tvm.rawReserve(address(this).balance - msg.value, 2);
+
+        TvmBuilder builder;
+
+        builder.store(root_code);
+        builder.store(wallet_code);
+        builder.store(storage_code);
+        builder.store(owner);
+        builder.store(pending_owner);
+
+        tvm.setcode(code);
+        tvm.setCurrentCode(code);
+
+        onCodeUpgrade(builder.toCell());
     }
 
-    function onCodeUpgrade(TvmCell upgrade_data) private {
-        //TODO
-    }
+    function onCodeUpgrade(TvmCell upgrade_data) private {}
 }

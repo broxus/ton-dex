@@ -29,8 +29,6 @@ interface ITokenFactory {
 
     function setRootCode(TvmCell root_code_) external;
     function setWalletCode(TvmCell wallet_code_) external;
-    function updateRootCode(TvmCell new_root_code) external;
-    function updateWalletCode(TvmCell new_wallet_code) external;
 
     function onTokenGetDetails(IRootTokenContract.IRootTokenContractDetails details) external view;
     function onStorageReadWithDetails(StorageData data, TvmCell meta) external view;

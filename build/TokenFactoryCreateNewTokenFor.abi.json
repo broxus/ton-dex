@@ -27,7 +27,7 @@
 			"name": "notifyTokenRootDeployed",
 			"inputs": [
 				{"name":"answer_id","type":"uint32"},
-				{"name":"root","type":"address"}
+				{"name":"token_root","type":"address"}
 			],
 			"outputs": [
 			]
@@ -36,7 +36,7 @@
 			"name": "notifyTokenRootNotDeployed",
 			"inputs": [
 				{"name":"answer_id","type":"uint32"},
-				{"name":"root","type":"address"}
+				{"name":"token_root","type":"address"}
 			],
 			"outputs": [
 			]
