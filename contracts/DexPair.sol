@@ -661,6 +661,14 @@ contract DexPair is IDexPair, IExpectedWalletAddressCallback, IUpgradableByReque
         send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
+    function liquidityTokenRootNotDeployed(address /*lp_root_*/, address send_gas_to) override external onlyVault {
+        if (!active) send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.DESTROY_IF_ZERO});
+        else {
+            tvm.rawReserve(address(this).balance - msg.value, 2);
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED});
+        }
+    }
+
     // callback for IRootTokenContract(...).sendExpectedWalletAddress
     function expectedWalletAddressCallback(
         address wallet,
