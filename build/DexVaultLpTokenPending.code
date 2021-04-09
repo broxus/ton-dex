@@ -117,6 +117,87 @@ CALLREF {
 TRUE
 SETGLOB 7
 
+.macro terminate
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+ENDS
+CALLREF {
+	CALL $terminate_internal_macro$
+}
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.globl	terminate_internal
+.type	terminate_internal, @function
+CALL $terminate_internal_macro$
+
+.macro terminate_internal_macro
+; function terminate
+;; get member sender
+GETGLOB 9
+;; push identifier send_gas_to
+GETGLOB 21
+SDEQ
+THROWIFNOT 100
+ACCEPT
+; function _onLiquidityTokenNotDeployed
+;; Remote call IDexVault.onLiquidityTokenNotDeployed
+;; push identifier vault
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x5cbd6524
+;; nonce
+;; push identifier _nonce
+GETGLOB 13
+STUR 32
+;; pair
+;; push identifier pair
+GETGLOB 15
+STSLICER
+;; left_root
+;; push identifier left_root
+GETGLOB 16
+STSLICER
+;; right_root
+;; push identifier right_root
+GETGLOB 17
+STSLICER
+NEWC
+;; lp_root
+;; push identifier lp_token_root
+GETGLOB 19
+STSLICER
+;; send_gas_to
+;; push identifier send_gas_to
+GETGLOB 21
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 128
+;; +
+PUSHINT 32
+ADD
+UFITS 8
+SENDRAWMSG
+; end function _onLiquidityTokenNotDeployed
+; end function terminate
+
 .macro onGetDetails
 DROP
 GETGLOB 1
@@ -1281,22 +1362,40 @@ THROWIF 60
 .macro public_function_selector
 DUP
 PUSHINT 744553903
-EQUAL
-IFJMPREF {
-	CALL $notifyTokenRootDeployed$
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 694542156
+	EQUAL
+	IFJMPREF {
+		CALL $terminate$
+	}
+	DUP
+	PUSHINT 744553903
+	EQUAL
+	IFJMPREF {
+		CALL $notifyTokenRootDeployed$
+	}
 }
-DUP
-PUSHINT 1073820897
-EQUAL
-IFJMPREF {
-	CALL $notifyTokenRootNotDeployed$
-}
+IFJMP
 DUP
 PUSHINT 1265177579
-EQUAL
-IFJMPREF {
-	CALL $constructor$
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 1073820897
+	EQUAL
+	IFJMPREF {
+		CALL $notifyTokenRootNotDeployed$
+	}
+	DUP
+	PUSHINT 1265177579
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
 }
+IFJMP
 DUP
 PUSHINT 1660798232
 EQUAL

@@ -75,6 +75,50 @@
 			]
 		},
 		{
+			"name": "buildExchangePayload",
+			"inputs": [
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"expected_amount","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "buildDepositLiquidityPayload",
+			"inputs": [
+				{"name":"deploy_wallet_grams","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "buildWithdrawLiquidityPayload",
+			"inputs": [
+				{"name":"deploy_wallet_grams","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "tokensReceivedCallback",
+			"inputs": [
+				{"name":"token_wallet","type":"address"},
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"sender_public_key","type":"uint256"},
+				{"name":"sender_address","type":"address"},
+				{"name":"sender_wallet","type":"address"},
+				{"name":"original_gas_to","type":"address"},
+				{"name":"value7","type":"uint128"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "expectedDepositLiquidity",
 			"inputs": [
 				{"name":"_answer_id","type":"uint32"},
@@ -184,6 +228,15 @@
 			"name": "liquidityTokenRootDeployed",
 			"inputs": [
 				{"name":"lp_root_","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "liquidityTokenRootNotDeployed",
+			"inputs": [
+				{"name":"value0","type":"address"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
