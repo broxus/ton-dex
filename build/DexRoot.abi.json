@@ -195,6 +195,30 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "platform_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"platform_code","type":"cell"}
+			]
+		},
+		{
+			"name": "account_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"account_code","type":"cell"}
+			]
+		},
+		{
+			"name": "pair_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"pair_code","type":"cell"}
+			]
 		}
 	],
 	"data": [

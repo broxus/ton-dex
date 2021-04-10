@@ -20,11 +20,11 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     uint32 static _nonce;
 
-    TvmCell platform_code;
+    TvmCell public platform_code;
     bool has_platform_code;
-    TvmCell account_code;
+    TvmCell public account_code;
     uint32 account_version;
-    TvmCell pair_code;
+    TvmCell public pair_code;
     uint32 pair_version;
 
     bool active;
@@ -34,9 +34,11 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     address pending_owner;
 
     constructor(address initial_owner, address initial_vault) public {
+        tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         tvm.accept();
         owner = initial_owner;
         vault = initial_vault;
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     // Install
@@ -46,6 +48,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         require(!has_platform_code, DexErrors.PLATFORM_CODE_NON_EMPTY);
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         platform_code = code;
+        has_platform_code = true;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 

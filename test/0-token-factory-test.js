@@ -1,16 +1,8 @@
-const { expect } = require('chai');
+const {expect} = require('chai');
 const logger = require('mocha-logger');
+const {getRandomNonce, Migration, stringToBytesArray, sleep} = require('../scripts/utils')
 
-const getRandomNonce = () => Math.random() * 64000 | 0;
-
-const stringToBytesArray = (dataString) => {
-  return Buffer.from(dataString).toString('hex')
-};
-
-async function sleep(ms) {
-  ms = ms === undefined ? 1000 : ms;
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const migration = new Migration();
 
 let tonTokenContractsPath = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
@@ -21,12 +13,11 @@ let RootToken;
 let TONTokenWallet;
 let TokenFactoryCreateNewTokenFor;
 let tokenFactoryCreateNewTokenFor
-let Account;
 let account;
 
-describe('TokeFactory contract', async function() {
-  describe('Contracts', async function() {
-    it('Load contract factory', async function() {
+describe.skip('TokeFactory contract', async function () {
+  describe('Contracts', async function () {
+    it('Load contract factory', async function () {
       TokenFactory = await locklift.factory.getContract('TokenFactory');
       TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
 
@@ -34,92 +25,60 @@ describe('TokeFactory contract', async function() {
       TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', tonTokenContractsPath);
 
       TokenFactoryCreateNewTokenFor = await locklift.factory.getContract('TokenFactoryCreateNewTokenFor');
-      Account = await locklift.factory.getAccount();
 
       expect(TokenFactory.code)
-          .not.to.equal(undefined, 'TokenFactory Code should be available');
+        .not.to.equal(undefined, 'TokenFactory Code should be available');
       expect(TokenFactory.abi)
-          .not.to.equal(undefined, 'TokenFactory ABI should be available');
+        .not.to.equal(undefined, 'TokenFactory ABI should be available');
 
       expect(TokenFactoryStorage.code)
-          .not.to.equal(undefined, 'TokenFactoryStorage Code should be available');
+        .not.to.equal(undefined, 'TokenFactoryStorage Code should be available');
       expect(TokenFactoryStorage.abi)
-          .not.to.equal(undefined, 'TokenFactoryStorage ABI should be available');
+        .not.to.equal(undefined, 'TokenFactoryStorage ABI should be available');
 
       expect(RootToken.abi)
-          .not.to.equal(undefined, 'RootToken ABI should be available');
+        .not.to.equal(undefined, 'RootToken ABI should be available');
       expect(TokenFactory.code)
-          .not.to.equal(undefined, 'RootToken Code should be available');
+        .not.to.equal(undefined, 'RootToken Code should be available');
 
       expect(TONTokenWallet.abi)
-          .not.to.equal(undefined, 'TONTokenWallet ABI should be available');
+        .not.to.equal(undefined, 'TONTokenWallet ABI should be available');
       expect(TONTokenWallet.code)
-          .not.to.equal(undefined, 'TONTokenWallet Code should be available');
+        .not.to.equal(undefined, 'TONTokenWallet Code should be available');
 
+      tokenFactory = migration.load(TokenFactory, 'TokenFactory');
+      account = migration.load(await locklift.factory.getAccount(), 'DevAccount');
+
+      logger.log(`TokenFactory address: ${tokenFactory.address}`)
     });
 
-    it('Deploy contract', async function() {
-      this.timeout(20000);
-
-      const [keyPair] = await locklift.keys.getKeyPairs();
-
-      account = await locklift.giver.deployContract({
-        contract: Account,
-        constructorParams: {},
-        initParams: {
-          _randomNonce: getRandomNonce(),
-        },
-        keyPair,
-      });
-
-      tokenFactory = await locklift.giver.deployContract({
-        contract: TokenFactory,
-        constructorParams: {
-          storage_code_: TokenFactoryStorage.code,
-          initial_owner: account.address
-        },
-        initParams: {
-          _randomNonce: getRandomNonce(),
-        },
-        keyPair,
-      });
-      logger.log(`TokenFactory address: ${tokenFactory.address}`)
-
+    it('Check deployed contracts', async function () {
       expect(tokenFactory.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
-
-      await account.runTarget({
-        contract: tokenFactory,
-        method: 'setRootCode',
-        params: {root_code_: RootToken.code},
-        keyPair
-      })
-
-      await account.runTarget({
-        contract: tokenFactory,
-        method: 'setWalletCode',
-        params: {wallet_code_: TONTokenWallet.code},
-        keyPair
-      })
-
       expect(await tokenFactory.call({method: 'root_code'}))
         .to
         .equal(RootToken.code, 'Wrong token root code');
       expect(await tokenFactory.call({method: 'wallet_code'}))
         .to
         .equal(TONTokenWallet.code, 'Wrong token wallet code');
+    });
+
+    it('Deploy contracts for tests', async function () {
+      this.timeout(20000);
+
+      const [keyPair] = await locklift.keys.getKeyPairs();
 
       tokenFactoryCreateNewTokenFor = await locklift.giver.deployContract({
         contract: TokenFactoryCreateNewTokenFor,
         constructorParams: {factory: tokenFactory.address},
-        initParams: { _randomNonce: getRandomNonce()},
+        initParams: {_randomNonce: getRandomNonce()},
         keyPair,
       }, locklift.utils.convertCrystal(100, 'nano'));
 
       logger.log(`TokenFactoryCreateNewTokenFor address: ${tokenFactoryCreateNewTokenFor.address}`)
     });
 
-    it('Interact with contract', async function() {
+    it('Interact with contract', async function () {
       this.timeout(200000);
       let tokensToCreate = [
         {
@@ -149,7 +108,7 @@ describe('TokeFactory contract', async function() {
             symbol: stringToBytesArray(tokenData.symbol),
             decimals: tokenData.decimals
           }
-          })
+        })
         await sleep();
         const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
           method: 'getDeployedToken',
