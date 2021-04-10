@@ -190,6 +190,15 @@
 			]
 		},
 		{
+			"name": "liquidityTokenRootNotDeployed",
+			"inputs": [
+				{"name":"value0","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "expectedWalletAddressCallback",
 			"inputs": [
 				{"name":"wallet","type":"address"},

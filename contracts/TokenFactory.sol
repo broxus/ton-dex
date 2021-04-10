@@ -15,7 +15,7 @@ import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interf
 
 contract TokenFactory is ITokenFactory, IUpgradable {
 
-    uint32 static _randomNonce;
+    uint32 static _nonce;
 
     TvmCell public root_code;
     TvmCell public wallet_code;
@@ -44,20 +44,24 @@ contract TokenFactory is ITokenFactory, IUpgradable {
 
     function transferOwner(address new_owner) public override onlyOwner {
         pending_owner = new_owner;
+        returnChange();
     }
 
     function acceptOwner() public override {
         require(msg.sender == pending_owner, TokenFactoryErrors.NOT_PENDING_OWNER);
         owner = pending_owner;
         pending_owner = address(0);
+        returnChange();
     }
 
     function setRootCode(TvmCell root_code_) public override onlyOwner {
         root_code = root_code_;
+        returnChange();
     }
 
     function setWalletCode(TvmCell wallet_code_) public override onlyOwner {
         wallet_code = wallet_code_;
+        returnChange();
     }
 
     function Token(
@@ -178,6 +182,10 @@ contract TokenFactory is ITokenFactory, IUpgradable {
             pubkey: 0,
             code: storage_code
         });
+    }
+
+    function returnChange() private inline view {
+        owner.transfer({value: 0, flag: MsgFlag.REMAINING_GAS});
     }
 
     function upgrade(TvmCell code) public override onlyOwner {

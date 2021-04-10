@@ -136,6 +136,14 @@
 			]
 		},
 		{
+			"name": "platform_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"platform_code","type":"cell"}
+			]
+		},
+		{
 			"name": "lp_token_pending_code",
 			"inputs": [
 			],
@@ -177,7 +185,7 @@
 		}
 	],
 	"data": [
-		{"key":1,"name":"_randomNonce","type":"uint32"}
+		{"key":1,"name":"_nonce","type":"uint32"}
 	],
 	"events": [
 	]

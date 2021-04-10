@@ -1,10 +1,10 @@
-const getRandomNonce = () => Math.random() * 64000 | 0;
+const {getRandomNonce, Migration} = require('../../../../../scripts/utils')
 
 const tonTokenContractsPath = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 async function main() {
-  const account = (await locklift.factory.getAccount())
-  await account.setAddress('');
+  const migration = new Migration();
+  const account = migration.load(await locklift.factory.getAccount(), 'DevAccount');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
@@ -18,13 +18,14 @@ async function main() {
     contract: TokenFactory,
     constructorParams: {
       storage_code_: TokenFactoryStorage.code,
-      initial_owner: locklift.giver.giver.address //todo
+      initial_owner: account.address
     },
     initParams: {
-      _randomNonce: getRandomNonce(),
+      _nonce: getRandomNonce(),
     },
     keyPair,
   });
+  migration.store(tokenFactory, 'TokenFactory');
 
   console.log(`TokenFactory: ${tokenFactory.address}`);
 

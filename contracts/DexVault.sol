@@ -17,9 +17,9 @@ import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interf
 
 contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCallback {
 
-    uint32 static _randomNonce;
+    uint32 static _nonce;
 
-    TvmCell platform_code;
+    TvmCell public platform_code;
     bool has_platform_code;
 
     TvmCell public lp_token_pending_code;
@@ -59,22 +59,28 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     }
 
     function transferOwner(address new_owner) public override onlyOwner {
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         pending_owner = new_owner;
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function acceptOwner() public override {
         require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         owner = pending_owner;
         pending_owner = address(0);
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function setTokenFactory(address new_token_factory) public override onlyOwner {
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         token_factory = new_token_factory;
+        owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function installPlatformOnce(TvmCell code) external onlyOwner {
         require(!has_platform_code, DexErrors.PLATFORM_CODE_NON_EMPTY);
-        tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         platform_code = code;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
@@ -206,12 +212,12 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     function onCodeUpgrade(TvmCell upgrade_data) private {}
 
     function resetGas(address receiver) override external view onlyOwner {
-        tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function resetTargetGas(address target, address receiver) external view onlyOwner {
-        tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IResetGas(target).resetGas{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(receiver);
     }
 
