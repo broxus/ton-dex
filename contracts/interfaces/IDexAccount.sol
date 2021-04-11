@@ -15,6 +15,9 @@ interface IDexAccount {
     function withdraw(
         uint128 amount,
         address token_root,
+        uint256 recipient_public_key,
+        address recipient_address,
+        uint128 deploy_wallet_grams,
         address send_gas_to
     ) external;
 

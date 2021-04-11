@@ -86,6 +86,21 @@ DUP
 ; colValue
 SETGLOB 15
 ; end colValue
+; function returnChange
+;; transfer()
+;; push identifier owner
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 64
+SENDRAWMSG
+; end function returnChange
 ; end function transferOwner
 ; end modifier onlyOwner
 DROP
@@ -133,6 +148,21 @@ PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 ; colValue
 SETGLOB 15
 ; end colValue
+; function returnChange
+;; transfer()
+;; push identifier owner
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 64
+SENDRAWMSG
+; end function returnChange
 ; end function acceptOwner
 
 .macro setRootCode
@@ -178,6 +208,21 @@ DUP
 ; colValue
 SETGLOB 11
 ; end colValue
+; function returnChange
+;; transfer()
+;; push identifier owner
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 64
+SENDRAWMSG
+; end function returnChange
 ; end function setRootCode
 ; end modifier onlyOwner
 DROP
@@ -225,6 +270,21 @@ DUP
 ; colValue
 SETGLOB 12
 ; end colValue
+; function returnChange
+;; transfer()
+;; push identifier owner
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 64
+SENDRAWMSG
+; end function returnChange
 ; end function setWalletCode
 ; end modifier onlyOwner
 DROP
@@ -1416,7 +1476,7 @@ PUSHCONT {
 }
 PUSHCONT {
 	PLDDICT   ; D
-	; init _randomNonce
+	; init _nonce
 	PUSHINT 1
 	PUSH S1
 	PUSHINT 64

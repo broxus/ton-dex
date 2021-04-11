@@ -218,7 +218,7 @@ GETGLOB 14
 ;; push identifier right_root
 GETGLOB 15
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 BLKDROP2 3, 3
 ; end function getTokenRoots
 ;; emitting 3 value(s)
@@ -511,9 +511,9 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 ;; push identifier fee_nominator
-GETGLOB 24
+GETGLOB 26
 ;; push identifier fee_denominator
-GETGLOB 25
+GETGLOB 27
 BLKDROP2 2, 2
 ; end function getFeeParams
 ;; emitting 2 value(s)
@@ -1047,7 +1047,7 @@ PUSHCONT {
 	PUSHCONT {
 		DROP
 		;; push identifier lp_supply
-		GETGLOB 21
+		GETGLOB 23
 		NEQINT 0
 	}
 	IF
@@ -1070,20 +1070,23 @@ GEQ
 ;; decl: notify_cancel
 NEWC
 ENDC
+;; decl: empty
+NEWC
+ENDC
 ;; decl: success_payload
 NEWC
 ENDC
 ;; decl: cancel_payload
 ;; if
 ;; push identifier notify_success
-PUSH S3
+PUSH S4
 PUSHCONT {
 	; expValue
-	PUSH S5
+	PUSH S6
 	; end expValue
 	LDREF
 	; colValue
-	POP S7
+	POP S8
 	; end colValue
 	; expValue
 	; end expValue
@@ -1095,14 +1098,14 @@ IF
 ;; end if
 ;; if
 ;; push identifier notify_cancel
-PUSH S2
+PUSH S3
 PUSHCONT {
 	; expValue
-	PUSH S5
+	PUSH S6
 	; end expValue
 	LDREF
 	; colValue
-	POP S7
+	POP S8
 	; end colValue
 	; expValue
 	; end expValue
@@ -1115,15 +1118,15 @@ IF
 ;; if
 ;; !
 ;; push identifier need_cancel
-PUSH S4
+PUSH S5
 PUSHCONT {
 	; expValue
-	PUSH S5
+	PUSH S6
 	; end expValue
 	LDU 8
 	LDU 128
 	; colValue
-	POP S8
+	POP S9
 	; end colValue
 	SWAP
 	SWAP
@@ -1131,7 +1134,7 @@ PUSHCONT {
 	;; decl: deploy_wallet_grams
 	;; if
 	;; push identifier token_root
-	PUSH S15
+	PUSH S16
 	;; push identifier left_root
 	GETGLOB 14
 	SDEQ
@@ -1140,7 +1143,7 @@ PUSHCONT {
 	PUSHCONT {
 		DROP
 		;; push identifier token_wallet
-		PUSH S16
+		PUSH S17
 		;; push identifier left_wallet
 		GETGLOB 18
 		SDEQ
@@ -1162,7 +1165,7 @@ PUSHCONT {
 					CALL $message_balance_macro$
 				}
 				;; >=
-				PUSHINT 1000000000
+				PUSHINT 2000000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S2
@@ -1185,7 +1188,7 @@ PUSHCONT {
 		PUSHCONT {
 			DROP
 			;; push identifier payloadSlice
-			PUSH S7
+			PUSH S8
 			SBITS
 			;; >=
 			PUSHINT 128
@@ -1194,19 +1197,19 @@ PUSHCONT {
 		IF
 		PUSHCONT {
 			; expValue
-			PUSH S7
+			PUSH S8
 			; end expValue
 			LDU 128
 			; colValue
-			POP S9
+			POP S10
 			; end colValue
 			;; decl: expected_amount
 			;; push identifier tokens_amount
-			PUSH S15
+			PUSH S16
 			;; push identifier left_balance
-			GETGLOB 22
+			GETGLOB 24
 			;; push identifier right_balance
-			GETGLOB 23
+			GETGLOB 25
 			;; param: a_amount
 			;; param: a_pool
 			;; param: b_pool
@@ -1214,9 +1217,9 @@ PUSHCONT {
 			;; push identifier a_amount
 			PUSH S2
 			;; push identifier fee_nominator
-			GETGLOB 24
+			GETGLOB 26
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			MULDIV
 			UFITS 128
 			;; decl: a_fee
@@ -1267,7 +1270,7 @@ PUSHCONT {
 			PUSH S1
 			;; <=
 			;; push identifier right_balance
-			GETGLOB 23
+			GETGLOB 25
 			LEQ
 			;; short-circuiting &&
 			DUP
@@ -1283,28 +1286,28 @@ PUSHCONT {
 			IF
 			PUSHCONT {
 				;; push identifier tokens_amount
-				PUSH S17
+				PUSH S18
 				; expValue
 				;; fetch left_balance
-				GETGLOB 22
+				GETGLOB 24
 				; end expValue
 				SWAP
 				ADD
 				UFITS 128
 				; colValue
-				SETGLOB 22
+				SETGLOB 24
 				; end colValue
 				;; push identifier expected_right_amount
 				PUSH S1
 				; expValue
 				;; fetch right_balance
-				GETGLOB 23
+				GETGLOB 25
 				; end expValue
 				SWAP
 				SUB
 				UFITS 128
 				; colValue
-				SETGLOB 23
+				SETGLOB 25
 				; end colValue
 				;; emit ExchangeLeftToRight
 				NEWC
@@ -1315,7 +1318,7 @@ PUSHCONT {
 				STSLICECONST x2d589b1b
 				;; left
 				;; push identifier tokens_amount
-				PUSH S18
+				PUSH S19
 				STUR 128
 				;; fee
 				;; push identifier expected_left_fee
@@ -1328,54 +1331,81 @@ PUSHCONT {
 				ENDC
 				PUSHINT 0
 				SENDRAWMSG
-				;; Remote call ITONTokenWallet.transferToRecipient
-				;; push identifier right_wallet
-				GETGLOB 19
+				;; Remote call IDexVault.transfer
+				PUSHINT 250000000
+				;; +
+				;; push identifier deploy_wallet_grams
+				PUSH S4
+				ADD
+				UFITS 128
+				;; push identifier vault
+				GETGLOB 11
 				NEWC
 				STSLICECONST x62_
 				STSLICE
-				PUSHINT 109
+				SWAP
+				STGRAMS
+				PUSHINT 105
 				STZEROES
 				STSLICECONST 0
 				STSLICECONST 1
 				NEWC
-				STSLICECONST x3f10d1ab
-				;; recipient_public_key
-				;; push identifier sender_public_key
-				PUSH S18
-				STUR 256
-				;; recipient_address
-				;; push identifier sender_address
-				PUSH S17
-				STSLICER
-				;; tokens
+				STSLICECONST x0635c6a0
+				;; amount
 				;; push identifier expected_right_amount
 				PUSH S3
 				STUR 128
-				;; deploy_grams
-				;; push identifier deploy_wallet_grams
-				PUSH S5
-				STUR 128
-				;; transfer_grams
-				PUSHINT 0
-				STUR 128
-				NEWC
-				;; send_gas_to
-				;; push identifier original_gas_to
-				PUSH S16
+				;; token_root
+				;; push identifier right_root
+				GETGLOB 15
 				STSLICER
+				;; vault_wallet
+				;; push identifier vault_right_wallet
+				GETGLOB 21
+				STSLICER
+				;; recipient_public_key
+				;; push identifier sender_public_key
+				PUSH S19
+				STUR 256
+				NEWC
+				;; recipient_address
+				;; push identifier sender_address
+				PUSH S19
+				STSLICER
+				;; deploy_wallet_grams
+				;; push identifier deploy_wallet_grams
+				PUSH S6
+				STUR 128
 				;; notify_receiver
 				;; push identifier notify_success
-				PUSH S11
+				PUSH S12
 				STIR 1
 				;; payload
 				;; push identifier success_payload
 				PUSH S9
 				STREFR
+				;; left_root
+				;; push identifier left_root
+				GETGLOB 14
+				STSLICER
+				NEWC
+				;; right_root
+				;; push identifier right_root
+				GETGLOB 15
+				STSLICER
+				;; pair_version
+				;; push identifier current_version
+				GETGLOB 12
+				STUR 32
+				;; send_gas_to
+				;; push identifier original_gas_to
+				PUSH S18
+				STSLICER
+				STBREFR
 				STBREFR
 				STBREFR
 				ENDC
-				PUSHINT 128
+				PUSHINT 1
 				SENDRAWMSG
 			}
 			PUSHCONT {
@@ -1383,7 +1413,7 @@ PUSHCONT {
 				; end expValue
 				TRUE
 				; colValue
-				POP S10
+				POP S11
 				; end colValue
 			}
 			IFELSE
@@ -1397,7 +1427,7 @@ PUSHCONT {
 			EQINT 2
 			PUSHCONT {
 				;; push identifier tokens_amount
-				PUSH S14
+				PUSH S15
 				PUSHINT 0
 				TRUE
 				;; param: left_amount
@@ -1407,11 +1437,11 @@ PUSHCONT {
 				;; push identifier left_amount
 				PUSH S2
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				;; push identifier right_amount
 				PUSH S3
 				;; push identifier right_balance
-				GETGLOB 23
+				GETGLOB 25
 				MULDIV
 				UFITS 128
 				MIN
@@ -1419,11 +1449,11 @@ PUSHCONT {
 				;; push identifier right_amount
 				PUSH S2
 				;; push identifier right_balance
-				GETGLOB 23
+				GETGLOB 25
 				;; push identifier left_amount
 				PUSH S5
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				MULDIV
 				UFITS 128
 				MIN
@@ -1431,17 +1461,17 @@ PUSHCONT {
 				;; push identifier step_1_right_deposit
 				DUP
 				;; push identifier lp_supply
-				GETGLOB 21
-				;; push identifier right_balance
 				GETGLOB 23
+				;; push identifier right_balance
+				GETGLOB 25
 				MULDIV
 				UFITS 128
 				;; push identifier step_1_left_deposit
 				PUSH S2
 				;; push identifier lp_supply
-				GETGLOB 21
+				GETGLOB 23
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				MULDIV
 				UFITS 128
 				MAX
@@ -1463,7 +1493,7 @@ PUSHCONT {
 				UFITS 128
 				;; decl: current_right_amount
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				;; +
 				;; push identifier step_1_left_deposit
 				PUSH S5
@@ -1471,7 +1501,7 @@ PUSHCONT {
 				UFITS 128
 				;; decl: current_left_balance
 				;; push identifier right_balance
-				GETGLOB 23
+				GETGLOB 25
 				;; +
 				;; push identifier step_1_right_deposit
 				PUSH S5
@@ -1479,7 +1509,7 @@ PUSHCONT {
 				UFITS 128
 				;; decl: current_right_balance
 				;; push identifier lp_supply
-				GETGLOB 21
+				GETGLOB 23
 				;; +
 				;; push identifier step_1_lp_reward
 				PUSH S5
@@ -1503,10 +1533,10 @@ PUSHCONT {
 				PUSHINT 0
 				;; decl: step_3_lp_reward
 				;; push identifier fee_denominator
-				GETGLOB 25
+				GETGLOB 27
 				;; -
 				;; push identifier fee_nominator
-				GETGLOB 24
+				GETGLOB 26
 				SUB
 				UFITS 16
 				;; uint256
@@ -1536,7 +1566,7 @@ PUSHCONT {
 					PUSH S1
 					;; +
 					;; push identifier fee_denominator
-					GETGLOB 25
+					GETGLOB 27
 					ADD
 					;; push identifier fee_d_minus_n
 					PUSH S2
@@ -1551,7 +1581,7 @@ PUSHCONT {
 					MUL
 					UFITS 128
 					;; push identifier fee_denominator
-					GETGLOB 25
+					GETGLOB 27
 					;; push identifier fee_d_minus_n
 					PUSH S3
 					MULDIV
@@ -1758,9 +1788,9 @@ PUSHCONT {
 					;; push identifier a_amount
 					PUSH S2
 					;; push identifier fee_nominator
-					GETGLOB 24
+					GETGLOB 26
 					;; push identifier fee_denominator
-					GETGLOB 25
+					GETGLOB 27
 					MULDIV
 					UFITS 128
 					;; decl: a_fee
@@ -1892,7 +1922,7 @@ PUSHCONT {
 						PUSH S1
 						;; +
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						ADD
 						;; push identifier fee_d_minus_n
 						PUSH S2
@@ -1907,7 +1937,7 @@ PUSHCONT {
 						MUL
 						UFITS 128
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						;; push identifier fee_d_minus_n
 						PUSH S3
 						MULDIV
@@ -2114,9 +2144,9 @@ PUSHCONT {
 						;; push identifier a_amount
 						PUSH S2
 						;; push identifier fee_nominator
-						GETGLOB 24
+						GETGLOB 26
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						MULDIV
 						UFITS 128
 						;; decl: a_fee
@@ -2269,7 +2299,7 @@ PUSHCONT {
 					; expValue
 					; end expValue
 					;; push identifier lp_supply
-					GETGLOB 21
+					GETGLOB 23
 					;; +
 					;; get member step_3_lp_reward
 					;; push identifier r
@@ -2278,19 +2308,19 @@ PUSHCONT {
 					ADD
 					UFITS 128
 					; colValue
-					SETGLOB 21
+					SETGLOB 23
 					; end colValue
 					;; push identifier tokens_amount
-					PUSH S15
+					PUSH S16
 					; expValue
 					;; fetch left_balance
-					GETGLOB 22
+					GETGLOB 24
 					; end expValue
 					SWAP
 					ADD
 					UFITS 128
 					; colValue
-					SETGLOB 22
+					SETGLOB 24
 					; end colValue
 					;; emit ExchangeLeftToRight
 					NEWC
@@ -2349,12 +2379,20 @@ PUSHCONT {
 					PUSHINT 0
 					SENDRAWMSG
 					;; Remote call IRootTokenContract.deployWallet
+					PUSHINT 100000000
+					;; +
+					;; push identifier deploy_wallet_grams
+					PUSH S2
+					ADD
+					UFITS 128
 					;; push identifier lp_root
-					GETGLOB 20
+					GETGLOB 22
 					NEWC
 					STSLICECONST x62_
 					STSLICE
-					PUSHINT 109
+					SWAP
+					STGRAMS
+					PUSHINT 105
 					STZEROES
 					STSLICECONST 0
 					STSLICECONST 1
@@ -2372,21 +2410,21 @@ PUSHCONT {
 					STUR 128
 					;; wallet_public_key
 					;; push identifier sender_public_key
-					PUSH S16
+					PUSH S17
 					STUR 256
 					;; owner_address
 					;; push identifier sender_address
-					PUSH S15
+					PUSH S16
 					STSLICER
 					NEWC
 					;; gas_back_address
 					;; push identifier original_gas_to
-					PUSH S14
+					PUSH S15
 					STSLICER
 					STBREFR
 					STBREFR
 					ENDC
-					PUSHINT 128
+					PUSHINT 1
 					SENDRAWMSG
 				}
 				PUSHCONT {
@@ -2394,7 +2432,7 @@ PUSHCONT {
 					; end expValue
 					TRUE
 					; colValue
-					POP S8
+					POP S9
 					; end colValue
 				}
 				IFELSE
@@ -2406,7 +2444,7 @@ PUSHCONT {
 				; end expValue
 				TRUE
 				; colValue
-				POP S7
+				POP S8
 				; end colValue
 			}
 			IFELSE
@@ -2418,7 +2456,7 @@ PUSHCONT {
 	PUSHCONT {
 		;; if
 		;; push identifier token_root
-		PUSH S15
+		PUSH S16
 		;; push identifier right_root
 		GETGLOB 15
 		SDEQ
@@ -2427,7 +2465,7 @@ PUSHCONT {
 		PUSHCONT {
 			DROP
 			;; push identifier token_wallet
-			PUSH S16
+			PUSH S17
 			;; push identifier right_wallet
 			GETGLOB 19
 			SDEQ
@@ -2449,7 +2487,7 @@ PUSHCONT {
 						CALL $message_balance_macro$
 					}
 					;; >=
-					PUSHINT 1000000000
+					PUSHINT 2000000000
 					;; +
 					;; push identifier deploy_wallet_grams
 					PUSH S2
@@ -2472,7 +2510,7 @@ PUSHCONT {
 			PUSHCONT {
 				DROP
 				;; push identifier payloadSlice
-				PUSH S7
+				PUSH S8
 				SBITS
 				;; >=
 				PUSHINT 128
@@ -2481,19 +2519,19 @@ PUSHCONT {
 			IF
 			PUSHCONT {
 				; expValue
-				PUSH S7
+				PUSH S8
 				; end expValue
 				LDU 128
 				; colValue
-				POP S9
+				POP S10
 				; end colValue
 				;; decl: expected_amount
 				;; push identifier tokens_amount
-				PUSH S15
+				PUSH S16
 				;; push identifier right_balance
-				GETGLOB 23
+				GETGLOB 25
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				;; param: a_amount
 				;; param: a_pool
 				;; param: b_pool
@@ -2501,9 +2539,9 @@ PUSHCONT {
 				;; push identifier a_amount
 				PUSH S2
 				;; push identifier fee_nominator
-				GETGLOB 24
+				GETGLOB 26
 				;; push identifier fee_denominator
-				GETGLOB 25
+				GETGLOB 27
 				MULDIV
 				UFITS 128
 				;; decl: a_fee
@@ -2554,7 +2592,7 @@ PUSHCONT {
 				PUSH S1
 				;; <=
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				LEQ
 				;; short-circuiting &&
 				DUP
@@ -2570,28 +2608,28 @@ PUSHCONT {
 				IF
 				PUSHCONT {
 					;; push identifier tokens_amount
-					PUSH S17
+					PUSH S18
 					; expValue
 					;; fetch right_balance
-					GETGLOB 23
+					GETGLOB 25
 					; end expValue
 					SWAP
 					ADD
 					UFITS 128
 					; colValue
-					SETGLOB 23
+					SETGLOB 25
 					; end colValue
 					;; push identifier expected_left_amount
 					PUSH S1
 					; expValue
 					;; fetch left_balance
-					GETGLOB 22
+					GETGLOB 24
 					; end expValue
 					SWAP
 					SUB
 					UFITS 128
 					; colValue
-					SETGLOB 22
+					SETGLOB 24
 					; end colValue
 					;; emit ExchangeRightToLeft
 					NEWC
@@ -2602,7 +2640,7 @@ PUSHCONT {
 					STSLICECONST x1f2c7e24
 					;; right
 					;; push identifier tokens_amount
-					PUSH S18
+					PUSH S19
 					STUR 128
 					;; fee
 					;; push identifier expected_right_fee
@@ -2615,54 +2653,81 @@ PUSHCONT {
 					ENDC
 					PUSHINT 0
 					SENDRAWMSG
-					;; Remote call ITONTokenWallet.transferToRecipient
-					;; push identifier left_wallet
-					GETGLOB 18
+					;; Remote call IDexVault.transfer
+					PUSHINT 250000000
+					;; +
+					;; push identifier deploy_wallet_grams
+					PUSH S4
+					ADD
+					UFITS 128
+					;; push identifier vault
+					GETGLOB 11
 					NEWC
 					STSLICECONST x62_
 					STSLICE
-					PUSHINT 109
+					SWAP
+					STGRAMS
+					PUSHINT 105
 					STZEROES
 					STSLICECONST 0
 					STSLICECONST 1
 					NEWC
-					STSLICECONST x3f10d1ab
-					;; recipient_public_key
-					;; push identifier sender_public_key
-					PUSH S18
-					STUR 256
-					;; recipient_address
-					;; push identifier sender_address
-					PUSH S17
-					STSLICER
-					;; tokens
+					STSLICECONST x0635c6a0
+					;; amount
 					;; push identifier expected_left_amount
 					PUSH S3
 					STUR 128
-					;; deploy_grams
-					;; push identifier deploy_wallet_grams
-					PUSH S5
-					STUR 128
-					;; transfer_grams
-					PUSHINT 0
-					STUR 128
-					NEWC
-					;; send_gas_to
-					;; push identifier original_gas_to
-					PUSH S16
+					;; token_root
+					;; push identifier left_root
+					GETGLOB 14
 					STSLICER
+					;; vault_wallet
+					;; push identifier vault_left_wallet
+					GETGLOB 20
+					STSLICER
+					;; recipient_public_key
+					;; push identifier sender_public_key
+					PUSH S19
+					STUR 256
+					NEWC
+					;; recipient_address
+					;; push identifier sender_address
+					PUSH S19
+					STSLICER
+					;; deploy_wallet_grams
+					;; push identifier deploy_wallet_grams
+					PUSH S6
+					STUR 128
 					;; notify_receiver
 					;; push identifier notify_success
-					PUSH S11
+					PUSH S12
 					STIR 1
 					;; payload
 					;; push identifier success_payload
 					PUSH S9
 					STREFR
+					;; left_root
+					;; push identifier left_root
+					GETGLOB 14
+					STSLICER
+					NEWC
+					;; right_root
+					;; push identifier right_root
+					GETGLOB 15
+					STSLICER
+					;; pair_version
+					;; push identifier current_version
+					GETGLOB 12
+					STUR 32
+					;; send_gas_to
+					;; push identifier original_gas_to
+					PUSH S18
+					STSLICER
+					STBREFR
 					STBREFR
 					STBREFR
 					ENDC
-					PUSHINT 128
+					PUSHINT 1
 					SENDRAWMSG
 				}
 				PUSHCONT {
@@ -2670,7 +2735,7 @@ PUSHCONT {
 					; end expValue
 					TRUE
 					; colValue
-					POP S10
+					POP S11
 					; end colValue
 				}
 				IFELSE
@@ -2685,7 +2750,7 @@ PUSHCONT {
 				PUSHCONT {
 					PUSHINT 0
 					;; push identifier tokens_amount
-					PUSH S15
+					PUSH S16
 					TRUE
 					;; param: left_amount
 					;; param: right_amount
@@ -2694,11 +2759,11 @@ PUSHCONT {
 					;; push identifier left_amount
 					PUSH S2
 					;; push identifier left_balance
-					GETGLOB 22
+					GETGLOB 24
 					;; push identifier right_amount
 					PUSH S3
 					;; push identifier right_balance
-					GETGLOB 23
+					GETGLOB 25
 					MULDIV
 					UFITS 128
 					MIN
@@ -2706,11 +2771,11 @@ PUSHCONT {
 					;; push identifier right_amount
 					PUSH S2
 					;; push identifier right_balance
-					GETGLOB 23
+					GETGLOB 25
 					;; push identifier left_amount
 					PUSH S5
 					;; push identifier left_balance
-					GETGLOB 22
+					GETGLOB 24
 					MULDIV
 					UFITS 128
 					MIN
@@ -2718,17 +2783,17 @@ PUSHCONT {
 					;; push identifier step_1_right_deposit
 					DUP
 					;; push identifier lp_supply
-					GETGLOB 21
-					;; push identifier right_balance
 					GETGLOB 23
+					;; push identifier right_balance
+					GETGLOB 25
 					MULDIV
 					UFITS 128
 					;; push identifier step_1_left_deposit
 					PUSH S2
 					;; push identifier lp_supply
-					GETGLOB 21
+					GETGLOB 23
 					;; push identifier left_balance
-					GETGLOB 22
+					GETGLOB 24
 					MULDIV
 					UFITS 128
 					MAX
@@ -2750,7 +2815,7 @@ PUSHCONT {
 					UFITS 128
 					;; decl: current_right_amount
 					;; push identifier left_balance
-					GETGLOB 22
+					GETGLOB 24
 					;; +
 					;; push identifier step_1_left_deposit
 					PUSH S5
@@ -2758,7 +2823,7 @@ PUSHCONT {
 					UFITS 128
 					;; decl: current_left_balance
 					;; push identifier right_balance
-					GETGLOB 23
+					GETGLOB 25
 					;; +
 					;; push identifier step_1_right_deposit
 					PUSH S5
@@ -2766,7 +2831,7 @@ PUSHCONT {
 					UFITS 128
 					;; decl: current_right_balance
 					;; push identifier lp_supply
-					GETGLOB 21
+					GETGLOB 23
 					;; +
 					;; push identifier step_1_lp_reward
 					PUSH S5
@@ -2790,10 +2855,10 @@ PUSHCONT {
 					PUSHINT 0
 					;; decl: step_3_lp_reward
 					;; push identifier fee_denominator
-					GETGLOB 25
+					GETGLOB 27
 					;; -
 					;; push identifier fee_nominator
-					GETGLOB 24
+					GETGLOB 26
 					SUB
 					UFITS 16
 					;; uint256
@@ -2823,7 +2888,7 @@ PUSHCONT {
 						PUSH S1
 						;; +
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						ADD
 						;; push identifier fee_d_minus_n
 						PUSH S2
@@ -2838,7 +2903,7 @@ PUSHCONT {
 						MUL
 						UFITS 128
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						;; push identifier fee_d_minus_n
 						PUSH S3
 						MULDIV
@@ -3045,9 +3110,9 @@ PUSHCONT {
 						;; push identifier a_amount
 						PUSH S2
 						;; push identifier fee_nominator
-						GETGLOB 24
+						GETGLOB 26
 						;; push identifier fee_denominator
-						GETGLOB 25
+						GETGLOB 27
 						MULDIV
 						UFITS 128
 						;; decl: a_fee
@@ -3179,7 +3244,7 @@ PUSHCONT {
 							PUSH S1
 							;; +
 							;; push identifier fee_denominator
-							GETGLOB 25
+							GETGLOB 27
 							ADD
 							;; push identifier fee_d_minus_n
 							PUSH S2
@@ -3194,7 +3259,7 @@ PUSHCONT {
 							MUL
 							UFITS 128
 							;; push identifier fee_denominator
-							GETGLOB 25
+							GETGLOB 27
 							;; push identifier fee_d_minus_n
 							PUSH S3
 							MULDIV
@@ -3401,9 +3466,9 @@ PUSHCONT {
 							;; push identifier a_amount
 							PUSH S2
 							;; push identifier fee_nominator
-							GETGLOB 24
+							GETGLOB 26
 							;; push identifier fee_denominator
-							GETGLOB 25
+							GETGLOB 27
 							MULDIV
 							UFITS 128
 							;; decl: a_fee
@@ -3556,7 +3621,7 @@ PUSHCONT {
 						; expValue
 						; end expValue
 						;; push identifier lp_supply
-						GETGLOB 21
+						GETGLOB 23
 						;; +
 						;; get member step_3_lp_reward
 						;; push identifier r
@@ -3565,19 +3630,19 @@ PUSHCONT {
 						ADD
 						UFITS 128
 						; colValue
-						SETGLOB 21
+						SETGLOB 23
 						; end colValue
 						;; push identifier tokens_amount
-						PUSH S15
+						PUSH S16
 						; expValue
 						;; fetch right_balance
-						GETGLOB 23
+						GETGLOB 25
 						; end expValue
 						SWAP
 						ADD
 						UFITS 128
 						; colValue
-						SETGLOB 23
+						SETGLOB 25
 						; end colValue
 						;; emit ExchangeRightToLeft
 						NEWC
@@ -3636,12 +3701,20 @@ PUSHCONT {
 						PUSHINT 0
 						SENDRAWMSG
 						;; Remote call IRootTokenContract.deployWallet
+						PUSHINT 100000000
+						;; +
+						;; push identifier deploy_wallet_grams
+						PUSH S2
+						ADD
+						UFITS 128
 						;; push identifier lp_root
-						GETGLOB 20
+						GETGLOB 22
 						NEWC
 						STSLICECONST x62_
 						STSLICE
-						PUSHINT 109
+						SWAP
+						STGRAMS
+						PUSHINT 105
 						STZEROES
 						STSLICECONST 0
 						STSLICECONST 1
@@ -3659,21 +3732,21 @@ PUSHCONT {
 						STUR 128
 						;; wallet_public_key
 						;; push identifier sender_public_key
-						PUSH S16
+						PUSH S17
 						STUR 256
 						;; owner_address
 						;; push identifier sender_address
-						PUSH S15
+						PUSH S16
 						STSLICER
 						NEWC
 						;; gas_back_address
 						;; push identifier original_gas_to
-						PUSH S14
+						PUSH S15
 						STSLICER
 						STBREFR
 						STBREFR
 						ENDC
-						PUSHINT 128
+						PUSHINT 1
 						SENDRAWMSG
 					}
 					PUSHCONT {
@@ -3681,7 +3754,7 @@ PUSHCONT {
 						; end expValue
 						TRUE
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 					}
 					IFELSE
@@ -3693,7 +3766,7 @@ PUSHCONT {
 					; end expValue
 					TRUE
 					; colValue
-					POP S7
+					POP S8
 					; end colValue
 				}
 				IFELSE
@@ -3712,16 +3785,16 @@ PUSHCONT {
 			PUSHCONT {
 				DROP
 				;; push identifier token_root
-				PUSH S15
+				PUSH S16
 				;; push identifier lp_root
-				GETGLOB 20
+				GETGLOB 22
 				SDEQ
 				;; short-circuiting &&
 				DUP
 				PUSHCONT {
 					DROP
 					;; push identifier token_wallet
-					PUSH S16
+					PUSH S17
 					;; push identifier lp_wallet
 					GETGLOB 17
 					SDEQ
@@ -3743,7 +3816,7 @@ PUSHCONT {
 								CALL $message_balance_macro$
 							}
 							;; >=
-							PUSHINT 1000000000
+							PUSHINT 2000000000
 							;; +
 							PUSHINT 2
 							;; *
@@ -3764,20 +3837,20 @@ PUSHCONT {
 			IF
 			PUSHCONT {
 				;; push identifier left_balance
-				GETGLOB 22
+				GETGLOB 24
 				;; push identifier tokens_amount
-				PUSH S15
+				PUSH S16
 				;; push identifier lp_supply
-				GETGLOB 21
+				GETGLOB 23
 				MULDIV
 				UFITS 128
 				;; decl: left_back_amount
 				;; push identifier right_balance
-				GETGLOB 23
+				GETGLOB 25
 				;; push identifier tokens_amount
-				PUSH S16
+				PUSH S17
 				;; push identifier lp_supply
-				GETGLOB 21
+				GETGLOB 23
 				MULDIV
 				UFITS 128
 				;; decl: right_back_amount
@@ -3785,18 +3858,30 @@ PUSHCONT {
 				PUSH S1
 				; expValue
 				;; fetch left_balance
-				GETGLOB 22
+				GETGLOB 24
 				; end expValue
 				SWAP
 				SUB
 				UFITS 128
 				; colValue
-				SETGLOB 22
+				SETGLOB 24
 				; end colValue
 				;; push identifier right_back_amount
 				DUP
 				; expValue
 				;; fetch right_balance
+				GETGLOB 25
+				; end expValue
+				SWAP
+				SUB
+				UFITS 128
+				; colValue
+				SETGLOB 25
+				; end colValue
+				;; push identifier tokens_amount
+				PUSH S17
+				; expValue
+				;; fetch lp_supply
 				GETGLOB 23
 				; end expValue
 				SWAP
@@ -3804,18 +3889,6 @@ PUSHCONT {
 				UFITS 128
 				; colValue
 				SETGLOB 23
-				; end colValue
-				;; push identifier tokens_amount
-				PUSH S16
-				; expValue
-				;; fetch lp_supply
-				GETGLOB 21
-				; end expValue
-				SWAP
-				SUB
-				UFITS 128
-				; colValue
-				SETGLOB 21
 				; end colValue
 				;; emit WithdrawLiquidity
 				NEWC
@@ -3826,7 +3899,7 @@ PUSHCONT {
 				STSLICECONST x0246b540
 				;; lp
 				;; push identifier tokens_amount
-				PUSH S17
+				PUSH S18
 				STUR 128
 				;; left
 				;; push identifier left_back_amount
@@ -3839,15 +3912,15 @@ PUSHCONT {
 				ENDC
 				PUSHINT 0
 				SENDRAWMSG
-				;; Remote call ITONTokenWallet.transferToRecipient
-				PUSHINT 200000000
+				;; Remote call IDexVault.transfer
+				PUSHINT 250000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S3
 				ADD
 				UFITS 128
-				;; push identifier left_wallet
-				GETGLOB 18
+				;; push identifier vault
+				GETGLOB 11
 				NEWC
 				STSLICECONST x62_
 				STSLICE
@@ -3858,53 +3931,72 @@ PUSHCONT {
 				STSLICECONST 0
 				STSLICECONST 1
 				NEWC
-				STSLICECONST x3f10d1ab
-				;; recipient_public_key
-				;; push identifier sender_public_key
-				PUSH S17
-				STUR 256
-				;; recipient_address
-				;; push identifier sender_address
-				PUSH S16
-				STSLICER
-				;; tokens
+				STSLICECONST x0635c6a0
+				;; amount
 				;; push identifier left_back_amount
 				PUSH S3
 				STUR 128
-				;; deploy_grams
-				;; push identifier deploy_wallet_grams
-				PUSH S4
-				STUR 128
-				;; transfer_grams
-				PUSHINT 0
-				STUR 128
-				NEWC
-				;; send_gas_to
-				;; push identifier original_gas_to
-				PUSH S15
+				;; token_root
+				;; push identifier left_root
+				GETGLOB 14
 				STSLICER
+				;; vault_wallet
+				;; push identifier vault_left_wallet
+				GETGLOB 20
+				STSLICER
+				;; recipient_public_key
+				;; push identifier sender_public_key
+				PUSH S18
+				STUR 256
+				NEWC
+				;; recipient_address
+				;; push identifier sender_address
+				PUSH S18
+				STSLICER
+				;; deploy_wallet_grams
+				;; push identifier deploy_wallet_grams
+				PUSH S5
+				STUR 128
 				;; notify_receiver
 				;; push identifier notify_success
-				PUSH S10
+				PUSH S11
 				STIR 1
 				;; payload
 				;; push identifier success_payload
 				PUSH S8
 				STREFR
+				;; left_root
+				;; push identifier left_root
+				GETGLOB 14
+				STSLICER
+				NEWC
+				;; right_root
+				;; push identifier right_root
+				GETGLOB 15
+				STSLICER
+				;; pair_version
+				;; push identifier current_version
+				GETGLOB 12
+				STUR 32
+				;; send_gas_to
+				;; push identifier original_gas_to
+				PUSH S17
+				STSLICER
+				STBREFR
 				STBREFR
 				STBREFR
 				ENDC
 				PUSHINT 1
 				SENDRAWMSG
-				;; Remote call ITONTokenWallet.transferToRecipient
-				PUSHINT 200000000
+				;; Remote call IDexVault.transfer
+				PUSHINT 250000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S3
 				ADD
 				UFITS 128
-				;; push identifier right_wallet
-				GETGLOB 19
+				;; push identifier vault
+				GETGLOB 11
 				NEWC
 				STSLICECONST x62_
 				STSLICE
@@ -3915,55 +4007,71 @@ PUSHCONT {
 				STSLICECONST 0
 				STSLICECONST 1
 				NEWC
-				STSLICECONST x3f10d1ab
-				;; recipient_public_key
-				;; push identifier sender_public_key
-				PUSH S17
-				STUR 256
-				;; recipient_address
-				;; push identifier sender_address
-				PUSH S16
-				STSLICER
-				;; tokens
+				STSLICECONST x0635c6a0
+				;; amount
 				;; push identifier right_back_amount
 				PUSH S2
 				STUR 128
-				;; deploy_grams
-				;; push identifier deploy_wallet_grams
-				PUSH S4
-				STUR 128
-				;; transfer_grams
-				PUSHINT 0
-				STUR 128
-				NEWC
-				;; send_gas_to
-				;; push identifier original_gas_to
-				PUSH S15
+				;; token_root
+				;; push identifier right_root
+				GETGLOB 15
 				STSLICER
+				;; vault_wallet
+				;; push identifier vault_right_wallet
+				GETGLOB 21
+				STSLICER
+				;; recipient_public_key
+				;; push identifier sender_public_key
+				PUSH S18
+				STUR 256
+				NEWC
+				;; recipient_address
+				;; push identifier sender_address
+				PUSH S18
+				STSLICER
+				;; deploy_wallet_grams
+				;; push identifier deploy_wallet_grams
+				PUSH S5
+				STUR 128
 				;; notify_receiver
 				;; push identifier notify_success
-				PUSH S10
+				PUSH S11
 				STIR 1
 				;; payload
 				;; push identifier success_payload
 				PUSH S8
 				STREFR
+				;; left_root
+				;; push identifier left_root
+				GETGLOB 14
+				STSLICER
+				NEWC
+				;; right_root
+				;; push identifier right_root
+				GETGLOB 15
+				STSLICER
+				;; pair_version
+				;; push identifier current_version
+				GETGLOB 12
+				STUR 32
+				;; send_gas_to
+				;; push identifier original_gas_to
+				PUSH S17
+				STSLICER
+				STBREFR
 				STBREFR
 				STBREFR
 				ENDC
 				PUSHINT 1
 				SENDRAWMSG
-				NEWC
-				ENDC
-				;; decl: empty
 				;; Remote call IBurnableByOwnerTokenWallet.burnByOwner
 				;; push identifier lp_wallet
 				GETGLOB 17
 				NEWC
 				STSLICECONST x62_
 				STSLICE
-				PUSHINT 109
-				STZEROES
+				PUSHSLICE x405f5e100000000000000000000000000004_
+				STSLICER
 				STSLICECONST 0
 				STSLICECONST 1
 				NEWC
@@ -3985,20 +4093,20 @@ PUSHCONT {
 				STSLICER
 				;; callback_payload
 				;; push identifier empty
-				PUSH S2
+				PUSH S8
 				STREFR
 				STBREFR
 				ENDC
-				PUSHINT 128
+				PUSHINT 1
 				SENDRAWMSG
-				BLKDROP 3
+				DROP2
 			}
 			PUSHCONT {
 				; expValue
 				; end expValue
 				TRUE
 				; colValue
-				POP S7
+				POP S8
 				; end colValue
 			}
 			IFELSE
@@ -4015,11 +4123,11 @@ IFNOT
 ;; end if
 ;; if
 ;; push identifier need_cancel
-PUSH S4
+PUSH S5
 PUSHCONT {
 	;; Remote call ITONTokenWallet.transfer
 	;; push identifier token_wallet
-	PUSH S14
+	PUSH S15
 	NEWC
 	STSLICECONST x62_
 	STSLICE
@@ -4031,22 +4139,22 @@ PUSHCONT {
 	STSLICECONST x4bf160e2
 	;; to
 	;; push identifier sender_wallet
-	PUSH S11
+	PUSH S12
 	STSLICER
 	;; tokens
 	;; push identifier tokens_amount
-	PUSH S14
+	PUSH S15
 	STUR 128
 	;; grams
 	PUSHINT 0
 	STUR 128
 	;; send_gas_to
 	;; push identifier original_gas_to
-	PUSH S10
+	PUSH S11
 	STSLICER
 	;; notify_receiver
 	;; push identifier notify_cancel
-	PUSH S4
+	PUSH S5
 	STIR 1
 	;; payload
 	;; push identifier cancel_payload
@@ -4057,9 +4165,57 @@ PUSHCONT {
 	PUSHINT 128
 	SENDRAWMSG
 }
-IF
+PUSHCONT {
+	;; Remote call ITONTokenWallet.transferToRecipient
+	;; push identifier token_wallet
+	PUSH S15
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHINT 109
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST x3f10d1ab
+	;; recipient_public_key
+	PUSHINT 0
+	STUR 256
+	;; recipient_address
+	;; push identifier vault
+	GETGLOB 11
+	STSLICER
+	;; tokens
+	;; push identifier tokens_amount
+	PUSH S15
+	STUR 128
+	;; deploy_grams
+	PUSHINT 0
+	STUR 128
+	;; transfer_grams
+	PUSHINT 0
+	STUR 128
+	NEWC
+	;; send_gas_to
+	;; push identifier original_gas_to
+	PUSH S12
+	STSLICER
+	;; notify_receiver
+	FALSE
+	STIR 1
+	;; payload
+	;; push identifier empty
+	PUSH S5
+	STREFR
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+}
+IFELSE
 ;; end if
-BLKDROP 6
+BLKDROP 7
 ; end function tokensReceivedCallback
 BLKDROP 9
 CALLREF {
@@ -4132,7 +4288,7 @@ TUPLE 11
 PUSHCONT {
 	;; if
 	;; push identifier lp_supply
-	GETGLOB 21
+	GETGLOB 23
 	EQINT 0
 	PUSHCONT {
 		;; return
@@ -4184,11 +4340,11 @@ PUSHCONT {
 		;; push identifier left_amount
 		PUSH S2
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; push identifier right_amount
 		PUSH S3
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		MULDIV
 		UFITS 128
 		MIN
@@ -4196,11 +4352,11 @@ PUSHCONT {
 		;; push identifier right_amount
 		PUSH S2
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; push identifier left_amount
 		PUSH S5
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		MULDIV
 		UFITS 128
 		MIN
@@ -4208,17 +4364,17 @@ PUSHCONT {
 		;; push identifier step_1_right_deposit
 		DUP
 		;; push identifier lp_supply
-		GETGLOB 21
-		;; push identifier right_balance
 		GETGLOB 23
+		;; push identifier right_balance
+		GETGLOB 25
 		MULDIV
 		UFITS 128
 		;; push identifier step_1_left_deposit
 		PUSH S2
 		;; push identifier lp_supply
-		GETGLOB 21
+		GETGLOB 23
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		MULDIV
 		UFITS 128
 		MAX
@@ -4240,7 +4396,7 @@ PUSHCONT {
 		UFITS 128
 		;; decl: current_right_amount
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; +
 		;; push identifier step_1_left_deposit
 		PUSH S5
@@ -4248,7 +4404,7 @@ PUSHCONT {
 		UFITS 128
 		;; decl: current_left_balance
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; +
 		;; push identifier step_1_right_deposit
 		PUSH S5
@@ -4256,7 +4412,7 @@ PUSHCONT {
 		UFITS 128
 		;; decl: current_right_balance
 		;; push identifier lp_supply
-		GETGLOB 21
+		GETGLOB 23
 		;; +
 		;; push identifier step_1_lp_reward
 		PUSH S5
@@ -4280,10 +4436,10 @@ PUSHCONT {
 		PUSHINT 0
 		;; decl: step_3_lp_reward
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		;; -
 		;; push identifier fee_nominator
-		GETGLOB 24
+		GETGLOB 26
 		SUB
 		UFITS 16
 		;; uint256
@@ -4313,7 +4469,7 @@ PUSHCONT {
 			PUSH S1
 			;; +
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			ADD
 			;; push identifier fee_d_minus_n
 			PUSH S2
@@ -4328,7 +4484,7 @@ PUSHCONT {
 			MUL
 			UFITS 128
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			;; push identifier fee_d_minus_n
 			PUSH S3
 			MULDIV
@@ -4535,9 +4691,9 @@ PUSHCONT {
 			;; push identifier a_amount
 			PUSH S2
 			;; push identifier fee_nominator
-			GETGLOB 24
+			GETGLOB 26
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			MULDIV
 			UFITS 128
 			;; decl: a_fee
@@ -4669,7 +4825,7 @@ PUSHCONT {
 				PUSH S1
 				;; +
 				;; push identifier fee_denominator
-				GETGLOB 25
+				GETGLOB 27
 				ADD
 				;; push identifier fee_d_minus_n
 				PUSH S2
@@ -4684,7 +4840,7 @@ PUSHCONT {
 				MUL
 				UFITS 128
 				;; push identifier fee_denominator
-				GETGLOB 25
+				GETGLOB 27
 				;; push identifier fee_d_minus_n
 				PUSH S3
 				MULDIV
@@ -4891,9 +5047,9 @@ PUSHCONT {
 				;; push identifier a_amount
 				PUSH S2
 				;; push identifier fee_nominator
-				GETGLOB 24
+				GETGLOB 26
 				;; push identifier fee_denominator
-				GETGLOB 25
+				GETGLOB 27
 				MULDIV
 				UFITS 128
 				;; decl: a_fee
@@ -5332,6 +5488,63 @@ PUSH S1
 SDEQ
 THROWIFNOT 105
 ; function depositLiquidity
+;; push identifier lp_supply
+GETGLOB 23
+NEQINT 0
+;; short-circuiting ||
+DUP
+PUSHCONT {
+	DROP
+	;; push identifier left_amount
+	PUSH S7
+	GTINT 0
+	;; short-circuiting &&
+	DUP
+	PUSHCONT {
+		DROP
+		;; push identifier right_amount
+		PUSH S6
+		GTINT 0
+	}
+	IF
+}
+IFNOT
+THROWIFNOT 127
+;; push identifier left_amount
+PUSH S7
+GTINT 0
+;; short-circuiting &&
+DUP
+PUSHCONT {
+	DROP
+	;; push identifier right_amount
+	PUSH S6
+	GTINT 0
+}
+IF
+;; short-circuiting ||
+DUP
+PUSHCONT {
+	DROP
+	;; push identifier auto_change
+	PUSH S5
+	;; short-circuiting &&
+	DUP
+	PUSHCONT {
+		DROP
+		;; push identifier left_amount
+		PUSH S7
+		;; +
+		;; push identifier right_amount
+		PUSH S7
+		ADD
+		UFITS 128
+		GTINT 0
+	}
+	IF
+}
+IFNOT
+THROWIFNOT 116
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
@@ -5339,7 +5552,7 @@ PUSHINT 0
 ;; decl: lp_tokens_amount
 ;; if
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 EQINT 0
 PUSHCONT {
 	; expValue
@@ -5353,14 +5566,14 @@ PUSHCONT {
 	;; push identifier left_amount
 	PUSH S8
 	; colValue
-	SETGLOB 22
+	SETGLOB 24
 	; end colValue
 	; expValue
 	; end expValue
 	;; push identifier right_amount
 	PUSH S7
 	; colValue
-	SETGLOB 23
+	SETGLOB 25
 	; end colValue
 	;; emit DepositLiquidity
 	NEWC
@@ -5399,11 +5612,11 @@ PUSHCONT {
 	;; push identifier left_amount
 	PUSH S2
 	;; push identifier left_balance
-	GETGLOB 22
+	GETGLOB 24
 	;; push identifier right_amount
 	PUSH S3
 	;; push identifier right_balance
-	GETGLOB 23
+	GETGLOB 25
 	MULDIV
 	UFITS 128
 	MIN
@@ -5411,11 +5624,11 @@ PUSHCONT {
 	;; push identifier right_amount
 	PUSH S2
 	;; push identifier right_balance
-	GETGLOB 23
+	GETGLOB 25
 	;; push identifier left_amount
 	PUSH S5
 	;; push identifier left_balance
-	GETGLOB 22
+	GETGLOB 24
 	MULDIV
 	UFITS 128
 	MIN
@@ -5423,17 +5636,17 @@ PUSHCONT {
 	;; push identifier step_1_right_deposit
 	DUP
 	;; push identifier lp_supply
-	GETGLOB 21
-	;; push identifier right_balance
 	GETGLOB 23
+	;; push identifier right_balance
+	GETGLOB 25
 	MULDIV
 	UFITS 128
 	;; push identifier step_1_left_deposit
 	PUSH S2
 	;; push identifier lp_supply
-	GETGLOB 21
+	GETGLOB 23
 	;; push identifier left_balance
-	GETGLOB 22
+	GETGLOB 24
 	MULDIV
 	UFITS 128
 	MAX
@@ -5455,7 +5668,7 @@ PUSHCONT {
 	UFITS 128
 	;; decl: current_right_amount
 	;; push identifier left_balance
-	GETGLOB 22
+	GETGLOB 24
 	;; +
 	;; push identifier step_1_left_deposit
 	PUSH S5
@@ -5463,7 +5676,7 @@ PUSHCONT {
 	UFITS 128
 	;; decl: current_left_balance
 	;; push identifier right_balance
-	GETGLOB 23
+	GETGLOB 25
 	;; +
 	;; push identifier step_1_right_deposit
 	PUSH S5
@@ -5471,7 +5684,7 @@ PUSHCONT {
 	UFITS 128
 	;; decl: current_right_balance
 	;; push identifier lp_supply
-	GETGLOB 21
+	GETGLOB 23
 	;; +
 	;; push identifier step_1_lp_reward
 	PUSH S5
@@ -5495,10 +5708,10 @@ PUSHCONT {
 	PUSHINT 0
 	;; decl: step_3_lp_reward
 	;; push identifier fee_denominator
-	GETGLOB 25
+	GETGLOB 27
 	;; -
 	;; push identifier fee_nominator
-	GETGLOB 24
+	GETGLOB 26
 	SUB
 	UFITS 16
 	;; uint256
@@ -5528,7 +5741,7 @@ PUSHCONT {
 		PUSH S1
 		;; +
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		ADD
 		;; push identifier fee_d_minus_n
 		PUSH S2
@@ -5543,7 +5756,7 @@ PUSHCONT {
 		MUL
 		UFITS 128
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		;; push identifier fee_d_minus_n
 		PUSH S3
 		MULDIV
@@ -5750,9 +5963,9 @@ PUSHCONT {
 		;; push identifier a_amount
 		PUSH S2
 		;; push identifier fee_nominator
-		GETGLOB 24
+		GETGLOB 26
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		MULDIV
 		UFITS 128
 		;; decl: a_fee
@@ -5884,7 +6097,7 @@ PUSHCONT {
 			PUSH S1
 			;; +
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			ADD
 			;; push identifier fee_d_minus_n
 			PUSH S2
@@ -5899,7 +6112,7 @@ PUSHCONT {
 			MUL
 			UFITS 128
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			;; push identifier fee_d_minus_n
 			PUSH S3
 			MULDIV
@@ -6106,9 +6319,9 @@ PUSHCONT {
 			;; push identifier a_amount
 			PUSH S2
 			;; push identifier fee_nominator
-			GETGLOB 24
+			GETGLOB 26
 			;; push identifier fee_denominator
-			GETGLOB 25
+			GETGLOB 27
 			MULDIV
 			UFITS 128
 			;; decl: a_fee
@@ -6274,33 +6487,33 @@ PUSHCONT {
 		; expValue
 		; end expValue
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; +
 		;; push identifier left_amount
 		PUSH S10
 		ADD
 		UFITS 128
 		; colValue
-		SETGLOB 22
+		SETGLOB 24
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; +
 		;; push identifier right_amount
 		PUSH S9
 		ADD
 		UFITS 128
 		; colValue
-		SETGLOB 23
+		SETGLOB 25
 		; end colValue
 	}
 	PUSHCONT {
 		; expValue
 		; end expValue
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; +
 		;; get member step_1_left_deposit
 		;; push identifier r
@@ -6309,12 +6522,12 @@ PUSHCONT {
 		ADD
 		UFITS 128
 		; colValue
-		SETGLOB 22
+		SETGLOB 24
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; +
 		;; get member step_1_right_deposit
 		;; push identifier r
@@ -6323,7 +6536,7 @@ PUSHCONT {
 		ADD
 		UFITS 128
 		; colValue
-		SETGLOB 23
+		SETGLOB 25
 		; end colValue
 		;; if
 		;; get member step_1_left_deposit
@@ -6603,18 +6816,18 @@ IFELSE
 ; expValue
 ; end expValue
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 ;; +
 ;; push identifier lp_tokens_amount
 PUSH S1
 ADD
 UFITS 128
 ; colValue
-SETGLOB 21
+SETGLOB 23
 ; end colValue
 ;; Remote call IRootTokenContract.deployWallet
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -6666,7 +6879,7 @@ PUSH S2
 STUR 128
 ;; token_root
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 STSLICER
 ;; sender_left_root
 ;; push identifier left_root
@@ -6748,20 +6961,20 @@ PUSHINT 0
 PUSHINT 0
 ; function expectedWithdrawLiquidity
 ;; push identifier left_balance
-GETGLOB 22
+GETGLOB 24
 ;; push identifier lp_amount
 PUSH S3
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 MULDIV
 UFITS 128
 ;; decl: left_back_amount
 ;; push identifier right_balance
-GETGLOB 23
+GETGLOB 25
 ;; push identifier lp_amount
 PUSH S4
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 MULDIV
 UFITS 128
 ;; decl: right_back_amount
@@ -7010,27 +7223,27 @@ THROWIFNOT 105
 ;; push identifier expected_lp_root
 PUSH S5
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 SDEQ
 THROWIFNOT 113
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
 ;; push identifier left_balance
-GETGLOB 22
+GETGLOB 24
 ;; push identifier lp_amount
 PUSH S7
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 MULDIV
 UFITS 128
 ;; decl: left_back_amount
 ;; push identifier right_balance
-GETGLOB 23
+GETGLOB 25
 ;; push identifier lp_amount
 PUSH S8
 ;; push identifier lp_supply
-GETGLOB 21
+GETGLOB 23
 MULDIV
 UFITS 128
 ;; decl: right_back_amount
@@ -7038,18 +7251,30 @@ UFITS 128
 PUSH S1
 ; expValue
 ;; fetch left_balance
-GETGLOB 22
+GETGLOB 24
 ; end expValue
 SWAP
 SUB
 UFITS 128
 ; colValue
-SETGLOB 22
+SETGLOB 24
 ; end colValue
 ;; push identifier right_back_amount
 DUP
 ; expValue
 ;; fetch right_balance
+GETGLOB 25
+; end expValue
+SWAP
+SUB
+UFITS 128
+; colValue
+SETGLOB 25
+; end colValue
+;; push identifier lp_amount
+PUSH S8
+; expValue
+;; fetch lp_supply
 GETGLOB 23
 ; end expValue
 SWAP
@@ -7057,18 +7282,6 @@ SUB
 UFITS 128
 ; colValue
 SETGLOB 23
-; end colValue
-;; push identifier lp_amount
-PUSH S8
-; expValue
-;; fetch lp_supply
-GETGLOB 21
-; end expValue
-SWAP
-SUB
-UFITS 128
-; colValue
-SETGLOB 21
 ; end colValue
 ;; emit WithdrawLiquidity
 NEWC
@@ -7173,7 +7386,7 @@ ENDC
 ;; decl: empty
 ;; Remote call IBurnableByRootTokenRootContract.proxyBurn
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -7298,9 +7511,9 @@ PUSHCONT {
 		;; push identifier amount
 		PUSH S3
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; param: a_amount
 		;; param: a_pool
 		;; param: b_pool
@@ -7308,9 +7521,9 @@ PUSHCONT {
 		;; push identifier a_amount
 		PUSH S2
 		;; push identifier fee_nominator
-		GETGLOB 24
+		GETGLOB 26
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		MULDIV
 		UFITS 128
 		;; decl: a_fee
@@ -7368,9 +7581,9 @@ PUSHCONT {
 		;; push identifier amount
 		PUSH S3
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; param: a_amount
 		;; param: a_pool
 		;; param: b_pool
@@ -7378,9 +7591,9 @@ PUSHCONT {
 		;; push identifier a_amount
 		PUSH S2
 		;; push identifier fee_nominator
-		GETGLOB 24
+		GETGLOB 26
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		MULDIV
 		UFITS 128
 		;; decl: a_fee
@@ -7699,9 +7912,9 @@ PUSHCONT {
 	;; push identifier spent_amount
 	PUSH S8
 	;; push identifier left_balance
-	GETGLOB 22
+	GETGLOB 24
 	;; push identifier right_balance
-	GETGLOB 23
+	GETGLOB 25
 	;; param: a_amount
 	;; param: a_pool
 	;; param: b_pool
@@ -7709,9 +7922,9 @@ PUSHCONT {
 	;; push identifier a_amount
 	PUSH S2
 	;; push identifier fee_nominator
-	GETGLOB 24
+	GETGLOB 26
 	;; push identifier fee_denominator
-	GETGLOB 25
+	GETGLOB 27
 	MULDIV
 	UFITS 128
 	;; decl: a_fee
@@ -7761,7 +7974,7 @@ PUSHCONT {
 	PUSH S1
 	;; <=
 	;; push identifier right_balance
-	GETGLOB 23
+	GETGLOB 25
 	LEQ
 	THROWIFNOT 118
 	;; push identifier expected_right_amount
@@ -7778,25 +7991,25 @@ PUSHCONT {
 	PUSH S10
 	; expValue
 	;; fetch left_balance
-	GETGLOB 22
+	GETGLOB 24
 	; end expValue
 	SWAP
 	ADD
 	UFITS 128
 	; colValue
-	SETGLOB 22
+	SETGLOB 24
 	; end colValue
 	;; push identifier expected_right_amount
 	PUSH S1
 	; expValue
 	;; fetch right_balance
-	GETGLOB 23
+	GETGLOB 25
 	; end expValue
 	SWAP
 	SUB
 	UFITS 128
 	; colValue
-	SETGLOB 23
+	SETGLOB 25
 	; end colValue
 	;; emit ExchangeLeftToRight
 	NEWC
@@ -7900,9 +8113,9 @@ PUSHCONT {
 		;; push identifier spent_amount
 		PUSH S8
 		;; push identifier right_balance
-		GETGLOB 23
+		GETGLOB 25
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		;; param: a_amount
 		;; param: a_pool
 		;; param: b_pool
@@ -7910,9 +8123,9 @@ PUSHCONT {
 		;; push identifier a_amount
 		PUSH S2
 		;; push identifier fee_nominator
-		GETGLOB 24
+		GETGLOB 26
 		;; push identifier fee_denominator
-		GETGLOB 25
+		GETGLOB 27
 		MULDIV
 		UFITS 128
 		;; decl: a_fee
@@ -7962,7 +8175,7 @@ PUSHCONT {
 		PUSH S1
 		;; <=
 		;; push identifier left_balance
-		GETGLOB 22
+		GETGLOB 24
 		LEQ
 		THROWIFNOT 118
 		;; push identifier expected_left_amount
@@ -7979,25 +8192,25 @@ PUSHCONT {
 		PUSH S10
 		; expValue
 		;; fetch right_balance
-		GETGLOB 23
+		GETGLOB 25
 		; end expValue
 		SWAP
 		ADD
 		UFITS 128
 		; colValue
-		SETGLOB 23
+		SETGLOB 25
 		; end colValue
 		;; push identifier expected_left_amount
 		PUSH S1
 		; expValue
 		;; fetch left_balance
-		GETGLOB 22
+		GETGLOB 24
 		; end expValue
 		SWAP
 		SUB
 		UFITS 128
 		; colValue
-		SETGLOB 22
+		SETGLOB 24
 		; end colValue
 		;; emit ExchangeRightToLeft
 		NEWC
@@ -8257,7 +8470,7 @@ GETGLOB 15
 STSLICER
 ;; lp_root
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 STSLICER
 NEWC
 ;; send_gas_to
@@ -8457,7 +8670,7 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier lp_root
+	;; push identifier vault_left_wallet
 	GETGLOB 20
 	STSLICER
 	; colValue
@@ -8466,25 +8679,25 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier lp_supply
+	;; push identifier vault_right_wallet
 	GETGLOB 21
-	STUR 128
+	STSLICER
 	; colValue
 	NIP
 	; end colValue
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier left_balance
+	;; push identifier lp_root
 	GETGLOB 22
-	STUR 128
+	STSLICER
 	; colValue
 	NIP
 	; end colValue
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier right_balance
+	;; push identifier lp_supply
 	GETGLOB 23
 	STUR 128
 	; colValue
@@ -8493,8 +8706,26 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier fee_nominator
+	;; push identifier left_balance
 	GETGLOB 24
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier right_balance
+	GETGLOB 25
+	STUR 128
+	; colValue
+	NIP
+	; end colValue
+	; expValue
+	DUP
+	; end expValue
+	;; push identifier fee_nominator
+	GETGLOB 26
 	STUR 16
 	; colValue
 	NIP
@@ -8503,7 +8734,7 @@ PUSHCONT {
 	DUP
 	; end expValue
 	;; push identifier fee_denominator
-	GETGLOB 25
+	GETGLOB 27
 	STUR 16
 	; colValue
 	NIP
@@ -8606,9 +8837,9 @@ PUSHCONT {
 	SETGLOB 19
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 20
-	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 21
-	PUSHINT 0
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 22
 	PUSHINT 0
 	SETGLOB 23
@@ -8616,6 +8847,10 @@ PUSHCONT {
 	SETGLOB 24
 	PUSHINT 0
 	SETGLOB 25
+	PUSHINT 0
+	SETGLOB 26
+	PUSHINT 0
+	SETGLOB 27
 	;; end set default state vars
 }
 IFNOT
@@ -8751,7 +8986,7 @@ RAWRESERVE
 ;; if
 ;; get member value
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 PARSEMSGADDR
 INDEX 3
 PLDU 256
@@ -8864,11 +9099,11 @@ RAWRESERVE
 ;; push identifier lp_root_
 PUSH S1
 ; colValue
-SETGLOB 20
+SETGLOB 22
 ; end colValue
 ;; Remote call IRootTokenContract.sendExpectedWalletAddress
 ;; push identifier lp_root
-GETGLOB 20
+GETGLOB 22
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -8933,6 +9168,58 @@ PUSHINT 0
 STUR 256
 ;; owner_address_
 MYADDR
+STSLICER
+;; to
+MYADDR
+STSLICER
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IRootTokenContract.sendExpectedWalletAddress
+;; push identifier left_root
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x55b3a9fb
+;; wallet_public_key_
+PUSHINT 0
+STUR 256
+;; owner_address_
+;; push identifier vault
+GETGLOB 11
+STSLICER
+;; to
+MYADDR
+STSLICER
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+;; Remote call IRootTokenContract.sendExpectedWalletAddress
+;; push identifier right_root
+GETGLOB 15
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x405f5e100000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x55b3a9fb
+;; wallet_public_key_
+PUSHINT 0
+STUR 256
+;; owner_address_
+;; push identifier vault
+GETGLOB 11
 STSLICER
 ;; to
 MYADDR
@@ -9125,7 +9412,7 @@ PUSHCONT {
 	;; get member sender
 	GETGLOB 9
 	;; push identifier lp_root
-	GETGLOB 20
+	GETGLOB 22
 	SDEQ
 	;; short-circuiting &&
 	DUP
@@ -9219,6 +9506,78 @@ PUSHCONT {
 IF
 ;; end if
 ;; if
+;; push identifier owner_address
+DUP
+;; push identifier vault
+GETGLOB 11
+SDEQ
+PUSHCONT {
+	;; if
+	;; get member sender
+	GETGLOB 9
+	;; push identifier left_root
+	GETGLOB 14
+	SDEQ
+	;; short-circuiting &&
+	DUP
+	PUSHCONT {
+		DROP
+		;; get member value
+		;; push identifier vault_left_wallet
+		GETGLOB 20
+		PARSEMSGADDR
+		INDEX 3
+		PLDU 256
+		EQINT 0
+	}
+	IF
+	PUSHCONT {
+		; expValue
+		; end expValue
+		;; push identifier wallet
+		PUSH S2
+		; colValue
+		SETGLOB 20
+		; end colValue
+	}
+	PUSHCONT {
+		;; if
+		;; get member sender
+		GETGLOB 9
+		;; push identifier right_root
+		GETGLOB 15
+		SDEQ
+		;; short-circuiting &&
+		DUP
+		PUSHCONT {
+			DROP
+			;; get member value
+			;; push identifier vault_right_wallet
+			GETGLOB 21
+			PARSEMSGADDR
+			INDEX 3
+			PLDU 256
+			EQINT 0
+		}
+		IF
+		PUSHCONT {
+			; expValue
+			; end expValue
+			;; push identifier wallet
+			PUSH S2
+			; colValue
+			SETGLOB 21
+			; end colValue
+		}
+		IF
+		;; end if
+	}
+	IFELSE
+	;; end if
+}
+IF
+;; end if
+;; if
 ;; get member value
 ;; push identifier lp_wallet
 GETGLOB 17
@@ -9248,6 +9607,32 @@ PUSHCONT {
 		INDEX 3
 		PLDU 256
 		NEQINT 0
+		;; short-circuiting &&
+		DUP
+		PUSHCONT {
+			DROP
+			;; get member value
+			;; push identifier vault_left_wallet
+			GETGLOB 20
+			PARSEMSGADDR
+			INDEX 3
+			PLDU 256
+			NEQINT 0
+			;; short-circuiting &&
+			DUP
+			PUSHCONT {
+				DROP
+				;; get member value
+				;; push identifier vault_right_wallet
+				GETGLOB 21
+				PARSEMSGADDR
+				INDEX 3
+				PLDU 256
+				NEQINT 0
+			}
+			IF
+		}
+		IF
 	}
 	IF
 }
@@ -9318,7 +9703,11 @@ NEWC
 GETGLOB 21
 GETGLOB 22
 GETGLOB 23
-REVERSE 4, 0
+GETGLOB 24
+GETGLOB 25
+REVERSE 6, 0
+STSLICE
+STSLICE
 STU 128
 STU 128
 STU 128
@@ -9327,8 +9716,8 @@ GETGLOB 11
 GETGLOB 12
 GETGLOB 13
 GETGLOB 16
-GETGLOB 24
-GETGLOB 25
+GETGLOB 26
+GETGLOB 27
 REVERSE 11, 0
 STBREF
 STBREF
@@ -9362,9 +9751,13 @@ SETGLOB 20
 SETGLOB 19
 SETGLOB 18
 LDREFRTOS
+LDMSGADDR
+LDMSGADDR
 LDU 128
 LDU 128
 PLDU 128
+SETGLOB 25
+SETGLOB 24
 SETGLOB 23
 SETGLOB 22
 SETGLOB 21
@@ -9375,8 +9768,8 @@ LDREF
 LDI 1
 LDU 16
 PLDU 16
-SETGLOB 25
-SETGLOB 24
+SETGLOB 27
+SETGLOB 26
 SETGLOB 16
 SETGLOB 13
 SETGLOB 12
@@ -9411,9 +9804,13 @@ PUSHCONT {
 	SETGLOB 19
 	SETGLOB 18
 	LDREFRTOS
+	LDMSGADDR
+	LDMSGADDR
 	LDU 128
 	LDU 128
 	PLDU 128
+	SETGLOB 25
+	SETGLOB 24
 	SETGLOB 23
 	SETGLOB 22
 	SETGLOB 21
@@ -9424,8 +9821,8 @@ PUSHCONT {
 	LDI 1
 	LDU 16
 	PLDU 16
-	SETGLOB 25
-	SETGLOB 24
+	SETGLOB 27
+	SETGLOB 26
 	SETGLOB 16
 	SETGLOB 13
 	SETGLOB 12
@@ -9470,24 +9867,30 @@ PUSHCONT {
 	; init right_wallet
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 19
-	; init lp_root
+	; init vault_left_wallet
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 20
+	; init vault_right_wallet
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 21
+	; init lp_root
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 22
 	; init lp_supply
 	PUSHINT 0
-	SETGLOB 21
+	SETGLOB 23
 	; init left_balance
 	PUSHINT 0
-	SETGLOB 22
+	SETGLOB 24
 	; init right_balance
 	PUSHINT 0
-	SETGLOB 23
+	SETGLOB 25
 	; init fee_nominator
 	PUSHINT 0
-	SETGLOB 24
+	SETGLOB 26
 	; init fee_denominator
 	PUSHINT 0
-	SETGLOB 25
+	SETGLOB 27
 	; set contract pubkey
 	PUSHINT 0
 	SWAP
@@ -9504,10 +9907,10 @@ PUSHCONT {
 	SETGLOB 1
 	;; init state var: fee_nominator
 	PUSHINT 3
-	SETGLOB 24
+	SETGLOB 26
 	;; init state var: fee_denominator
 	PUSHINT 1000
-	SETGLOB 25
+	SETGLOB 27
 }
 IFELSE
 
