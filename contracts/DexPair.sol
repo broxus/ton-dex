@@ -48,6 +48,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     address lp_wallet;
     address left_wallet;
     address right_wallet;
+    // Vault wallets
+    address vault_left_wallet;
+    address vault_right_wallet;
     // Liquidity tokens
     address lp_root;
     uint128 lp_supply;
@@ -146,6 +149,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
         bool notify_success = payloadSlice.refs() >= 1;
         bool notify_cancel = payloadSlice.refs() >= 2;
+        TvmCell empty;
         TvmCell success_payload;
         TvmCell cancel_payload;
         if (notify_success) {
@@ -172,18 +176,22 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         emit ExchangeLeftToRight(tokens_amount, expected_left_fee, expected_right_amount);
 
-                        ITONTokenWallet(right_wallet).transferToRecipient{
-                            value: 0,
-                            flag: MsgFlag.ALL_NOT_RESERVED
+                        IDexVault(vault).transfer{
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            flag: MsgFlag.SENDER_PAYS_FEES
                         }(
+                            expected_right_amount,
+                            right_root,
+                            vault_right_wallet,
                             sender_public_key,
                             sender_address,
-                            expected_right_amount,
                             deploy_wallet_grams,
-                            0,
-                            original_gas_to,
                             notify_success,
-                            success_payload
+                            success_payload,
+                            left_root,
+                            right_root,
+                            current_version,
+                            original_gas_to
                         );
                     } else {
                         need_cancel = true;
@@ -196,7 +204,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                         left_balance += tokens_amount;
                         emit ExchangeLeftToRight(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
-                        IRootTokenContract(lp_root).deployWallet{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                        IRootTokenContract(lp_root).deployWallet{
+                            value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
+                            flag: MsgFlag.SENDER_PAYS_FEES
+                        }(
                             r.step_3_lp_reward,
                             deploy_wallet_grams,
                             sender_public_key,
@@ -222,18 +233,22 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         emit ExchangeRightToLeft(tokens_amount, expected_right_fee, expected_left_amount);
 
-                        ITONTokenWallet(left_wallet).transferToRecipient{
-                            value: 0,
-                            flag: MsgFlag.ALL_NOT_RESERVED
+                        IDexVault(vault).transfer{
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            flag: MsgFlag.SENDER_PAYS_FEES
                         }(
+                            expected_left_amount,
+                            left_root,
+                            vault_left_wallet,
                             sender_public_key,
                             sender_address,
-                            expected_left_amount,
                             deploy_wallet_grams,
-                            0,
-                            original_gas_to,
                             notify_success,
-                            success_payload
+                            success_payload,
+                            left_root,
+                            right_root,
+                            current_version,
+                            original_gas_to
                         );
                     } else {
                         need_cancel = true;
@@ -246,7 +261,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                         right_balance += tokens_amount;
                         emit ExchangeRightToLeft(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
-                        IRootTokenContract(lp_root).deployWallet{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                        IRootTokenContract(lp_root).deployWallet{
+                            value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
+                            flag: MsgFlag.SENDER_PAYS_FEES
+                        }(
                             r.step_3_lp_reward,
                             deploy_wallet_grams,
                             sender_public_key,
@@ -272,36 +290,43 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                 emit WithdrawLiquidity(tokens_amount, left_back_amount, right_back_amount);
 
-                ITONTokenWallet(left_wallet).transferToRecipient{
-                    value: Gas.TRANSFER_TO_RECIPIENT_VALUE + deploy_wallet_grams,
+                IDexVault(vault).transfer{
+                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
                     flag: MsgFlag.SENDER_PAYS_FEES
                 }(
-                    sender_public_key,
-                    sender_address,
                     left_back_amount,
-                    deploy_wallet_grams,
-                    0,
-                    original_gas_to,
-                    notify_success,
-                    success_payload
-                );
-
-                ITONTokenWallet(right_wallet).transferToRecipient{
-                    value: Gas.TRANSFER_TO_RECIPIENT_VALUE + deploy_wallet_grams,
-                    flag: MsgFlag.SENDER_PAYS_FEES
-                }(
+                    left_root,
+                    vault_left_wallet,
                     sender_public_key,
                     sender_address,
-                    right_back_amount,
                     deploy_wallet_grams,
-                    0,
-                    original_gas_to,
                     notify_success,
-                    success_payload
+                    success_payload,
+                    left_root,
+                    right_root,
+                    current_version,
+                    original_gas_to
                 );
 
-                TvmCell empty;
-                IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                IDexVault(vault).transfer{
+                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                    flag: MsgFlag.SENDER_PAYS_FEES
+                }(
+                    right_back_amount,
+                    right_root,
+                    vault_right_wallet,
+                    sender_public_key,
+                    sender_address,
+                    deploy_wallet_grams,
+                    notify_success,
+                    success_payload,
+                    left_root,
+                    right_root,
+                    current_version,
+                    original_gas_to
+                );
+
+                IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: Gas.BURN_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
                     tokens_amount,
                     0,
                     original_gas_to,
@@ -321,6 +346,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 original_gas_to,
                 notify_cancel,
                 cancel_payload
+            );
+        } else {
+            ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                0,
+                vault,
+                tokens_amount,
+                0,
+                0,
+                original_gas_to,
+                false,
+                empty
             );
         }
     }
@@ -354,6 +390,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
+        require(lp_supply != 0 || (left_amount > 0 && right_amount > 0), DexErrors.WRONG_LIQUIDITY);
+        require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
+            DexErrors.AMOUNT_TOO_LOW);
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
 
         uint128 lp_tokens_amount;
@@ -420,7 +459,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
         lp_supply = lp_supply + lp_tokens_amount;
 
-        IRootTokenContract(lp_root).deployWallet{ value: Gas.DEPLOY_MINT_BASE_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+        IRootTokenContract(lp_root).deployWallet{ value: Gas.DEPLOY_MINT_VALUE_BASE, flag: MsgFlag.SENDER_PAYS_FEES }(
             lp_tokens_amount,
             0,                  // deploy_grams == 0, just mint
             0,                  // wallet_public_key
@@ -803,6 +842,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             dataBuilder.store(lp_wallet);
             dataBuilder.store(left_wallet);
             dataBuilder.store(right_wallet);
+            // Vault wallets
+            dataBuilder.store(vault_left_wallet);
+            dataBuilder.store(vault_right_wallet);
             // Liquidity tokens
             dataBuilder.store(lp_root);
             dataBuilder.store(lp_supply);
@@ -912,6 +954,27 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 address(this)                   // to
             );
 
+        IRootTokenContract(left_root)
+            .sendExpectedWalletAddress{
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                0,                              // wallet_public_key_
+                vault,                 // owner_address_
+                address(this)                   // to
+            );
+
+
+        IRootTokenContract(right_root)
+            .sendExpectedWalletAddress{
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                0,                              // wallet_public_key_
+                vault,                          // owner_address_
+                address(this)                   // to
+            );
+
         send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
     }
 
@@ -941,7 +1004,16 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             }
         }
 
-        if (lp_wallet.value != 0 && left_wallet.value != 0 && right_wallet.value != 0) {
+        if (owner_address == vault) {
+            if (msg.sender == left_root && vault_left_wallet.value == 0) {
+                vault_left_wallet = wallet;
+            } else if (msg.sender == right_root && vault_right_wallet.value == 0) {
+                vault_right_wallet = wallet;
+            }
+        }
+
+        if (lp_wallet.value != 0 && left_wallet.value != 0 && right_wallet.value != 0 &&
+            vault_left_wallet.value != 0 && vault_right_wallet.value != 0) {
             active = true;
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
             root.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });

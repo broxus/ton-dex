@@ -34,6 +34,13 @@ contract DexAccount is
     IResetGas
 {
 
+    struct WithdrawalParams {
+        uint64  call_id;
+        uint256 recipient_public_key;
+        address recipient_address;
+        uint128 deploy_wallet_grams;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data:
 
@@ -62,8 +69,8 @@ contract DexAccount is
     mapping(uint64 => address) _tmp_send_gas_to;
     // _nonce -> expected_confirmation_sender
     mapping(uint64 => address) _tmp_expected_callback_sender;
-    // token_root -> _nonce
-    mapping(address => uint64) _tmp_withdrawals;
+    // token_root -> (_nonce, recipient_public_key, recipient_address, deploy_wallet_grams)
+    mapping(address => WithdrawalParams) _tmp_withdrawals;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Base functions
@@ -127,18 +134,15 @@ contract DexAccount is
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
 
         TvmSlice payloadSlice = payload.toSlice();
-        bool notify_cancel = payloadSlice.refs() >= 2;
-        TvmCell success_payload;
+        bool notify_cancel = payloadSlice.refs() >= 1;
         TvmCell cancel_payload;
-        if (payloadSlice.refs() >= 1) {
-            success_payload = payloadSlice.loadRef();
-        }
         if (notify_cancel) {
             cancel_payload = payloadSlice.loadRef();
         }
 
         if (_wallets.exists(token_root) && msg.sender == _wallets[token_root] && msg.sender == token_wallet) {
             _balances[token_root] += tokens_amount;
+            TvmCell empty;
             ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 0,                          // recipient_public_key
                 vault,                      // recipient_address
@@ -146,8 +150,8 @@ contract DexAccount is
                 0,                          // deploy_grams
                 0,                          // transfer_grams
                 original_gas_to,
-                true,                       // notify_receiver
-                success_payload
+                false,                      // notify_receiver
+                empty
             );
         } else {
             ITONTokenWallet(token_wallet).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
@@ -167,11 +171,16 @@ contract DexAccount is
     function withdraw(
         uint128 amount,
         address token_root,
+        uint256 recipient_public_key,
+        address recipient_address,
+        uint128 deploy_wallet_grams,
         address send_gas_to
     ) override external onlyOwner {
         require(!_tmp_withdrawals.exists(token_root), DexErrors.ANOTHER_WITHDRAWAL_IN_PROGRESS);
         require(amount > 0, DexErrors.AMOUNT_TOO_LOW);
-        require(msg.value >= Gas.WITHDRAW_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
+        require(recipient_address.value == 0 || recipient_public_key == 0, DexErrors.WRONG_RECIPIENT);
+        require(recipient_address.value != 0 || recipient_public_key != 0, DexErrors.WRONG_RECIPIENT);
+        require(msg.value >= Gas.WITHDRAW_MIN_VALUE_BASE + deploy_wallet_grams, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(token_root) && _balances.exists(token_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[token_root] >= amount, DexErrors.NOT_ENOUGH_FUNDS);
 
@@ -185,7 +194,7 @@ contract DexAccount is
         _tmp_operations[_nonce] = [TokenOperation(amount, token_root)];
         _tmp_send_gas_to[_nonce] = send_gas_to_;
         _tmp_expected_callback_sender[_nonce] = vault;
-        _tmp_withdrawals[token_root] = _nonce;
+        _tmp_withdrawals[token_root] = WithdrawalParams(_nonce, recipient_public_key, recipient_address, deploy_wallet_grams);
 
         IRootTokenContract(token_root)
             .sendExpectedWalletAddress{
@@ -496,18 +505,21 @@ contract DexAccount is
 
             ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(address(this), false);
         } else if (owner_address == vault && _wallets.exists(msg.sender) && _tmp_withdrawals.exists(msg.sender)) {
-            uint64 call_id = _tmp_withdrawals[msg.sender];
+            WithdrawalParams w = _tmp_withdrawals[msg.sender];
 
-            TokenOperation operation = _tmp_operations[call_id][0];
-            address send_gas_to = _tmp_send_gas_to[call_id];
+            TokenOperation operation = _tmp_operations[w.call_id][0];
+            address send_gas_to = _tmp_send_gas_to[w.call_id];
 
-            if (_tmp_expected_callback_sender[call_id] == vault && operation.root == msg.sender) {
+            if (_tmp_expected_callback_sender[w.call_id] == vault && operation.root == msg.sender) {
                 delete _tmp_withdrawals[msg.sender];
                 IDexVault(vault).withdraw{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: true }(
-                    call_id,
+                    w.call_id,
                     operation.amount,
                     operation.root,
                     wallet,
+                    w.recipient_public_key,
+                    w.recipient_address,
+                    w.deploy_wallet_grams,
                     owner,
                     current_version,
                     send_gas_to

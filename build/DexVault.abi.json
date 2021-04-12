@@ -101,10 +101,32 @@
 			"inputs": [
 				{"name":"call_id","type":"uint64"},
 				{"name":"amount","type":"uint128"},
-				{"name":"token_root","type":"address"},
+				{"name":"value2","type":"address"},
 				{"name":"vault_wallet","type":"address"},
+				{"name":"recipient_public_key","type":"uint256"},
+				{"name":"recipient_address","type":"address"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
 				{"name":"account_owner","type":"address"},
-				{"name":"account_version","type":"uint32"},
+				{"name":"value8","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transfer",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"value1","type":"address"},
+				{"name":"vault_wallet","type":"address"},
+				{"name":"recipient_public_key","type":"uint256"},
+				{"name":"recipient_address","type":"address"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"notify_receiver","type":"bool"},
+				{"name":"payload","type":"cell"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"value10","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [

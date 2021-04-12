@@ -28,4 +28,6 @@ library DexErrors {
     uint8 constant NOT_LP_PENDING_CONTRACT          = 124;
     uint8 constant NOT_TOKEN_FACTORY                = 125;
     uint8 constant NOT_EXPECTED_TOKEN               = 126;
+    uint8 constant WRONG_LIQUIDITY                  = 127;
+    uint8 constant WRONG_RECIPIENT                  = 128;
 }

@@ -26,19 +26,21 @@ library Gas {
     uint128 constant UPGRADE_ACCOUNT_MIN_VALUE      = 5 ton;
     uint128 constant UPGRADE_PAIR_MIN_VALUE         = 5 ton;
 
-    uint128 constant WITHDRAW_MIN_VALUE             = 1 ton;
+    uint128 constant WITHDRAW_MIN_VALUE_BASE        = 1 ton;
     uint128 constant TRANSFER_MIN_VALUE             = 1 ton;
     uint128 constant EXCHANGE_MIN_VALUE             = 1 ton;
     uint128 constant DEPOSIT_LIQUIDITY_MIN_VALUE    = 1 ton;
     uint128 constant WITHDRAW_LIQUIDITY_MIN_VALUE   = 1 ton;
     uint128 constant INTERNAL_PAIR_TRANSFER_VALUE   = 0.1 ton;
 
-    uint128 constant DIRECT_PAIR_OP_MIN_VALUE       = 1 ton;
+    uint128 constant DIRECT_PAIR_OP_MIN_VALUE       = 2 ton;
+
+    uint128 constant VAULT_TRANSFER_BASE_VALUE      = 0.25 ton;
 
     // TOKENS
     uint128 constant TRANSFER_VALUE                 = 0.1 ton;
     uint128 constant TRANSFER_TO_RECIPIENT_VALUE    = 0.2 ton;
-    uint128 constant DEPLOY_MINT_BASE_VALUE         = 0.1 ton;
+    uint128 constant DEPLOY_MINT_VALUE_BASE         = 0.1 ton;
     uint128 constant MINT_VALUE                     = 0.03 ton;
     uint128 constant BURN_VALUE                     = 0.1 ton;
     uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.2 ton;
