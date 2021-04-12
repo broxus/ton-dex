@@ -1,8 +1,8 @@
-const {getRandomNonce, Migration, getBalance} = require('../../../../../scripts/utils')
+const {getRandomNonce, Migration} = require('../../../../../scripts/utils')
 
 async function main() {
   const migration = new Migration();
-  const account = migration.load(await locklift.factory.getAccount(), 'DevAccount');
+  const account = migration.load(await locklift.factory.getAccount(), 'Account0');
 
   const DexPlatform = await locklift.factory.getContract('DexPlatform');
   const DexAccount = await locklift.factory.getContract('DexAccount');
@@ -25,8 +25,6 @@ async function main() {
     keyPair,
   });
   console.log(`DexRoot address: ${dexRoot.address}`);
-  // console.log(await getBalance(account));
-
 
   const DexVault = await locklift.factory.getContract('DexVault');
   console.log(`Deploying DexVault...`);

@@ -15,7 +15,7 @@ let TokenFactoryCreateNewTokenFor;
 let tokenFactoryCreateNewTokenFor
 let account;
 
-describe.skip('TokeFactory contract', async function () {
+describe('TokeFactory contract', async function () {
   describe('Contracts', async function () {
     it('Load contract factory', async function () {
       TokenFactory = await locklift.factory.getContract('TokenFactory');
@@ -47,7 +47,7 @@ describe.skip('TokeFactory contract', async function () {
         .not.to.equal(undefined, 'TONTokenWallet Code should be available');
 
       tokenFactory = migration.load(TokenFactory, 'TokenFactory');
-      account = migration.load(await locklift.factory.getAccount(), 'DevAccount');
+      account = migration.load(await locklift.factory.getAccount(), 'Account0');
 
       logger.log(`TokenFactory address: ${tokenFactory.address}`)
     });

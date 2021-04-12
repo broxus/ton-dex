@@ -1,10 +1,8 @@
-const {getRandomNonce, Migration} = require('../../../../../scripts/utils')
-
-const tonTokenContractsPath = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
+const {getRandomNonce, Migration, tonTokenContractsPath} = require('../../../../../scripts/utils')
 
 async function main() {
   const migration = new Migration();
-  const account = migration.load(await locklift.factory.getAccount(), 'DevAccount');
+  const account = migration.load(await locklift.factory.getAccount(), 'Account0');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');

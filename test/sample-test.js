@@ -7,7 +7,7 @@ let sample;
 const getRandomNonce = () => Math.random() * 64000 | 0;
 
 
-describe('Test Sample contract', async function() {
+describe.skip('Test Sample contract', async function() {
   describe('Contracts', async function() {
     it('Load contract factory', async function() {
       Sample = await locklift.factory.getContract('Sample');
