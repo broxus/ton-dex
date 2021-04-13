@@ -826,36 +826,72 @@ PUSHCONT {
 }
 IF
 PUSHCONT {
-	;; push identifier tokens_amount
-	PUSH S9
-	; expValue
-	;; fetch _balances
-	GETGLOB 17
+	;; if
+	;; map.exists
 	;; push identifier token_root
-	PUSH S12
-	SWAP
-	PUSH2 S1, S0
+	PUSH S10
+	;; push identifier _balances
+	GETGLOB 17
 	PUSHINT 267
 	DICTGET
+	DUP
 	PUSHCONT {
-		PLDU 128
+		NIP
+	}
+	IF
+	PUSHCONT {
+		;; push identifier tokens_amount
+		PUSH S9
+		; expValue
+		;; fetch _balances
+		GETGLOB 17
+		;; push identifier token_root
+		PUSH S12
+		SWAP
+		PUSH2 S1, S0
+		PUSHINT 267
+		DICTGET
+		PUSHCONT {
+			PLDU 128
+		}
+		PUSHCONT {
+			PUSHINT 0
+		}
+		IFELSE
+		; end expValue
+		BLKSWAP 1, 3
+		ADD
+		UFITS 128
+		; colValue
+		NEWC
+		STU 128
+		ROTREV
+		PUSHINT 267
+		DICTSETB
+		SETGLOB 17
+		; end colValue
 	}
 	PUSHCONT {
-		PUSHINT 0
+		; expValue
+		;; fetch _balances
+		GETGLOB 17
+		;; push identifier token_root
+		PUSH S11
+		SWAP
+		; end expValue
+		;; push identifier tokens_amount
+		PUSH S11
+		; colValue
+		NEWC
+		STU 128
+		ROTREV
+		PUSHINT 267
+		DICTSETB
+		SETGLOB 17
+		; end colValue
 	}
 	IFELSE
-	; end expValue
-	BLKSWAP 1, 3
-	ADD
-	UFITS 128
-	; colValue
-	NEWC
-	STU 128
-	ROTREV
-	PUSHINT 267
-	DICTSETB
-	SETGLOB 17
-	; end colValue
+	;; end if
 	NEWC
 	ENDC
 	;; decl: empty
@@ -1874,36 +1910,72 @@ THROWIFNOT 117
 PUSHINT 100000000
 PUSHINT 2
 RAWRESERVE
-;; push identifier amount
-PUSH S6
-; expValue
-;; fetch _balances
-GETGLOB 17
+;; if
+;; map.exists
 ;; push identifier token_root
-PUSH S7
-SWAP
-PUSH2 S1, S0
+PUSH S5
+;; push identifier _balances
+GETGLOB 17
 PUSHINT 267
 DICTGET
+DUP
 PUSHCONT {
-	PLDU 128
+	NIP
+}
+IF
+PUSHCONT {
+	;; push identifier amount
+	PUSH S6
+	; expValue
+	;; fetch _balances
+	GETGLOB 17
+	;; push identifier token_root
+	PUSH S7
+	SWAP
+	PUSH2 S1, S0
+	PUSHINT 267
+	DICTGET
+	PUSHCONT {
+		PLDU 128
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	; end expValue
+	BLKSWAP 1, 3
+	ADD
+	UFITS 128
+	; colValue
+	NEWC
+	STU 128
+	ROTREV
+	PUSHINT 267
+	DICTSETB
+	SETGLOB 17
+	; end colValue
 }
 PUSHCONT {
-	PUSHINT 0
+	; expValue
+	;; fetch _balances
+	GETGLOB 17
+	;; push identifier token_root
+	PUSH S6
+	SWAP
+	; end expValue
+	;; push identifier amount
+	PUSH S8
+	; colValue
+	NEWC
+	STU 128
+	ROTREV
+	PUSHINT 267
+	DICTSETB
+	SETGLOB 17
+	; end colValue
 }
 IFELSE
-; end expValue
-BLKSWAP 1, 3
-ADD
-UFITS 128
-; colValue
-NEWC
-STU 128
-ROTREV
-PUSHINT 267
-DICTSETB
-SETGLOB 17
-; end colValue
+;; end if
 ;; if
 ;; push identifier willing_to_deploy
 PUSH S3
@@ -2191,36 +2263,72 @@ THROWIFNOT 106
 PUSHINT 100000000
 PUSHINT 2
 RAWRESERVE
-;; push identifier amount
-PUSH S7
-; expValue
-;; fetch _balances
-GETGLOB 17
+;; if
+;; map.exists
 ;; push identifier token_root
-PUSH S8
-SWAP
-PUSH2 S1, S0
+PUSH S6
+;; push identifier _balances
+GETGLOB 17
 PUSHINT 267
 DICTGET
+DUP
 PUSHCONT {
-	PLDU 128
+	NIP
+}
+IF
+PUSHCONT {
+	;; push identifier amount
+	PUSH S7
+	; expValue
+	;; fetch _balances
+	GETGLOB 17
+	;; push identifier token_root
+	PUSH S8
+	SWAP
+	PUSH2 S1, S0
+	PUSHINT 267
+	DICTGET
+	PUSHCONT {
+		PLDU 128
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	; end expValue
+	BLKSWAP 1, 3
+	ADD
+	UFITS 128
+	; colValue
+	NEWC
+	STU 128
+	ROTREV
+	PUSHINT 267
+	DICTSETB
+	SETGLOB 17
+	; end colValue
 }
 PUSHCONT {
-	PUSHINT 0
+	; expValue
+	;; fetch _balances
+	GETGLOB 17
+	;; push identifier token_root
+	PUSH S7
+	SWAP
+	; end expValue
+	;; push identifier amount
+	PUSH S9
+	; colValue
+	NEWC
+	STU 128
+	ROTREV
+	PUSHINT 267
+	DICTSETB
+	SETGLOB 17
+	; end colValue
 }
 IFELSE
-; end expValue
-BLKSWAP 1, 3
-ADD
-UFITS 128
-; colValue
-NEWC
-STU 128
-ROTREV
-PUSHINT 267
-DICTSETB
-SETGLOB 17
-; end colValue
+;; end if
 ;; transfer()
 ;; push identifier send_gas_to
 PUSH S3

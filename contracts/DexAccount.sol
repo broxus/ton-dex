@@ -141,7 +141,11 @@ contract DexAccount is
         }
 
         if (_wallets.exists(token_root) && msg.sender == _wallets[token_root] && msg.sender == token_wallet) {
-            _balances[token_root] += tokens_amount;
+            if(_balances.exists(token_root)) {
+                _balances[token_root] += tokens_amount;
+            } else {
+                _balances[token_root] = tokens_amount;
+            }
             TvmCell empty;
             ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 0,                          // recipient_public_key
@@ -256,7 +260,11 @@ contract DexAccount is
 
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
 
-        _balances[token_root] += amount;
+        if(_balances.exists(token_root)) {
+            _balances[token_root] += amount;
+        } else {
+            _balances[token_root] = amount;
+        }
 
         if (willing_to_deploy && !_wallets.exists(token_root) && !_tmp_deploying_wallets.exists(token_root)) {
             _deployWallet(token_root, send_gas_to);
@@ -274,7 +282,11 @@ contract DexAccount is
     ) override external onlyPair(sender_left_root, sender_right_root) {
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
 
-        _balances[token_root] += amount;
+        if(_balances.exists(token_root)) {
+            _balances[token_root] += amount;
+        } else {
+            _balances[token_root] = amount;
+        }
 
         send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
