@@ -110,12 +110,20 @@ contract DexAccount is
     }
 
     function getWalletData(address token_root) override external view responsible returns (address wallet, uint128 balance) {
-        if(_wallets.exists(token_root) && _balances.exists(token_root)) {
-            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (_wallets.at(token_root), _balances.at(token_root));
-        } else {
-            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (address.makeAddrStd(0, 0), 0);
-        }
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (
+            _wallets.exists(token_root) ? _wallets.at(token_root) : address.makeAddrStd(0, 0),
+            _balances.exists(token_root) ? _balances.at(token_root) : 0
+        );
     }
+
+    function getWallets() external view returns (mapping(address => address)) {
+        return _wallets;
+    }
+
+    function getBalances() external view returns (mapping(address => uint128)) {
+        return _balances;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Deposit
 
@@ -598,7 +606,7 @@ contract DexAccount is
         return tvm.buildStateInit({
             contr: DexPlatform,
             varInit: {
-                root: address(this),
+                root: root,
                 type_id: type_id,
                 params: params
             },
@@ -671,7 +679,7 @@ contract DexAccount is
         }
 
         root = root_;
-        vault_ = vault_;
+        vault = vault_;
         current_version = new_version;
 
         platform_code = s.loadRef();        // ref 1

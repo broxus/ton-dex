@@ -3,22 +3,28 @@ const {Migration} = require('../../../../../scripts/utils')
 
 async function main() {
   const migration = new Migration();
-  const [keyPair] = await locklift.keys.getKeyPairs();
+  const keyPairs = await locklift.keys.getKeyPairs();
 
-  const account1 = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
   const dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
-  await account1.runTarget({
+  await account2.runTarget({
     contract: dexRoot,
     method: 'deployAccount',
     params: {
-      'account_owner': account1.address,
-      'send_gas_to': account1.address
+      'account_owner': account2.address,
+      'send_gas_to': account2.address
     },
-    keyPair
+    keyPair: keyPairs[1],
+    value: locklift.utils.convertCrystal(4, 'nano')
   });
-  console.log(`DexAccount1: ` +
-    await dexRoot.call({method: 'getExpectedAccountAddress', params: {'account_owner': account1.address}})
-  );
+  const dexAccount2Address = await dexRoot.call({
+    method: 'getExpectedAccountAddress',
+    params: {'account_owner': account2.address}
+  });
+  console.log(`DexAccount2: ${dexAccount2Address}`);
+  const dexAccount2 = await locklift.factory.getContract('DexAccount');
+  dexAccount2.address = dexAccount2Address;
+  migration.store(dexAccount2, 'DexAccount2');
 }
 
 main()

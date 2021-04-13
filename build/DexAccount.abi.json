@@ -65,6 +65,22 @@
 			]
 		},
 		{
+			"name": "getWallets",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"map(address,address)"}
+			]
+		},
+		{
+			"name": "getBalances",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"map(address,uint128)"}
+			]
+		},
+		{
 			"name": "tokensReceivedCallback",
 			"inputs": [
 				{"name":"token_wallet","type":"address"},

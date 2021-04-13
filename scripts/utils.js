@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const tonTokenContractsPath = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build'
+const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build'
 
 const getRandomNonce = () => Math.random() * 64000 | 0;
 
@@ -71,5 +71,5 @@ module.exports = {
   sleep,
   getBalance,
   displayAccount,
-  tonTokenContractsPath
+  TOKEN_CONTRACTS_PATH
 }

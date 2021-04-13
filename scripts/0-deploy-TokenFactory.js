@@ -1,14 +1,14 @@
-const {getRandomNonce, Migration, tonTokenContractsPath} = require('../../../../../scripts/utils')
+const {getRandomNonce, Migration, TOKEN_CONTRACTS_PATH} = require('../../../../../scripts/utils')
 
 async function main() {
   const migration = new Migration();
-  const account = migration.load(await locklift.factory.getAccount(), 'Account0');
+  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
 
-  const RootToken = await locklift.factory.getContract('RootTokenContract', tonTokenContractsPath);
-  const TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', tonTokenContractsPath);
+  const RootToken = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+  const TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
   const [keyPair] = await locklift.keys.getKeyPairs();
 

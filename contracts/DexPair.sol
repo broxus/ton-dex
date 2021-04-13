@@ -45,18 +45,18 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     // Custom:
     bool active;
     // Wallets
-    address lp_wallet;
-    address left_wallet;
-    address right_wallet;
+    address public lp_wallet;
+    address public left_wallet;
+    address public right_wallet;
     // Vault wallets
-    address vault_left_wallet;
-    address vault_right_wallet;
+    address public vault_left_wallet;
+    address public vault_right_wallet;
     // Liquidity tokens
-    address lp_root;
-    uint128 lp_supply;
+    address public lp_root;
+    uint128 public lp_supply;
     // Balances
-    uint128 left_balance;
-    uint128 right_balance;
+    uint128 public left_balance;
+    uint128 public right_balance;
     // Fee
     uint16 fee_nominator = 3;
     uint16 fee_denominator = 1000;
@@ -846,7 +846,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         return tvm.buildStateInit({
             contr: DexPlatform,
             varInit: {
-                root: address(this),
+                root: root,
                 type_id: type_id,
                 params: params
             },

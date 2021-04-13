@@ -1,41 +1,41 @@
-const {Migration, tonTokenContractsPath} = require('../../../../../scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH} = require('../../../../../scripts/utils')
 
 async function main() {
   const migration = new Migration();
   const [keyPair] = await locklift.keys.getKeyPairs();
 
-  const account0 = migration.load(await locklift.factory.getAccount(), 'Account0');
   const account1 = migration.load(await locklift.factory.getAccount(), 'Account1');
   const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+  const account3 = migration.load(await locklift.factory.getAccount(), 'Account3');
 
   const tokenFoo = migration.load(
-    await locklift.factory.getContract('RootTokenContract', tonTokenContractsPath), 'TokenRootFoo'
+    await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'
   );
   const tokenBar = migration.load(
-    await locklift.factory.getContract('RootTokenContract', tonTokenContractsPath), 'TokenRootBar'
+    await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot'
   );
   const tokensToMint = [
     {
       contract: tokenFoo,
-      owner: account1.address,
+      owner: account2.address,
       tokens: 10000,
-      alias: 'TokenFooAccount1Wallet'
+      alias: 'FooWallet2'
     },
     {
       contract: tokenBar,
-      owner: account1.address,
+      owner: account2.address,
       tokens: 10000,
-      alias: 'TokenBarAccount1Wallet'
+      alias: 'BarWallet2'
     },
     {
       contract: tokenFoo,
-      owner: account2.address,
+      owner: account3.address,
       tokens: 10000,
-      alias: 'TokenFooAccount2Wallet'
+      alias: 'FooWallet3'
     }
   ]
   for (const tokenData of tokensToMint) {
-    await account0.runTarget({
+    await account1.runTarget({
       contract: tokenData.contract,
       method: 'deployWallet',
       params: {
@@ -43,7 +43,7 @@ async function main() {
         deploy_grams: locklift.utils.convertCrystal(1, 'nano'),
         wallet_public_key_: 0,
         owner_address_: tokenData.owner,
-        gas_back_address: account0.address
+        gas_back_address: account1.address
       },
       value: locklift.utils.convertCrystal(2, 'nano'),
       keyPair
@@ -54,7 +54,7 @@ async function main() {
         owner_address_: tokenData.owner
       }
     });
-    const tokenWallet = await locklift.factory.getContract('TONTokenWallet', tonTokenContractsPath);
+    const tokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
     tokenWallet.address = tokenWalletAddress
     migration.store(tokenWallet, tokenData.alias);
     console.log(`${tokenData.alias}: ${tokenWalletAddress}`);

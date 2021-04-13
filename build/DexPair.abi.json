@@ -252,6 +252,78 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "lp_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "left_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"left_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "right_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"right_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "vault_left_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"vault_left_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "vault_right_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"vault_right_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "lp_root",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_root","type":"address"}
+			]
+		},
+		{
+			"name": "lp_supply",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_supply","type":"uint128"}
+			]
+		},
+		{
+			"name": "left_balance",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"left_balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "right_balance",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"right_balance","type":"uint128"}
+			]
 		}
 	],
 	"data": [

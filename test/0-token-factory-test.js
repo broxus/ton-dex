@@ -1,10 +1,8 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {getRandomNonce, Migration, stringToBytesArray, sleep} = require('../scripts/utils')
+const {getRandomNonce, Migration, stringToBytesArray, sleep, TOKEN_CONTRACTS_PATH} = require('../scripts/utils')
 
 const migration = new Migration();
-
-let tonTokenContractsPath = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let TokenFactory;
 let tokenFactory;
@@ -21,8 +19,8 @@ describe('TokeFactory contract', async function () {
       TokenFactory = await locklift.factory.getContract('TokenFactory');
       TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
 
-      RootToken = await locklift.factory.getContract('RootTokenContract', tonTokenContractsPath);
-      TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', tonTokenContractsPath);
+      RootToken = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+      TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
       TokenFactoryCreateNewTokenFor = await locklift.factory.getContract('TokenFactoryCreateNewTokenFor');
 
@@ -47,7 +45,7 @@ describe('TokeFactory contract', async function () {
         .not.to.equal(undefined, 'TONTokenWallet Code should be available');
 
       tokenFactory = migration.load(TokenFactory, 'TokenFactory');
-      account = migration.load(await locklift.factory.getAccount(), 'Account0');
+      account = migration.load(await locklift.factory.getAccount(), 'Account1');
 
       logger.log(`TokenFactory address: ${tokenFactory.address}`)
     });
@@ -141,7 +139,6 @@ describe('TokeFactory contract', async function () {
         expect(deployedTokenRootDetails.root_owner_address)
           .to
           .equal(tokenData.owner, 'Wrong Token owner in deployed Token');
-        // TODO: deploy wallet
       }
     });
   });

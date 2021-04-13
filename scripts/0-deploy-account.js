@@ -5,7 +5,7 @@ const migration = new Migration();
 
 async function main() {
   const Account = await locklift.factory.getAccount();
-  const [keyPair] = await locklift.keys.getKeyPairs();
+  const keyPairs = await locklift.keys.getKeyPairs();
 
   for (let i of range(3)) {
     let account = await locklift.giver.deployContract({
@@ -14,9 +14,9 @@ async function main() {
       initParams: {
         _randomNonce: Math.random() * 6400 | 0,
       },
-      keyPair,
+      keyPair: keyPairs[i],
     }, locklift.utils.convertCrystal(100, 'nano'));
-    const name = `${account.name}${i}`;
+    const name = `${account.name}${i+1}`;
     migration.store(account, name);
     console.log(`${name}: ${account.address}`);
   }

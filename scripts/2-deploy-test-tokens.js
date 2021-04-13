@@ -5,7 +5,7 @@ async function main() {
   const migration = new Migration();
   const [keyPair] = await locklift.keys.getKeyPairs();
 
-  const account = migration.load(await locklift.factory.getAccount(), 'Account0');
+  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const tokenFactory = migration.load(TokenFactory, 'TokenFactory');
@@ -56,7 +56,7 @@ async function main() {
     migration.store({
       name: 'TokenRoot',
       address: deployedTokenRoot,
-    }, `TokenRoot${tokenData.symbol}`);
+    }, `${tokenData.symbol}Root`);
   }
 }
 
