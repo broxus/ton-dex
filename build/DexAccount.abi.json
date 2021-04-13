@@ -149,6 +149,7 @@
 				{"name":"left_amount","type":"uint128"},
 				{"name":"right_root","type":"address"},
 				{"name":"right_amount","type":"uint128"},
+				{"name":"expected_lp_root","type":"address"},
 				{"name":"auto_change","type":"bool"},
 				{"name":"send_gas_to","type":"address"}
 			],

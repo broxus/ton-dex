@@ -422,11 +422,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        address expected_lp_root,
         bool    auto_change,
         address account_owner,
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
+        require(expected_lp_root == lp_root, DexErrors.NOT_LP_TOKEN_ROOT);
         require(lp_supply != 0 || (left_amount > 0 && right_amount > 0), DexErrors.WRONG_LIQUIDITY);
         require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
             DexErrors.AMOUNT_TOO_LOW);

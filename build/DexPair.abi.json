@@ -136,9 +136,10 @@
 				{"name":"call_id","type":"uint64"},
 				{"name":"left_amount","type":"uint128"},
 				{"name":"right_amount","type":"uint128"},
+				{"name":"expected_lp_root","type":"address"},
 				{"name":"auto_change","type":"bool"},
 				{"name":"account_owner","type":"address"},
-				{"name":"value5","type":"uint32"},
+				{"name":"value6","type":"uint32"},
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [

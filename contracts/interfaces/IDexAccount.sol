@@ -50,6 +50,7 @@ interface IDexAccount {
         uint128 left_amount,
         address right_root,
         uint128 right_amount,
+        address expected_lp_root,
         bool    auto_change,
         address send_gas_to
     ) external;

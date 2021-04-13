@@ -328,6 +328,7 @@ contract DexAccount is
         uint128 left_amount,
         address right_root,
         uint128 right_amount,
+        address expected_lp_root,
         bool    auto_change,
         address send_gas_to
     ) override external onlyOwner {
@@ -339,6 +340,7 @@ contract DexAccount is
         require(msg.value >= Gas.DEPOSIT_LIQUIDITY_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(_wallets.exists(left_root) && _balances.exists(left_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_wallets.exists(right_root) && _balances.exists(right_root), DexErrors.UNKNOWN_TOKEN_ROOT);
+        require(_wallets.exists(expected_lp_root) && _balances.exists(expected_lp_root), DexErrors.UNKNOWN_TOKEN_ROOT);
         require(_balances[left_root] >= left_amount, DexErrors.NOT_ENOUGH_FUNDS);
         require(_balances[right_root] >= right_amount, DexErrors.NOT_ENOUGH_FUNDS);
 
@@ -366,6 +368,7 @@ contract DexAccount is
             _nonce,
             left_root.value < right_root.value ? left_amount : right_amount,
             left_root.value < right_root.value ? right_amount : left_amount,
+            expected_lp_root,
             auto_change,
             owner,
             current_version,
