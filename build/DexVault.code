@@ -1923,8 +1923,6 @@ DROP
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-PUSHINT 1
-CALL 1
 ;; param: upgrade_data
 ; function onCodeUpgrade
 ; end function onCodeUpgrade

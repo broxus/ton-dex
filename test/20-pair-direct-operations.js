@@ -9,13 +9,13 @@ const migration = new Migration();
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot;
-let DexPair;
+let DexPairFooBar;
 let FooDexWallet;
 let BarDexWallet;
 let LpDexWallet;
 let FooRoot;
 let BarRoot;
-let LpRoot;
+let FooBarLpRoot;
 let Account3;
 let FooWallet3;
 let BarWallet3;
@@ -107,15 +107,15 @@ function logExpectedDeposit(expected) {
     logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString()}`);
 }
 
-describe('Check direct DexPair operations', async function () {
+describe('Check direct DexPairFooBar operations', async function () {
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPair = await locklift.factory.getContract('DexPair');
+        DexPairFooBar = await locklift.factory.getContract('DexPair');
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        LpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         LpDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
@@ -125,13 +125,13 @@ describe('Check direct DexPair operations', async function () {
         LpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
-        migration.load(DexPair, 'DexPair');
+        migration.load(DexPairFooBar, 'DexPairFooBar');
         migration.load(FooDexWallet, 'FooDexWallet');
         migration.load(BarDexWallet, 'BarDexWallet');
         migration.load(LpDexWallet, 'LpDexWallet');
         migration.load(FooRoot, 'FooRoot');
         migration.load(BarRoot, 'BarRoot');
-        migration.load(LpRoot, 'LpRoot');
+        migration.load(FooBarLpRoot, 'FooBarLpRoot');
         migration.load(Account3, 'Account3');
         migration.load(FooWallet3, 'FooWallet3');
 
@@ -145,16 +145,16 @@ describe('Check direct DexPair operations', async function () {
         } catch (e) {
             logger.log('LpWallet#3 not deployed');
         }
-        const pairRoots = DexPair.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         logger.log('DexRoot: ' + DexRoot.address);
-        logger.log('DexPair: ' + DexPair.address);
+        logger.log('DexPairFooBar: ' + DexPairFooBar.address);
         logger.log('FooDexWallet: ' + FooDexWallet.address);
         logger.log('BarDexWallet: ' + BarDexWallet.address);
         logger.log('LpDexWallet: ' + LpDexWallet.address);
         logger.log('FooRoot: ' + BarRoot.address);
-        logger.log('BarRoot: ' + LpRoot.address);
+        logger.log('BarRoot: ' + FooBarLpRoot.address);
         logger.log('Account#3: ' + Account3.address);
         logger.log('FooWallet#3: ' + FooWallet3.address);
     });
@@ -171,7 +171,7 @@ describe('Check direct DexPair operations', async function () {
                 `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
             const TOKENS_TO_EXCHANGE = 100;
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: IS_FOO_LEFT
             });
@@ -184,7 +184,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -221,7 +221,7 @@ describe('Check direct DexPair operations', async function () {
                 `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
             const TOKENS_TO_EXCHANGE = 100;
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: IS_FOO_LEFT
             });
@@ -229,7 +229,7 @@ describe('Check direct DexPair operations', async function () {
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(FOO_DECIMALS_MODIFIER).toString()} FOO`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(BAR_DECIMALS_MODIFIER).toString()} BAR`);
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano'),
                 expected_amount: expected.expected_amount
             });
@@ -239,7 +239,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -277,7 +277,7 @@ describe('Check direct DexPair operations', async function () {
                 `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
             const TOKENS_TO_EXCHANGE = 100;
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: IS_FOO_LEFT
             });
@@ -285,7 +285,7 @@ describe('Check direct DexPair operations', async function () {
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(FOO_DECIMALS_MODIFIER).toString()} FOO`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(BAR_DECIMALS_MODIFIER).toString()} BAR`);
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano'),
                 expected_amount: new BigNumber(expected.expected_amount).plus(1).toString()
             });
@@ -295,7 +295,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -334,7 +334,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_EXCHANGE = 100000;
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano'),
                 expected_amount: 0
             });
@@ -344,7 +344,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -384,7 +384,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_EXCHANGE = 1000;
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: IS_FOO_LEFT
             });
@@ -392,7 +392,7 @@ describe('Check direct DexPair operations', async function () {
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(FOO_DECIMALS_MODIFIER).toString()} FOO`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(BAR_DECIMALS_MODIFIER).toString()} BAR`);
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano'),
                 expected_amount: expected.expected_amount
             });
@@ -402,7 +402,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -455,7 +455,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_EXCHANGE = new BigNumber(accountStart.bar).div(10);
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: !IS_FOO_LEFT
             });
@@ -463,7 +463,7 @@ describe('Check direct DexPair operations', async function () {
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(BAR_DECIMALS_MODIFIER).toString()} BAR`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(FOO_DECIMALS_MODIFIER).toString()} FOO`);
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: 0,
                 expected_amount: expected.expected_amount
             });
@@ -473,7 +473,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(BAR_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -518,7 +518,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_EXCHANGE = 0.000000001;
 
-            const expected = await DexPair.call('expectedExchange', {
+            const expected = await DexPairFooBar.call('expectedExchange', {
                 amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
                 is_left_to_right: !IS_FOO_LEFT
             });
@@ -526,7 +526,7 @@ describe('Check direct DexPair operations', async function () {
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(BAR_DECIMALS_MODIFIER).toString()} BAR`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(FOO_DECIMALS_MODIFIER).toString()} FOO`);
 
-            const payload = await DexPair.call('buildExchangePayload', {
+            const payload = await DexPairFooBar.call('buildExchangePayload', {
                 deploy_wallet_grams: 0,
                 expected_amount: 0
             });
@@ -536,7 +536,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_EXCHANGE).times(BAR_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -584,7 +584,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_DEPOSIT = "0.000000000000000001";
 
-            const expected = await DexPair.call('expectedDepositLiquidity', {
+            const expected = await DexPairFooBar.call('expectedDepositLiquidity', {
                 left_amount: IS_FOO_LEFT ? new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() : 0,
                 right_amount: !IS_FOO_LEFT ? 0 : new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString(),
                 auto_change: true
@@ -592,7 +592,7 @@ describe('Check direct DexPair operations', async function () {
 
             logExpectedDeposit(expected);
 
-            const payload = await DexPair.call('buildDepositLiquidityPayload', {
+            const payload = await DexPairFooBar.call('buildDepositLiquidityPayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano')
             });
 
@@ -601,7 +601,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -613,7 +613,7 @@ describe('Check direct DexPair operations', async function () {
                 keyPair: keyPairs[3]
             });
 
-            LpWallet3.setAddress(await LpRoot.call({method: 'getWalletAddress', params: {
+            LpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
                     _answer_id: 0,
                     wallet_public_key_: `0x0`,
                     owner_address_: Account3.address
@@ -651,7 +651,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_DEPOSIT = 100;
 
-            const expected = await DexPair.call('expectedDepositLiquidity', {
+            const expected = await DexPairFooBar.call('expectedDepositLiquidity', {
                 left_amount: IS_FOO_LEFT ? new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() : 0,
                 right_amount: !IS_FOO_LEFT ? 0 : new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString(),
                 auto_change: true
@@ -659,7 +659,7 @@ describe('Check direct DexPair operations', async function () {
 
             logExpectedDeposit(expected);
 
-            const payload = await DexPair.call('buildDepositLiquidityPayload', {
+            const payload = await DexPairFooBar.call('buildDepositLiquidityPayload', {
                 deploy_wallet_grams: locklift.utils.convertCrystal('0.05', 'nano')
             });
 
@@ -668,7 +668,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -680,7 +680,7 @@ describe('Check direct DexPair operations', async function () {
                 keyPair: keyPairs[3]
             });
 
-            LpWallet3.setAddress(await LpRoot.call({method: 'getWalletAddress', params: {
+            LpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
                 _answer_id: 0,
                 wallet_public_key_: `0x0`,
                 owner_address_: Account3.address
@@ -718,7 +718,7 @@ describe('Check direct DexPair operations', async function () {
 
             const TOKENS_TO_DEPOSIT = new BigNumber(accountStart.bar).div(2);
 
-            const expected = await DexPair.call('expectedDepositLiquidity', {
+            const expected = await DexPairFooBar.call('expectedDepositLiquidity', {
                 left_amount: !IS_FOO_LEFT ? new BigNumber(TOKENS_TO_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() : 0,
                 right_amount: IS_FOO_LEFT ? 0 : new BigNumber(TOKENS_TO_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString(),
                 auto_change: true
@@ -726,7 +726,7 @@ describe('Check direct DexPair operations', async function () {
 
             logExpectedDeposit(expected);
 
-            const payload = await DexPair.call('buildDepositLiquidityPayload', {
+            const payload = await DexPairFooBar.call('buildDepositLiquidityPayload', {
                 deploy_wallet_grams: 0
             });
 
@@ -735,7 +735,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: new BigNumber(TOKENS_TO_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -778,11 +778,11 @@ describe('Check direct DexPair operations', async function () {
                 `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
                 `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
 
-            const expected = await DexPair.call('expectedWithdrawLiquidity', {
+            const expected = await DexPairFooBar.call('expectedWithdrawLiquidity', {
                 lp_amount: 1
             });
 
-            const payload = await DexPair.call('buildWithdrawLiquidityPayload', {
+            const payload = await DexPairFooBar.call('buildWithdrawLiquidityPayload', {
                 deploy_wallet_grams: 0
             });
 
@@ -796,7 +796,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: 1,
                     deploy_grams: 0,
                     transfer_grams: 0,
@@ -840,11 +840,11 @@ describe('Check direct DexPair operations', async function () {
                 `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
                 `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
 
-            const expected = await DexPair.call('expectedWithdrawLiquidity', {
+            const expected = await DexPairFooBar.call('expectedWithdrawLiquidity', {
                 lp_amount: accountStart.lp
             });
 
-            const payload = await DexPair.call('buildWithdrawLiquidityPayload', {
+            const payload = await DexPairFooBar.call('buildWithdrawLiquidityPayload', {
                 deploy_wallet_grams: 0
             });
 
@@ -858,7 +858,7 @@ describe('Check direct DexPair operations', async function () {
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
-                    recipient_address: DexPair.address,
+                    recipient_address: DexPairFooBar.address,
                     tokens: accountStart.lp,
                     deploy_grams: 0,
                     transfer_grams: 0,

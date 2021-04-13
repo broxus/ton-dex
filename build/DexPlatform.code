@@ -218,8 +218,6 @@ SETGLOB 7
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-PUSHINT 1
-CALL 1
 ;; param: data
 ; function onCodeUpgrade
 ; end function onCodeUpgrade

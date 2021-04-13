@@ -7,6 +7,12 @@ interface IDexPair {
     event ExchangeLeftToRight(uint128 left, uint128 fee, uint128 right);
     event ExchangeRightToLeft(uint128 right, uint128 fee, uint128 left);
 
+    struct IDexPairBalances {
+        uint128 lp_supply;
+        uint128 left_balance;
+        uint128 right_balance;
+    }
+
     struct DepositLiquidityResult {
         uint128 step_1_left_deposit;
         uint128 step_1_right_deposit;
@@ -23,17 +29,25 @@ interface IDexPair {
         uint128 step_3_lp_reward;
     }
 
-    function getRoot() external view responsible returns (address);
+    function getRoot() external view responsible returns (address dex_root);
 
     function getTokenRoots() external view responsible returns (address left_root, address right_root, address lp_root);
 
-    function getVersion() external view responsible returns (uint32);
+    function getTokenWallets() external view responsible returns (address left, address right, address lp);
 
-    function getVault() external view responsible returns (address);
+    function getVersion() external view responsible returns (uint32 version);
+
+    function getVault() external view responsible returns (address dex_vault);
+
+    function getVaultWallets() external view responsible returns (address left, address right);
+
+    function setFeeParams(uint16 nominator, uint16 denominator) external;
 
     function getFeeParams() external view responsible returns (uint16 nominator, uint16 denominator);
 
     function isActive() external view responsible returns (bool);
+
+    function getBalances() external view responsible returns (IDexPairBalances);
 
     function expectedExchange(
         uint128 amount,

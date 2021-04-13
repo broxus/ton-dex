@@ -912,8 +912,6 @@ SETGLOB 7
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-PUSHINT 1
-CALL 1
 ;; param: data
 ; function onCodeUpgrade
 ; end function onCodeUpgrade
@@ -2192,7 +2190,7 @@ CALLREF {
 	CALL $message_balance_macro$
 }
 ;; >=
-PUSHINT 1000000000
+PUSHINT 2000000000
 GEQ
 THROWIFNOT 103
 ;; get member value
@@ -2335,7 +2333,7 @@ DUP
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x41dcd6500000000000000000000000000004_
+PUSHSLICE x43b9aca00000000000000000000000000004_
 STSLICER
 STSLICECONST 0
 STSLICECONST 1

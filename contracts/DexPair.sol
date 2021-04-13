@@ -82,7 +82,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getters
 
-    function getRoot() override external view responsible returns (address) {
+    function getRoot() override external view responsible returns (address dex_root) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } root;
     }
 
@@ -90,12 +90,25 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (left_root, right_root, lp_root);
     }
 
-    function getVersion() override external view responsible returns (uint32) {
+    function getTokenWallets() override external view responsible returns (address left, address right, address lp) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (left_wallet, right_wallet, lp_wallet);
+    }
+
+    function getVersion() override external view responsible returns (uint32 version) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } current_version;
     }
 
-    function getVault() override external view responsible returns (address) {
+    function getVault() override external view responsible returns (address dex_vault) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } vault;
+    }
+
+    function getVaultWallets() override external view responsible returns (address left, address right) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (vault_left_wallet, vault_right_wallet);
+    }
+
+    function setFeeParams(uint16 nominator, uint16 denominator) override external onlyRoot {
+        fee_nominator = nominator;
+        fee_denominator = denominator;
     }
 
     function getFeeParams() override external view responsible returns (uint16 nominator, uint16 denominator) {
@@ -104,6 +117,14 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
     function isActive() override external view responsible returns (bool) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } active;
+    }
+
+    function getBalances() override external view responsible returns (IDexPairBalances) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } IDexPairBalances(
+            lp_supply,
+            left_balance,
+            right_balance
+        );
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -963,6 +984,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         lp_root = lp_root_;
 
         IRootTokenContract(lp_root)
+            .deployEmptyWallet {
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
+                0,                              // wallet_public_key
+                address(this),                  // owner_address
+                send_gas_to                     // gas_back_address
+            );
+
+        IRootTokenContract(lp_root)
             .sendExpectedWalletAddress{
                 value: Gas.SEND_EXPECTED_WALLET_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
@@ -970,6 +1002,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 0,                              // wallet_public_key_
                 address(this) ,                 // owner_address_
                 address(this)                   // to
+            );
+
+        IRootTokenContract(left_root)
+            .deployEmptyWallet {
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
+                0,                              // wallet_public_key
+                address(this),                  // owner_address
+                send_gas_to                     // gas_back_address
             );
 
         IRootTokenContract(left_root)
@@ -982,6 +1025,16 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 address(this)                   // to
             );
 
+        IRootTokenContract(right_root)
+            .deployEmptyWallet {
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES
+            }(
+                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
+                0,                              // wallet_public_key
+                address(this),                  // owner_address
+                send_gas_to                     // gas_back_address
+            );
 
         IRootTokenContract(right_root)
             .sendExpectedWalletAddress{

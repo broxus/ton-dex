@@ -9,10 +9,10 @@ const migration = new Migration();
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot;
-let DexPair;
+let DexPairFooBar;
 let FooRoot;
 let BarRoot;
-let LpRoot;
+let FooBarLpRoot;
 let Account2;
 let DexAccount2;
 
@@ -42,10 +42,13 @@ async function dexAccountBalances(account) {
     }})).balance).div(BAR_DECIMALS_MODIFIER).toString();
     const lp = new BigNumber((await account.call({method: 'getWalletData', params: {
         _answer_id: 0,
-        token_root: LpRoot.address
+        token_root: FooBarLpRoot.address
     }})).balance).div(LP_DECIMALS_MODIFIER).toString();
 
     return {foo, bar, lp};
+}
+async function dexPairParams() {
+
 }
 
 describe('Deposit liquidity', async function () {
@@ -53,37 +56,41 @@ describe('Deposit liquidity', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPair = await locklift.factory.getContract('DexPair');
+        DexPairFooBar = await locklift.factory.getContract('DexPair');
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        LpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount();
         DexAccount2 = await locklift.factory.getContract('DexAccount');
 
         migration.load(DexRoot, 'DexRoot');
-        migration.load(DexPair, 'DexPair');
+        migration.load(DexPairFooBar, 'DexPairFooBar');
         migration.load(FooRoot, 'FooRoot');
         migration.load(BarRoot, 'BarRoot');
-        migration.load(LpRoot, 'LpRoot');
+        migration.load(FooBarLpRoot, 'FooBarLpRoot');
         migration.load(Account2, 'Account2');
         migration.load(DexAccount2, 'DexAccount2');
 
-        const pairRoots = DexPair.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         logger.log('DexRoot: ' + DexRoot.address);
-        logger.log('DexPair: ' + DexPair.address);
+        logger.log('DexPairFooBar: ' + DexPairFooBar.address);
         logger.log('FooRoot: ' + BarRoot.address);
         logger.log('BarRoot: ' + BarRoot.address);
-        logger.log('LpRoot: ' + LpRoot.address);
+        logger.log('FooBarLpRoot: ' + FooBarLpRoot.address);
         logger.log('Account#2: ' + Account2.address);
         logger.log('DexAccount#2: ' + DexAccount2.address);
     });
 
     describe('Deposit with auto_change=true', async function () {
 
-        it('', async function () {
-                //TODO: 
+        it('Add initial liquidity to Foo/Bar', async function () {
+            const dexAccountStart = await dexAccountBalances(DexAccount2);
+
+
+
+            const dexAccountEnd = await dexAccountBalances(DexAccount2);
         });
 
     });

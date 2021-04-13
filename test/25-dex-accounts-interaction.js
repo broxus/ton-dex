@@ -9,13 +9,13 @@ const migration = new Migration();
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot;
-let DexPair;
+let DexPairFooBar;
 let FooDexWallet;
 let BarDexWallet;
 let LpDexWallet;
 let FooRoot;
 let BarRoot;
-let LpRoot;
+let FooBarLpRoot;
 let Account2;
 let Account3;
 let DexAccount2;
@@ -81,21 +81,21 @@ async function dexAccountBalances(account) {
     }})).balance).div(BAR_DECIMALS_MODIFIER).toString();
     const lp = new BigNumber((await account.call({method: 'getWalletData', params: {
         _answer_id: 0,
-        token_root: LpRoot.address
+        token_root: FooBarLpRoot.address
     }})).balance).div(LP_DECIMALS_MODIFIER).toString();
 
     return {foo, bar, lp};
 }
 
-describe('Check direct DexPair operations', async function () {
+describe('Check direct DexPairFooBar operations', async function () {
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPair = await locklift.factory.getContract('DexPair');
+        DexPairFooBar = await locklift.factory.getContract('DexPair');
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        LpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         LpDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
@@ -108,13 +108,13 @@ describe('Check direct DexPair operations', async function () {
         LpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
-        migration.load(DexPair, 'DexPair');
+        migration.load(DexPairFooBar, 'DexPairFooBar');
         migration.load(FooDexWallet, 'FooDexWallet');
         migration.load(BarDexWallet, 'BarDexWallet');
         migration.load(LpDexWallet, 'LpDexWallet');
         migration.load(FooRoot, 'FooRoot');
         migration.load(BarRoot, 'BarRoot');
-        migration.load(LpRoot, 'LpRoot');
+        migration.load(FooBarLpRoot, 'FooBarLpRoot');
         migration.load(Account2, 'Account2');
         migration.load(Account3, 'Account3');
         migration.load(DexAccount2, 'DexAccount2');
@@ -122,17 +122,17 @@ describe('Check direct DexPair operations', async function () {
         migration.load(BarWallet3, 'BarWallet3');
         migration.load(LpWallet3, 'LpWallet3');
 
-        const pairRoots = DexPair.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         logger.log('DexRoot: ' + DexRoot.address);
-        logger.log('DexPair: ' + DexPair.address);
+        logger.log('DexPairFooBar: ' + DexPairFooBar.address);
         logger.log('FooDexWallet: ' + FooDexWallet.address);
         logger.log('BarDexWallet: ' + BarDexWallet.address);
         logger.log('LpDexWallet: ' + LpDexWallet.address);
         logger.log('FooRoot: ' + BarRoot.address);
         logger.log('BarRoot: ' + BarRoot.address);
-        logger.log('LpRoot: ' + LpRoot.address);
+        logger.log('FooBarLpRoot: ' + FooBarLpRoot.address);
         logger.log('Account#3: ' + Account3.address);
         logger.log('FooWallet#3: ' + FooWallet3.address);
         logger.log('BarWallet#3: ' + BarWallet3.address);
