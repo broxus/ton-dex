@@ -193,6 +193,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             current_version,
                             original_gas_to
                         );
+
+                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                            0,
+                            vault,
+                            tokens_amount,
+                            0,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
+                        );
                     } else {
                         need_cancel = true;
                     }
@@ -202,8 +213,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                     if (r.step_3_lp_reward > 0) {
                         lp_supply = lp_supply + r.step_3_lp_reward;
                         left_balance += tokens_amount;
+
                         emit ExchangeLeftToRight(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
+
                         IRootTokenContract(lp_root).deployWallet{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
@@ -213,6 +226,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             sender_public_key,
                             sender_address,
                             original_gas_to
+                        );
+
+                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                            0,
+                            vault,
+                            tokens_amount,
+                            0,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
                         );
                     } else {
                         need_cancel = true;
@@ -250,6 +274,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             current_version,
                             original_gas_to
                         );
+
+                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                            0,
+                            vault,
+                            tokens_amount,
+                            0,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
+                        );
                     } else {
                         need_cancel = true;
                     }
@@ -259,8 +294,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                     if (r.step_3_lp_reward > 0) {
                         lp_supply = lp_supply + r.step_3_lp_reward;
                         right_balance += tokens_amount;
+
                         emit ExchangeRightToLeft(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
+
                         IRootTokenContract(lp_root).deployWallet{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
@@ -270,6 +307,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             sender_public_key,
                             sender_address,
                             original_gas_to
+                        );
+
+                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                            0,
+                            vault,
+                            tokens_amount,
+                            0,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
                         );
                     } else {
                         need_cancel = true;
@@ -326,7 +374,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                     original_gas_to
                 );
 
-                IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: Gas.BURN_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+                IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                     tokens_amount,
                     0,
                     original_gas_to,
@@ -346,17 +394,6 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 original_gas_to,
                 notify_cancel,
                 cancel_payload
-            );
-        } else {
-            ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                0,
-                vault,
-                tokens_amount,
-                0,
-                0,
-                original_gas_to,
-                false,
-                empty
             );
         }
     }
@@ -385,11 +422,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint64 call_id,
         uint128 left_amount,
         uint128 right_amount,
+        address expected_lp_root,
         bool    auto_change,
         address account_owner,
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
+        require(expected_lp_root == lp_root, DexErrors.NOT_LP_TOKEN_ROOT);
         require(lp_supply != 0 || (left_amount > 0 && right_amount > 0), DexErrors.WRONG_LIQUIDITY);
         require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
             DexErrors.AMOUNT_TOO_LOW);

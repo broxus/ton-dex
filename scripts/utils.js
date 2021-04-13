@@ -44,7 +44,7 @@ class Migration {
 
   load(contract, alias) {
     if (this.migration_log[alias] !== undefined) {
-      contract.address = this.migration_log[alias].address;
+      contract.setAddress(this.migration_log[alias].address);
     } else {
       throw new Error(`Contract ${alias} not found in the migration`);
     }

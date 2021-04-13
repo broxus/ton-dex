@@ -64,32 +64,33 @@ interface IDexPair {
     function liquidityTokenRootNotDeployed(address lp_root, address send_gas_to) external;
 
     function exchange(
-        uint64 call_id,
+        uint64  call_id,
         uint128 spent_amount,
         address spent_token_root,
         address receive_token_root,
         uint128 expected_amount,
         address account_owner,
-        uint32 account_version,
+        uint32  account_version,
         address send_gas_to
     ) external;
 
     function depositLiquidity(
-        uint64 call_id,
+        uint64  call_id,
         uint128 left_amount,
         uint128 right_amount,
+        address expected_lp_root,
         bool    auto_change,
         address account_owner,
-        uint32 account_version,
+        uint32  account_version,
         address send_gas_to
     ) external;
 
     function withdrawLiquidity(
-        uint64 call_id,
+        uint64  call_id,
         uint128 lp_amount,
         address expected_lp_root,
         address account_owner,
-        uint32 account_version,
+        uint32  account_version,
         address send_gas_to
     ) external;
 }

@@ -2758,6 +2758,16 @@ PUSHCONT {
 	LDU 128
 }
 IFNOT
+; Decode expected_lp_root
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ; Decode auto_change
 LDIQ 1
 PUSHCONT {
@@ -2783,6 +2793,7 @@ ENDS
 ;; param: left_amount
 ;; param: right_root
 ;; param: right_amount
+;; param: expected_lp_root
 ;; param: auto_change
 ;; param: send_gas_to
 ; modifier onlyOwner
@@ -2795,14 +2806,14 @@ THROWIFNOT 100
 ; function depositLiquidity
 ;; get member value
 ;; push identifier left_root
-PUSH S5
+PUSH S6
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 ;; !=
 ;; get member value
 ;; push identifier right_root
-PUSH S4
+PUSH S5
 PARSEMSGADDR
 INDEX 3
 PLDU 256
@@ -2810,7 +2821,7 @@ NEQ
 THROWIFNOT 121
 ;; get member value
 ;; push identifier left_root
-PUSH S5
+PUSH S6
 PARSEMSGADDR
 INDEX 3
 PLDU 256
@@ -2818,21 +2829,21 @@ NEQINT 0
 THROWIFNOT 121
 ;; get member value
 ;; push identifier right_root
-PUSH S3
+PUSH S4
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 NEQINT 0
 THROWIFNOT 121
 ;; push identifier left_amount
-PUSH S4
+PUSH S5
 GTINT 0
 ;; short-circuiting &&
 DUP
 PUSHCONT {
 	DROP
 	;; push identifier right_amount
-	PUSH S2
+	PUSH S3
 	GTINT 0
 }
 IF
@@ -2847,10 +2858,10 @@ PUSHCONT {
 	PUSHCONT {
 		DROP
 		;; push identifier left_amount
-		PUSH S4
+		PUSH S5
 		;; +
 		;; push identifier right_amount
-		PUSH S3
+		PUSH S4
 		ADD
 		UFITS 128
 		GTINT 0
@@ -2869,7 +2880,7 @@ GEQ
 THROWIFNOT 103
 ;; map.exists
 ;; push identifier left_root
-PUSH S5
+PUSH S6
 ;; push identifier _wallets
 GETGLOB 16
 PUSHINT 267
@@ -2885,7 +2896,7 @@ PUSHCONT {
 	DROP
 	;; map.exists
 	;; push identifier left_root
-	PUSH S5
+	PUSH S6
 	;; push identifier _balances
 	GETGLOB 17
 	PUSHINT 267
@@ -2900,7 +2911,7 @@ IF
 THROWIFNOT 117
 ;; map.exists
 ;; push identifier right_root
-PUSH S3
+PUSH S4
 ;; push identifier _wallets
 GETGLOB 16
 PUSHINT 267
@@ -2916,7 +2927,38 @@ PUSHCONT {
 	DROP
 	;; map.exists
 	;; push identifier right_root
-	PUSH S3
+	PUSH S4
+	;; push identifier _balances
+	GETGLOB 17
+	PUSHINT 267
+	DICTGET
+	DUP
+	PUSHCONT {
+		NIP
+	}
+	IF
+}
+IF
+THROWIFNOT 117
+;; map.exists
+;; push identifier expected_lp_root
+PUSH S2
+;; push identifier _wallets
+GETGLOB 16
+PUSHINT 267
+DICTGET
+DUP
+PUSHCONT {
+	NIP
+}
+IF
+;; short-circuiting &&
+DUP
+PUSHCONT {
+	DROP
+	;; map.exists
+	;; push identifier expected_lp_root
+	PUSH S2
 	;; push identifier _balances
 	GETGLOB 17
 	PUSHINT 267
@@ -2931,7 +2973,7 @@ IF
 THROWIFNOT 117
 ;; index
 ;; push identifier left_root
-PUSH S5
+PUSH S6
 ;; push identifier _balances
 GETGLOB 17
 PUSHINT 267
@@ -2945,12 +2987,12 @@ PUSHCONT {
 IFELSE
 ;; >=
 ;; push identifier left_amount
-PUSH S5
+PUSH S6
 GEQ
 THROWIFNOT 118
 ;; index
 ;; push identifier right_root
-PUSH S3
+PUSH S4
 ;; push identifier _balances
 GETGLOB 17
 PUSHINT 267
@@ -2964,7 +3006,7 @@ PUSHCONT {
 IFELSE
 ;; >=
 ;; push identifier right_amount
-PUSH S3
+PUSH S4
 GEQ
 THROWIFNOT 118
 PUSHINT 100000000
@@ -2972,9 +3014,9 @@ PUSHINT 2
 RAWRESERVE
 PUSHINT 2
 ;; push identifier left_root
-PUSH S6
+PUSH S7
 ;; push identifier right_root
-PUSH S5
+PUSH S6
 ;; param: left_root
 ;; param: right_root
 ; function _buildPairParams
@@ -3096,12 +3138,12 @@ ENDC
 CTOS
 ;; decl: pair
 ;; push identifier left_amount
-PUSH S5
+PUSH S6
 ; expValue
 ;; fetch _balances
 GETGLOB 17
 ;; push identifier left_root
-PUSH S8
+PUSH S9
 SWAP
 PUSH2 S1, S0
 PUSHINT 267
@@ -3126,12 +3168,12 @@ DICTSETB
 SETGLOB 17
 ; end colValue
 ;; push identifier right_amount
-PUSH S3
+PUSH S4
 ; expValue
 ;; fetch _balances
 GETGLOB 17
 ;; push identifier right_root
-PUSH S6
+PUSH S7
 SWAP
 PUSH2 S1, S0
 PUSHINT 267
@@ -3185,9 +3227,9 @@ SETGLOB 15
 PUSHINT 2
 NEWDICT
 ;; push identifier left_amount
-PUSH S8
+PUSH S9
 ;; push identifier left_root
-PUSH S10
+PUSH S11
 TUPLE 2
 UNTUPLE 2
 NEWC
@@ -3201,9 +3243,9 @@ ROT
 PUSHINT 32
 DICTUSETB
 ;; push identifier right_amount
-PUSH S6
+PUSH S7
 ;; push identifier right_root
-PUSH S8
+PUSH S9
 TUPLE 2
 UNTUPLE 2
 NEWC
@@ -3282,7 +3324,7 @@ STZEROES
 STSLICECONST 0
 STSLICECONST 1
 NEWC
-STSLICECONST x580a1cc6
+STSLICECONST x7ef158d3
 ;; call_id
 ;; push identifier _nonce
 GETGLOB 15
@@ -3290,53 +3332,57 @@ STUR 64
 ;; left_amount
 ;; get member value
 ;; push identifier left_root
-PUSH S9
+PUSH S10
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 ;; <
 ;; get member value
 ;; push identifier right_root
-PUSH S8
+PUSH S9
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
 	;; push identifier left_amount
-	PUSH S8
+	PUSH S9
 }
 PUSHCONT {
 	;; push identifier right_amount
-	PUSH S6
+	PUSH S7
 }
 IFELSE
 STUR 128
 ;; right_amount
 ;; get member value
 ;; push identifier left_root
-PUSH S9
+PUSH S10
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 ;; <
 ;; get member value
 ;; push identifier right_root
-PUSH S8
+PUSH S9
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
 	;; push identifier right_amount
-	PUSH S6
+	PUSH S7
 }
 PUSHCONT {
 	;; push identifier left_amount
-	PUSH S8
+	PUSH S9
 }
 IFELSE
 STUR 128
+;; expected_lp_root
+;; push identifier expected_lp_root
+PUSH S6
+STSLICER
 ;; auto_change
 ;; push identifier auto_change
 PUSH S5
@@ -3349,10 +3395,12 @@ STSLICER
 ;; push identifier current_version
 GETGLOB 12
 STUR 32
+NEWC
 ;; send_gas_to
 ;; push identifier send_gas_to_
-PUSH S2
+PUSH S3
 STSLICER
+STBREFR
 STBREFR
 ENDC
 PUSHINT 128
@@ -3360,7 +3408,7 @@ SENDRAWMSG
 DROP2
 ; end function depositLiquidity
 ; end modifier onlyOwner
-BLKDROP 6
+BLKDROP 7
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -5644,7 +5692,7 @@ PUSHCONT {
 	;; push identifier functionId
 	DUP
 	;; ==
-	PUSHINT 1477057734
+	PUSHINT 2129746131
 	EQUAL
 	;; short-circuiting ||
 	DUP
@@ -6374,7 +6422,7 @@ PUSHCONT {
 }
 IFJMP
 DUP
-PUSHINT 1462273657
+PUSHINT 1369517246
 LEQ
 PUSHCONT {
 	DUP
@@ -6414,7 +6462,7 @@ PUSHCONT {
 	}
 	IFJMP
 	DUP
-	PUSHINT 1462273657
+	PUSHINT 1369517246
 	LEQ
 	PUSHCONT {
 		DUP
@@ -6424,7 +6472,7 @@ PUSHCONT {
 			CALL $exchange$
 		}
 		DUP
-		PUSHINT 1462273657
+		PUSHINT 1369517246
 		EQUAL
 		IFJMPREF {
 			CALL $depositLiquidity$
