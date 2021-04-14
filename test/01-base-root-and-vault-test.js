@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require('../scripts/utils')
+const {Migration} = require(process.cwd()+'/scripts/utils')
 
 const migration = new Migration();
 

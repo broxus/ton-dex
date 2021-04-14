@@ -1,4 +1,4 @@
-const {Migration, TOKEN_CONTRACTS_PATH} = require('../../../../../scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 
 async function main() {
@@ -22,6 +22,9 @@ async function main() {
     value: locklift.utils.convertCrystal(6, 'nano'),
     keyPair: keyPairs[1]
   });
+
+  await new Promise((r) => setTimeout(r, 10000));
+
   const dexPairFooBarAddress = await dexRoot.call({
     method: 'getExpectedPairAddress',
     params: {
@@ -34,7 +37,7 @@ async function main() {
   dexPairFooBar.address = dexPairFooBarAddress;
   migration.store(dexPairFooBar, 'DexPairFooBar');
 
-  const FooBarLpRoot = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  const FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
   FooBarLpRoot.setAddress(await dexPairFooBar.call({method: "lp_root"}));
 
   const FooPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
@@ -73,11 +76,21 @@ async function main() {
     }
   }));
 
+  const FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  FooBarLpVaultWallet.setAddress(await tokenBar.call({
+    method: "getWalletAddress",
+    params: {
+      wallet_public_key_: 0,
+      owner_address_: dexVault.address,
+    }
+  }));
+
   migration.store(FooBarLpRoot, 'FooBarLpRoot');
   migration.store(FooPairWallet, 'FooPairWallet');
   migration.store(BarPairWallet, 'BarPairWallet');
   migration.store(FooVaultWallet, 'FooVaultWallet');
   migration.store(BarVaultWallet, 'BarVaultWallet');
+  migration.store(FooBarLpVaultWallet, 'FooBarLpVaultWallet');
 }
 
 main()

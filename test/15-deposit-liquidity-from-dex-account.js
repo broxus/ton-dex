@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require('../scripts/utils');
+const {Migration} = require(process.cwd()+'/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -12,11 +12,9 @@ let DexRoot;
 let DexPairFooBar;
 let FooRoot;
 let BarRoot;
-let LpRoot;
 let FooBarLpRoot;
 let Account2;
 let DexAccount2;
-let LpVaultWallet;
 
 const FOO_DECIMALS = 3;
 const BAR_DECIMALS = 18;
@@ -90,7 +88,7 @@ async function dexAccountBalances(account) {
 }
 async function dexPairInfo() {
     const balances = await DexPairFooBar.call({method: 'getBalances', params: { _answer_id: 0 }});
-    const total_supply = await LpRoot.call({method: 'total_supply', params: { _answer_id: 0 }});
+    const total_supply = await FooBarLpRoot.call({method: 'total_supply', params: {}});
     let foo, bar;
     if (IS_FOO_LEFT) {
         foo = new BigNumber(balances.left_balance).div(FOO_DECIMALS_MODIFIER).toString();
@@ -116,17 +114,14 @@ describe('Deposit liquidity', async function () {
         DexPairFooBar = await locklift.factory.getContract('DexPair');
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        LpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount();
         DexAccount2 = await locklift.factory.getContract('DexAccount');
-        LpVaultWallet = await locklift.factory.getContract('DexAccount');
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPairFooBar');
         migration.load(FooRoot, 'FooRoot');
         migration.load(BarRoot, 'BarRoot');
-        migration.load(LpRoot, 'LpRoot');
         migration.load(FooBarLpRoot, 'FooBarLpRoot');
         migration.load(Account2, 'Account2');
         migration.load(DexAccount2, 'DexAccount2');
@@ -136,12 +131,11 @@ describe('Deposit liquidity', async function () {
 
         logger.log('DexRoot: ' + DexRoot.address);
         logger.log('DexPairFooBar: ' + DexPairFooBar.address);
-        logger.log('FooRoot: ' + BarRoot.address);
+        logger.log('FooRoot: ' + FooRoot.address);
         logger.log('BarRoot: ' + BarRoot.address);
         logger.log('FooBarLpRoot: ' + FooBarLpRoot.address);
         logger.log('Account#2: ' + Account2.address);
         logger.log('DexAccount#2: ' + DexAccount2.address);
-        logger.log('LpVaultWallet#2: ' + DexAccount2.address);
     });
 
     describe('Deposits', async function () {
@@ -186,12 +180,12 @@ describe('Deposit liquidity', async function () {
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
                     right_amount: RIGHT_AMOUNT,
-                    expected_lp_root: LpRoot.address,
+                    expected_lp_root: FooBarLpRoot.address,
                     auto_change: false,
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -260,12 +254,12 @@ describe('Deposit liquidity', async function () {
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
                     right_amount: RIGHT_AMOUNT,
-                    expected_lp_root: LpRoot.address,
+                    expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -334,12 +328,12 @@ describe('Deposit liquidity', async function () {
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
                     right_amount: RIGHT_AMOUNT,
-                    expected_lp_root: LpRoot.address,
+                    expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -408,12 +402,12 @@ describe('Deposit liquidity', async function () {
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
                     right_amount: RIGHT_AMOUNT,
-                    expected_lp_root: LpRoot.address,
+                    expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -486,12 +480,12 @@ describe('Deposit liquidity', async function () {
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
                     right_amount: RIGHT_AMOUNT,
-                    expected_lp_root: LpRoot.address,
+                    expected_lp_root: FooBarLpRoot.address,
                     auto_change: false,
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);

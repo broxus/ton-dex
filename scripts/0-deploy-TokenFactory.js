@@ -1,4 +1,4 @@
-const {getRandomNonce, Migration, TOKEN_CONTRACTS_PATH} = require('../../../../../scripts/utils')
+const {getRandomNonce, Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();

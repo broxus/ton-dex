@@ -1,4 +1,4 @@
-const {Migration} = require('../../../../../scripts/utils')
+const {Migration} = require(process.cwd()+'/scripts/utils')
 
 
 async function main() {

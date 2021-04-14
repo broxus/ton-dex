@@ -1,4 +1,4 @@
-const {Migration, TOKEN_CONTRACTS_PATH} = require('../../../../../scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();
@@ -30,7 +30,7 @@ async function main() {
     {
       contract: tokenFoo,
       owner: account3.address,
-      tokens: 10000,
+      tokens: 110000,
       alias: 'FooWallet3'
     }
   ]

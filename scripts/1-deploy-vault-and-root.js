@@ -1,4 +1,4 @@
-const {getRandomNonce, Migration} = require('../../../../../scripts/utils')
+const {getRandomNonce, Migration} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();

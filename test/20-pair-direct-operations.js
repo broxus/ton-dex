@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require('../scripts/utils');
+const {Migration} = require(process.cwd()+'/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -10,16 +10,16 @@ const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-t
 
 let DexRoot;
 let DexPairFooBar;
-let FooDexWallet;
-let BarDexWallet;
-let LpDexWallet;
+let FooVaultWallet;
+let BarVaultWallet;
+let FooBarLpVaultWallet;
 let FooRoot;
 let BarRoot;
 let FooBarLpRoot;
 let Account3;
 let FooWallet3;
 let BarWallet3;
-let LpWallet3;
+let FooBarLpWallet3;
 
 
 const FOO_DECIMALS = 3;
@@ -38,13 +38,13 @@ let IS_FOO_LEFT;
 let keyPairs;
 
 async function dexBalances() {
-    const foo = await FooDexWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const foo = await FooVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         return new BigNumber(n).div(FOO_DECIMALS_MODIFIER).toString();
     });
-    const bar = await BarDexWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const bar = await BarVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         return new BigNumber(n).div(BAR_DECIMALS_MODIFIER).toString();
     });
-    const lp = await LpDexWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         return new BigNumber(n).div(LP_DECIMALS_MODIFIER).toString();
     });
     return {foo, bar, lp};
@@ -60,7 +60,7 @@ async function account3balances() {
         bar = new BigNumber(n).div(BAR_DECIMALS_MODIFIER).toString();
     });
     let lp;
-    await LpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         lp = new BigNumber(n).div(LP_DECIMALS_MODIFIER).toString();
     });
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
@@ -116,19 +116,19 @@ describe('Check direct DexPairFooBar operations', async function () {
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        LpDexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         Account3 = await locklift.factory.getAccount();
         FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        LpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPairFooBar');
-        migration.load(FooDexWallet, 'FooDexWallet');
-        migration.load(BarDexWallet, 'BarDexWallet');
-        migration.load(LpDexWallet, 'LpDexWallet');
+        migration.load(FooVaultWallet, 'FooVaultWallet');
+        migration.load(BarVaultWallet, 'BarVaultWallet');
+        migration.load(FooBarLpVaultWallet, 'FooBarLpVaultWallet');
         migration.load(FooRoot, 'FooRoot');
         migration.load(BarRoot, 'BarRoot');
         migration.load(FooBarLpRoot, 'FooBarLpRoot');
@@ -141,7 +141,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             logger.log('BarWallet#3 not deployed');
         }
         try {
-            migration.load(LpWallet3, 'LpWallet3');
+            migration.load(FooBarLpWallet3, 'FooBarLpWallet3');
         } catch (e) {
             logger.log('LpWallet#3 not deployed');
         }
@@ -150,11 +150,11 @@ describe('Check direct DexPairFooBar operations', async function () {
 
         logger.log('DexRoot: ' + DexRoot.address);
         logger.log('DexPairFooBar: ' + DexPairFooBar.address);
-        logger.log('FooDexWallet: ' + FooDexWallet.address);
-        logger.log('BarDexWallet: ' + BarDexWallet.address);
-        logger.log('LpDexWallet: ' + LpDexWallet.address);
-        logger.log('FooRoot: ' + BarRoot.address);
-        logger.log('BarRoot: ' + FooBarLpRoot.address);
+        logger.log('FooVaultWallet: ' + FooVaultWallet.address);
+        logger.log('BarVaultWallet: ' + BarVaultWallet.address);
+        logger.log('FooBarLpVaultWallet: ' + FooBarLpVaultWallet.address);
+        logger.log('FooRoot: ' + FooRoot.address);
+        logger.log('BarRoot: ' + BarRoot.address);
         logger.log('Account#3: ' + Account3.address);
         logger.log('FooWallet#3: ' + FooWallet3.address);
     });
@@ -193,7 +193,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: EMPTY_TVM_CELL
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -248,7 +248,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('1', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -304,7 +304,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -353,7 +353,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -411,7 +411,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             BarWallet3.setAddress(await BarRoot.call({method: 'getWalletAddress', params: {
@@ -482,7 +482,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -545,7 +545,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -610,16 +610,16 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
-            LpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
+            FooBarLpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
                     _answer_id: 0,
                     wallet_public_key_: `0x0`,
                     owner_address_: Account3.address
                 }}));
 
-            migration.store(LpWallet3, 'LpWallet3');
+            migration.store(FooBarLpWallet3, 'FooBarLpWallet3');
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -677,16 +677,16 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
-            LpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
+            FooBarLpWallet3.setAddress(await FooBarLpRoot.call({method: 'getWalletAddress', params: {
                 _answer_id: 0,
                 wallet_public_key_: `0x0`,
                 owner_address_: Account3.address
             }}));
 
-            migration.store(LpWallet3, 'LpWallet3');
+            migration.store(FooBarLpWallet3, 'FooBarLpWallet3');
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -744,7 +744,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -792,7 +792,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 `${new BigNumber(expected.expected_right_amount).div(!IS_FOO_LEFT ? FOO_DECIMALS_MODIFIER : BAR_DECIMALS_MODIFIER).toString()}`);
 
             await Account3.runTarget({
-                contract: LpWallet3,
+                contract: FooBarLpWallet3,
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
@@ -805,7 +805,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();
@@ -854,7 +854,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 `${new BigNumber(expected.expected_right_amount).div(!IS_FOO_LEFT ? FOO_DECIMALS_MODIFIER : BAR_DECIMALS_MODIFIER).toString()}`);
 
             await Account3.runTarget({
-                contract: LpWallet3,
+                contract: FooBarLpWallet3,
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
@@ -867,7 +867,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
-                keyPair: keyPairs[3]
+                keyPair: keyPairs[2]
             });
 
             const dexEnd = await dexBalances();

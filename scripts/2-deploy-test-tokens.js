@@ -1,4 +1,4 @@
-const {getRandomNonce, Migration, stringToBytesArray} = require('../../../../../scripts/utils')
+const {getRandomNonce, Migration, stringToBytesArray} = require(process.cwd()+'/scripts/utils')
 
 
 async function main() {

@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {getRandomNonce, Migration, stringToBytesArray, sleep, TOKEN_CONTRACTS_PATH} = require('../scripts/utils')
+const {getRandomNonce, Migration, stringToBytesArray, sleep, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 const migration = new Migration();
 

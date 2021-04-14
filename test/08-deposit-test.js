@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, TOKEN_CONTRACTS_PATH} = require('../scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 const migration = new Migration();
 
