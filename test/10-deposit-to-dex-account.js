@@ -2,22 +2,17 @@ const {expect} = require('chai');
 const logger = require('mocha-logger');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
-const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd() + '/scripts/utils');
+const {Migration, TOKEN_CONTRACTS_PATH, afterRun, EMPTY_TVM_CELL} = require(process.cwd() + '/scripts/utils');
 
 if (!Array.prototype.last) {
   Array.prototype.last = function () {
     return this[this.length - 1];
   };
 }
-
 const migration = new Migration();
-const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
 
 const FOO_DECIMALS = 3;
 const BAR_DECIMALS = 18;
-
-const FOO_DEPOSIT_AMOUNT = new BigNumber(10000).times(new BigNumber(10).pow(FOO_DECIMALS)).toString();
-const BAR_DEPOSIT_AMOUNT = new BigNumber(10000).times(new BigNumber(10).pow(BAR_DECIMALS)).toString();
 
 let DexAccount;
 let dexAccount2;
@@ -29,7 +24,10 @@ let fooData = {
     vaultWallet: 'FooVaultWallet',
     accountWallet: 'FooWallet2',
   },
-  history: []
+  history: [],
+  decimals: FOO_DECIMALS,
+  decimals_modifier: new BigNumber(10).pow(FOO_DECIMALS).toNumber(),
+  deposit_amount: new BigNumber(10000).times(new BigNumber(10).pow(FOO_DECIMALS))
 };
 let barData = {
   aliases: {
@@ -37,7 +35,12 @@ let barData = {
     vaultWallet: 'BarVaultWallet',
     accountWallet: 'BarWallet2',
   },
-  history: []
+  history: [],
+  decimals: BAR_DECIMALS,
+  decimals_modifier: new BigNumber(10).pow(BAR_DECIMALS).toNumber(),
+  deposit_amount: new BigNumber(10000).times(new BigNumber(10).pow(BAR_DECIMALS))
+
+
 };
 
 const loadWallets = async (data) => {
@@ -48,18 +51,20 @@ const loadWallets = async (data) => {
   data.vaultWallet = migration.load(
     await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH), data.aliases.vaultWallet
   );
-  data.vaultWalletBalance = new BigNumber(await data.vaultWallet.call({method: 'balance'})).toString();
+  data.vaultWalletBalance = new BigNumber(await data.vaultWallet.call({method: 'balance'}))
+    .div(data.decimals_modifier).toString();
   data.accountWallet = migration.load(
     await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH), data.aliases.accountWallet
   );
-  data.accountWalletBalance = new BigNumber(await data.accountWallet.call({method: 'balance'})).toString();
+  data.accountWalletBalance = new BigNumber(await data.accountWallet.call({method: 'balance'}))
+    .div(data.decimals_modifier).toString();
   data.dexAccountWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
   const account2WalletData = await dexAccount2.call({
     method: 'getWalletData',
     params: {token_root: data.tokenRoot.address}
   });
   data.dexAccountWallet.setAddress(account2WalletData.wallet);
-  data.dexAccountVirtualBalance = new BigNumber(account2WalletData.balance).toString();
+  data.dexAccountVirtualBalance = new BigNumber(account2WalletData.balance).div(data.decimals_modifier).toString();
   data.dexAccountWalletBalance = (await data.dexAccountWallet.call({method: 'balance'})).toString();
 }
 
@@ -73,7 +78,7 @@ const displayBalancesChanges = async (data) => {
   };
   await loadWallets(data);
   for (const [key, value] of Object.entries(oldBalances)) {
-    const change = data[key] - value;
+    const change = (data[key] - value);
     logger.log(`${key}: ${change >= 0 ? '+' : ''}${change}`);
   }
   data.history.push(oldBalances);
@@ -99,6 +104,7 @@ describe('Check Deposit to Dex Account', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
     DexAccount = await locklift.factory.getContract('DexAccount');
     account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+    account2.afterRun = afterRun;
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
 
     await loadWallets(fooData);
@@ -116,7 +122,7 @@ describe('Check Deposit to Dex Account', async function () {
         method: 'transfer',
         params: {
           to: fooData.dexAccountWallet.address,
-          tokens: FOO_DEPOSIT_AMOUNT,
+          tokens: fooData.deposit_amount.toString(),
           grams: 0,
           send_gas_to: account2.address,
           notify_receiver: true,
@@ -133,7 +139,8 @@ describe('Check Deposit to Dex Account', async function () {
       expect(fooData.accountWalletBalance)
         .to
         .equal(
-            new BigNumber(fooData.history.last().accountWalletBalance).minus(FOO_DEPOSIT_AMOUNT).toString(),
+          new BigNumber(fooData.history.last().accountWalletBalance)
+            .minus(fooData.deposit_amount.div(fooData.decimals_modifier)).toString(),
           'FooWallet2 has wrong balance after deposit'
         );
       expect(fooData.dexAccountWalletBalance)
@@ -145,7 +152,8 @@ describe('Check Deposit to Dex Account', async function () {
       expect(fooData.dexAccountVirtualBalance)
         .to
         .equal(
-            new BigNumber(fooData.history.last().dexAccountVirtualBalance).plus(FOO_DEPOSIT_AMOUNT).toString(),
+          new BigNumber(fooData.history.last().dexAccountVirtualBalance)
+            .plus(fooData.deposit_amount.div(fooData.decimals_modifier)).toString(),
           'DexAccount2 Foo has wrong balance virtual after deposit'
         );
       expect(fooData.dexAccountWalletBalance)
@@ -161,7 +169,7 @@ describe('Check Deposit to Dex Account', async function () {
         method: 'transfer',
         params: {
           to: barData.dexAccountWallet.address,
-          tokens: BAR_DEPOSIT_AMOUNT,
+          tokens: barData.deposit_amount.toString(),
           grams: 0,
           send_gas_to: account2.address,
           notify_receiver: true,
@@ -178,7 +186,8 @@ describe('Check Deposit to Dex Account', async function () {
       expect(barData.accountWalletBalance)
         .to
         .equal(
-          new BigNumber(barData.history.last().accountWalletBalance).minus(BAR_DEPOSIT_AMOUNT).toString(),
+          new BigNumber(barData.history.last().accountWalletBalance)
+            .minus(barData.deposit_amount.div(barData.decimals_modifier)).toString(),
           'BarWallet2 has wrong balance after deposit'
         );
       expect(barData.dexAccountWalletBalance)
@@ -190,7 +199,8 @@ describe('Check Deposit to Dex Account', async function () {
       expect(barData.dexAccountVirtualBalance)
         .to
         .equal(
-            new BigNumber(barData.history.last().dexAccountVirtualBalance).plus(BAR_DEPOSIT_AMOUNT).toString(),
+          new BigNumber(barData.history.last().dexAccountVirtualBalance)
+            .plus(barData.deposit_amount.div(barData.decimals_modifier)).toString(),
           'DexAccount2 Bar has wrong balance virtual after deposit'
         );
       expect(barData.dexAccountWalletBalance)

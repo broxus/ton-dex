@@ -1,6 +1,7 @@
 const fs = require('fs');
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build'
+const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
 
 const getRandomNonce = () => Math.random() * 64000 | 0;
 
@@ -10,7 +11,7 @@ const stringToBytesArray = (dataString) => {
 
 const displayAccount = async (contract) => {
   return (
-    `Account.${contract.name}${contract.index !== undefined ? '#'+contract.index : ''}`+
+    `Account.${contract.name}${contract.index !== undefined ? '#' + contract.index : ''}` +
     `(address="${contract.address}" balance=${await getBalance(contract)})`
   )
 };
@@ -23,6 +24,10 @@ async function sleep(ms) {
   ms = ms === undefined ? 1000 : ms;
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const afterRun = async (tx) => {
+  await new Promise(resolve => setTimeout(resolve, 10000));
+};
 
 class Migration {
   constructor(log_path = 'migration-log.json') {
@@ -71,5 +76,7 @@ module.exports = {
   sleep,
   getBalance,
   displayAccount,
-  TOKEN_CONTRACTS_PATH
+  afterRun,
+  TOKEN_CONTRACTS_PATH,
+  EMPTY_TVM_CELL
 }

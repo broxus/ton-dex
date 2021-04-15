@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require(process.cwd()+'/scripts/utils')
+const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
 
@@ -17,9 +17,9 @@ describe('Check DexAccount add Pair', async function () {
   this.timeout(120000);
   before('Load contracts', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
-    await locklift.keys.getKeyPairs();
     DexAccount = await locklift.factory.getContract('DexAccount');
     account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+    account2.afterRun = afterRun;
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
     dexPairFooBar = migration.load(await locklift.factory.getContract('DexPair'), 'DexPairFooBar');
     let dexPairFooBarRoots = await dexPairFooBar.call({method: 'getTokenRoots'});
@@ -42,7 +42,6 @@ describe('Check DexAccount add Pair', async function () {
     });
   });
   describe('Add new DexPair to DexAccount', async function () {
-    this.timeout(20000);
     before('Adding new pair', async function () {
       await account2.runTarget({
         contract: dexAccount2,
