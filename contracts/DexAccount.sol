@@ -524,6 +524,9 @@ contract DexAccount is
 
         if (_tmp_deploying_wallets[msg.sender] && owner_address == address(this) && !_wallets.exists(msg.sender)) {
             _wallets[msg.sender] = wallet;
+            if(!_balances.exists(msg.sender)) {
+                _balances[msg.sender] = 0;
+            }
             delete _tmp_deploying_wallets[msg.sender];
 
             ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(address(this), false);

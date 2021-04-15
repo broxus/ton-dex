@@ -4884,6 +4884,40 @@ PUSHCONT {
 	DICTSET
 	SETGLOB 16
 	; end colValue
+	;; if
+	;; !
+	;; map.exists
+	;; get member sender
+	GETGLOB 9
+	;; push identifier _balances
+	GETGLOB 17
+	PUSHINT 267
+	DICTGET
+	DUP
+	PUSHCONT {
+		NIP
+	}
+	IF
+	PUSHCONT {
+		; expValue
+		;; fetch _balances
+		GETGLOB 17
+		;; get member sender
+		GETGLOB 9
+		SWAP
+		; end expValue
+		PUSHINT 0
+		; colValue
+		NEWC
+		STU 128
+		ROTREV
+		PUSHINT 267
+		DICTSETB
+		SETGLOB 17
+		; end colValue
+	}
+	IFNOT
+	;; end if
 	;; delete
 	; expValue
 	;; fetch _tmp_deploying_wallets
