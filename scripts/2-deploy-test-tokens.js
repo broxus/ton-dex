@@ -1,5 +1,8 @@
 const {getRandomNonce, Migration, stringToBytesArray} = require(process.cwd()+'/scripts/utils')
 
+const afterRun = async (tx) => {
+  await new Promise(resolve => setTimeout(resolve, 5000));
+};
 
 async function main() {
   const migration = new Migration();
@@ -17,6 +20,8 @@ async function main() {
     initParams: {_randomNonce: getRandomNonce()},
     keyPair,
   }, locklift.utils.convertCrystal(100, 'nano'));
+
+  TokenFactoryCreateNewTokenFor.afterRun = afterRun;
 
   const tokensToCreate = [
     {

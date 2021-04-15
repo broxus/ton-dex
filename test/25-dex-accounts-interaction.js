@@ -88,6 +88,7 @@ async function dexAccountBalances(account) {
 }
 
 describe('Check direct DexPairFooBar operations', async function () {
+    this.timeout(120000);
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 

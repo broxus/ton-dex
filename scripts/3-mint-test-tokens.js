@@ -1,5 +1,15 @@
 const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
+const BigNumber = require('bignumber.js');
+BigNumber.config({EXPONENTIAL_AT: 257});
+
+const afterRun = async (tx) => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+};
+
+const FOO_DECIMALS = 3;
+const BAR_DECIMALS = 18;
+
 async function main() {
   const migration = new Migration();
   const [keyPair] = await locklift.keys.getKeyPairs();
@@ -7,6 +17,8 @@ async function main() {
   const account1 = migration.load(await locklift.factory.getAccount(), 'Account1');
   const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
   const account3 = migration.load(await locklift.factory.getAccount(), 'Account3');
+
+  account1.afterRun = afterRun;
 
   const tokenFoo = migration.load(
     await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'
@@ -18,19 +30,19 @@ async function main() {
     {
       contract: tokenFoo,
       owner: account2.address,
-      tokens: 10000,
+      tokens: new BigNumber(20000).times(new BigNumber(10).pow(FOO_DECIMALS)).toString(),
       alias: 'FooWallet2'
     },
     {
       contract: tokenBar,
       owner: account2.address,
-      tokens: 10000,
+      tokens: new BigNumber(20000).times(new BigNumber(10).pow(BAR_DECIMALS)).toString(),
       alias: 'BarWallet2'
     },
     {
       contract: tokenFoo,
       owner: account3.address,
-      tokens: 110000,
+      tokens: new BigNumber(110000).times(new BigNumber(10).pow(FOO_DECIMALS)).toString(),
       alias: 'FooWallet3'
     }
   ]

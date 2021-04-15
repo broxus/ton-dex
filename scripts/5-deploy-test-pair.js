@@ -1,11 +1,16 @@
 const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
 
 
+const afterRun = async (tx) => {
+  await new Promise(resolve => setTimeout(resolve, 10000));
+};
+
 async function main() {
   const migration = new Migration();
   const keyPairs = await locklift.keys.getKeyPairs();
 
   const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+  account2.afterRun = afterRun;
   const tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot');
   const tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot');
   const dexVault = migration.load(await locklift.factory.getContract('DexVault'), 'DexVault');
@@ -22,8 +27,6 @@ async function main() {
     value: locklift.utils.convertCrystal(6, 'nano'),
     keyPair: keyPairs[1]
   });
-
-  await new Promise((r) => setTimeout(r, 10000));
 
   const dexPairFooBarAddress = await dexRoot.call({
     method: 'getExpectedPairAddress',

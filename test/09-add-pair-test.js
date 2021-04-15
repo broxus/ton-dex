@@ -14,6 +14,7 @@ let lp_root;
 let keyPairs;
 
 describe('Check DexAccount add Pair', async function () {
+  this.timeout(120000);
   before('Load contracts', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
     await locklift.keys.getKeyPairs();
