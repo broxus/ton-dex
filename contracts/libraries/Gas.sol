@@ -25,6 +25,7 @@ library Gas {
     uint128 constant UPGRADE_ROOT_MIN_VALUE         = 10 ton;
     uint128 constant UPGRADE_ACCOUNT_MIN_VALUE      = 5 ton;
     uint128 constant UPGRADE_PAIR_MIN_VALUE         = 5 ton;
+    uint128 constant UPGRADE_VAULT_MIN_VALUE        = 5 ton;
 
     uint128 constant WITHDRAW_MIN_VALUE_BASE        = 1 ton;
     uint128 constant TRANSFER_MIN_VALUE             = 1 ton;

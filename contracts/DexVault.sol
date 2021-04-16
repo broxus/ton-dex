@@ -264,15 +264,22 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     }
 
     function upgrade(TvmCell code) public override onlyOwner {
+        require(msg.value > Gas.UPGRADE_VAULT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
+        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+
         TvmBuilder builder;
+        TvmBuilder owners_data_builder;
+
+        owners_data_builder.store(owner);
+        owners_data_builder.store(pending_owner);
+
+        builder.store(root);
+        builder.store(token_factory);
+
+        builder.storeRef(owners_data_builder);
 
         builder.store(platform_code);
-        builder.store(has_platform_code);
         builder.store(lp_token_pending_code);
-        builder.store(root);
-        builder.store(owner);
-        builder.store(pending_owner);
-        builder.store(token_factory);
 
         tvm.setcode(code);
         tvm.setCurrentCode(code);

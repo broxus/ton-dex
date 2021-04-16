@@ -48,7 +48,7 @@ contract DexAccount is
     address root;
     address vault;
     uint32 current_version;
-    TvmCell platform_code;
+    TvmCell public platform_code;
 
     // Params:
     address owner;

@@ -36,7 +36,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     address root;
     address vault;
     uint32 current_version;
-    TvmCell platform_code;
+    TvmCell public platform_code;
 
     // Params:
     address left_root;
@@ -908,28 +908,39 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
             builder.store(platform_code);  // ref1 = platform_code
 
-            TvmBuilder dataBuilder;        // ref2:
-            dataBuilder.store(left_root);
-            dataBuilder.store(right_root);
+            //Tokens
+            TvmBuilder tokens_data_builder;
+            tokens_data_builder.store(left_root);
+            tokens_data_builder.store(right_root);
+            tokens_data_builder.store(lp_root);
+
+            TvmBuilder balances_data_builder;
+            // Liquidity tokens
+            balances_data_builder.store(lp_supply);
+            // Balances
+            balances_data_builder.store(left_balance);
+            balances_data_builder.store(right_balance);
+            // Fee
+            balances_data_builder.store(fee_numerator);
+            balances_data_builder.store(fee_denominator);
+            tokens_data_builder.storeRef(balances_data_builder); // ref2: ref1
+
+            builder.storeRef(tokens_data_builder); // ref2:
 
             // Wallets
-            dataBuilder.store(lp_wallet);
-            dataBuilder.store(left_wallet);
-            dataBuilder.store(right_wallet);
-            // Vault wallets
-            dataBuilder.store(vault_left_wallet);
-            dataBuilder.store(vault_right_wallet);
-            // Liquidity tokens
-            dataBuilder.store(lp_root);
-            dataBuilder.store(lp_supply);
-            // Balances
-            dataBuilder.store(left_balance);
-            dataBuilder.store(right_balance);
-            // Fee
-            dataBuilder.store(fee_numerator);
-            dataBuilder.store(fee_denominator);
+            TvmBuilder pair_wallets_data_builder;
+            pair_wallets_data_builder.store(lp_wallet);
+            pair_wallets_data_builder.store(left_wallet);
+            pair_wallets_data_builder.store(right_wallet);
 
-            builder.storeRef(dataBuilder);
+            builder.storeRef(pair_wallets_data_builder); // ref3:
+
+            // Vault wallets
+            TvmBuilder vault_wallets_data_builder;
+            vault_wallets_data_builder.store(vault_left_wallet);
+            vault_wallets_data_builder.store(vault_right_wallet);
+            builder.storeRef(vault_wallets_data_builder); // ref4:
+
 
             // set code after complete this method
             tvm.setcode(code);
@@ -943,17 +954,35 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     /*
         upgrade_data
             bits:
+                address root
+                address vault
                 uint32 old_version - zero if initialize
                 uint32 new_version
-                address root
                 address send_gas_to
             refs:
                 1: platform_code
-                2: data
+                2: tokens_data
                     bits:
                         address left_root
                         address right_root
-                        [address lp_root]
+                        address lp_root
+                    refs:
+                        1: balances_data
+                            bits:
+                                uint128 lp_supply
+                                uint128 left_balance
+                                uint128 right_balance
+                                uint16 fee_numerator
+                                uint16 fee_denominator
+                3: pair_wallets
+                    bits:
+                        address lp_wallet
+                        address left_wallet
+                        address right_wallet
+                4: vault_wallets
+                    bits:
+                        address vault_left_wallet
+                        address vault_right_wallet
     */
     function onCodeUpgrade(TvmCell upgrade_data) private {
         TvmSlice s = upgrade_data.toSlice();

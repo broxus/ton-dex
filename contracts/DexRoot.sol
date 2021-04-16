@@ -125,8 +125,12 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
         TvmBuilder builder;
 
+        builder.store(account_version);
+        builder.store(pair_version);
+
         builder.store(owner);
         builder.store(vault);
+        builder.store(pending_owner);
 
         builder.store(platform_code);
         builder.store(account_code);
@@ -199,6 +203,14 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     modifier onlyOwner() {
         require(msg.sender == owner, DexErrors.NOT_MY_OWNER);
         _;
+    }
+
+    function getOwner() external view responsible returns (address dex_owner) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner;
+    }
+
+    function getPendingOwner() external view responsible returns (address dex_pending_owner) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pending_owner;
     }
 
     function transferOwner(address new_owner) external onlyOwner {

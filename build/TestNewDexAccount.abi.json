@@ -1,0 +1,96 @@
+{
+	"ABI version": 2,
+	"header": ["pubkey", "time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getRoot",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "getOwner",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "getVersion",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint32"}
+			]
+		},
+		{
+			"name": "getVault",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "getWalletData",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"token_root","type":"address"}
+			],
+			"outputs": [
+				{"name":"wallet","type":"address"},
+				{"name":"balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "getWallets",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"map(address,address)"}
+			]
+		},
+		{
+			"name": "getBalances",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"map(address,uint128)"}
+			]
+		},
+		{
+			"name": "newFunc",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"bytes"}
+			]
+		},
+		{
+			"name": "platform_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"platform_code","type":"cell"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}

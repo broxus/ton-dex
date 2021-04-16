@@ -248,6 +248,14 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "platform_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"platform_code","type":"cell"}
+			]
 		}
 	],
 	"data": [
