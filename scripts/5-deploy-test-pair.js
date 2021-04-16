@@ -1,9 +1,4 @@
-const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
-
-
-const afterRun = async (tx) => {
-  await new Promise(resolve => setTimeout(resolve, 10000));
-};
+const {Migration, TOKEN_CONTRACTS_PATH, afterRun} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();
@@ -40,6 +35,8 @@ async function main() {
   dexPairFooBar.address = dexPairFooBarAddress;
   migration.store(dexPairFooBar, 'DexPairFooBar');
 
+  await new Promise(resolve => setTimeout(resolve, 10000));
+
   const FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
   FooBarLpRoot.setAddress(await dexPairFooBar.call({method: "lp_root"}));
 
@@ -54,6 +51,15 @@ async function main() {
 
   const BarPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
   BarPairWallet.setAddress(await tokenBar.call({
+    method: "getWalletAddress",
+    params: {
+      wallet_public_key_: 0,
+      owner_address_: dexPairFooBarAddress,
+    }
+  }));
+
+  const FooBarLpPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  FooBarLpPairWallet.setAddress(await FooBarLpRoot.call({
     method: "getWalletAddress",
     params: {
       wallet_public_key_: 0,
@@ -80,7 +86,7 @@ async function main() {
   }));
 
   const FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-  FooBarLpVaultWallet.setAddress(await tokenBar.call({
+  FooBarLpVaultWallet.setAddress(await FooBarLpRoot.call({
     method: "getWalletAddress",
     params: {
       wallet_public_key_: 0,
@@ -91,6 +97,7 @@ async function main() {
   migration.store(FooBarLpRoot, 'FooBarLpRoot');
   migration.store(FooPairWallet, 'FooPairWallet');
   migration.store(BarPairWallet, 'BarPairWallet');
+  migration.store(FooBarLpPairWallet, 'FooBarLpPairWallet');
   migration.store(FooVaultWallet, 'FooVaultWallet');
   migration.store(BarVaultWallet, 'BarVaultWallet');
   migration.store(FooBarLpVaultWallet, 'FooBarLpVaultWallet');

@@ -4,6 +4,7 @@ const range = n => [...Array(n).keys()];
 const migration = new Migration();
 
 async function main() {
+  migration.reset();
   const Account = await locklift.factory.getAccount();
   const keyPairs = await locklift.keys.getKeyPairs();
 

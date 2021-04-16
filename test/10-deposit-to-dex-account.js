@@ -12,7 +12,7 @@ if (!Array.prototype.last) {
 const migration = new Migration();
 
 const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 18;
+const BAR_DECIMALS = 9;
 
 let DexAccount;
 let dexAccount2;

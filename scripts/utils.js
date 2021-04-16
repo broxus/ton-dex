@@ -43,8 +43,17 @@ class Migration {
     }
   }
 
+  reset() {
+    this.migration_log = {};
+    this._saveMigrationLog();
+  }
+
   _saveMigrationLog() {
     fs.writeFileSync(this.log_path, JSON.stringify(this.migration_log));
+  }
+
+  exists(alias) {
+    return this.migration_log[alias] !== undefined;
   }
 
   load(contract, alias) {

@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require(process.cwd() + '/scripts/utils');
+const {Migration, afterRun} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -17,7 +17,7 @@ let Account2;
 let DexAccount2;
 
 const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 18;
+const BAR_DECIMALS = 9;
 const LP_DECIMALS = 9;
 
 const FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(FOO_DECIMALS).toNumber();
@@ -133,6 +133,8 @@ describe('Deposit liquidity', async function () {
         migration.load(FooBarLpRoot, 'FooBarLpRoot');
         migration.load(Account2, 'Account2');
         migration.load(DexAccount2, 'DexAccount2');
+
+        Account2.afterRun = afterRun;
 
         const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;

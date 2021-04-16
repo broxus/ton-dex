@@ -79,7 +79,7 @@
 		{
 			"name": "setFeeParams",
 			"inputs": [
-				{"name":"nominator","type":"uint16"},
+				{"name":"numerator","type":"uint16"},
 				{"name":"denominator","type":"uint16"}
 			],
 			"outputs": [
@@ -91,7 +91,7 @@
 				{"name":"_answer_id","type":"uint32"}
 			],
 			"outputs": [
-				{"name":"nominator","type":"uint16"},
+				{"name":"numerator","type":"uint16"},
 				{"name":"denominator","type":"uint16"}
 			]
 		},

@@ -26,7 +26,7 @@ let FooBarLpWallet3;
 
 
 const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 18;
+const BAR_DECIMALS = 9;
 const LP_DECIMALS = 9;
 
 const FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(FOO_DECIMALS).toNumber();

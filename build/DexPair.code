@@ -721,12 +721,12 @@ IFREF {
 	CALL $c4_to_c7$
 }
 ; Decode input parameters
-; Decode nominator
+; Decode numerator
 LDU 16
 ; Decode denominator
 LDU 16
 ENDS
-;; param: nominator
+;; param: numerator
 ;; param: denominator
 ; modifier onlyRoot
 ;; get member sender
@@ -738,7 +738,7 @@ THROWIFNOT 101
 ; function setFeeParams
 ; expValue
 ; end expValue
-;; push identifier nominator
+;; push identifier numerator
 PUSH S1
 ; colValue
 SETGLOB 26
@@ -773,7 +773,7 @@ SETINDEXQ 5
 SETGLOB 4
 ; Decode input parameters
 ENDS
-;; ret param: nominator
+;; ret param: numerator
 PUSHINT 0
 ;; ret param: denominator
 PUSHINT 0
@@ -787,7 +787,7 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier fee_nominator
+;; push identifier fee_numerator
 GETGLOB 26
 ;; push identifier fee_denominator
 GETGLOB 27
@@ -1422,17 +1422,17 @@ CTOS
 ;; push identifier active
 GETGLOB 16
 NOT
-;; short-circuiting &&
+;; short-circuiting ||
 DUP
 PUSHCONT {
 	DROP
 	;; push identifier payloadSlice
 	DUP
 	SBITS
-	;; >=
+	;; <
 	PUSHINT 136
-	GEQ
-	;; short-circuiting &&
+	LESS
+	;; short-circuiting ||
 	DUP
 	PUSHCONT {
 		DROP
@@ -1440,9 +1440,9 @@ PUSHCONT {
 		GETGLOB 23
 		NEQINT 0
 	}
-	IF
+	IFNOT
 }
-IF
+IFNOT
 ;; decl: need_cancel
 ;; push identifier payloadSlice
 PUSH S1
@@ -1606,7 +1606,7 @@ PUSHCONT {
 			; function _expectedExchange
 			;; push identifier a_amount
 			PUSH S2
-			;; push identifier fee_nominator
+			;; push identifier fee_numerator
 			GETGLOB 26
 			;; push identifier fee_denominator
 			GETGLOB 27
@@ -1832,7 +1832,7 @@ PUSHCONT {
 				PUSH S17
 				STSLICER
 				;; notify_receiver
-				FALSE
+				TRUE
 				STIR 1
 				;; payload
 				;; push identifier empty
@@ -1971,7 +1971,7 @@ PUSHCONT {
 				;; push identifier fee_denominator
 				GETGLOB 27
 				;; -
-				;; push identifier fee_nominator
+				;; push identifier fee_numerator
 				GETGLOB 26
 				SUB
 				UFITS 16
@@ -2223,7 +2223,7 @@ PUSHCONT {
 					; function _expectedExchange
 					;; push identifier a_amount
 					PUSH S2
-					;; push identifier fee_nominator
+					;; push identifier fee_numerator
 					GETGLOB 26
 					;; push identifier fee_denominator
 					GETGLOB 27
@@ -2579,7 +2579,7 @@ PUSHCONT {
 						; function _expectedExchange
 						;; push identifier a_amount
 						PUSH S2
-						;; push identifier fee_nominator
+						;; push identifier fee_numerator
 						GETGLOB 26
 						;; push identifier fee_denominator
 						GETGLOB 27
@@ -2897,7 +2897,7 @@ PUSHCONT {
 					PUSH S15
 					STSLICER
 					;; notify_receiver
-					FALSE
+					TRUE
 					STIR 1
 					;; payload
 					;; push identifier empty
@@ -3020,7 +3020,7 @@ PUSHCONT {
 				; function _expectedExchange
 				;; push identifier a_amount
 				PUSH S2
-				;; push identifier fee_nominator
+				;; push identifier fee_numerator
 				GETGLOB 26
 				;; push identifier fee_denominator
 				GETGLOB 27
@@ -3246,7 +3246,7 @@ PUSHCONT {
 					PUSH S17
 					STSLICER
 					;; notify_receiver
-					FALSE
+					TRUE
 					STIR 1
 					;; payload
 					;; push identifier empty
@@ -3385,7 +3385,7 @@ PUSHCONT {
 					;; push identifier fee_denominator
 					GETGLOB 27
 					;; -
-					;; push identifier fee_nominator
+					;; push identifier fee_numerator
 					GETGLOB 26
 					SUB
 					UFITS 16
@@ -3637,7 +3637,7 @@ PUSHCONT {
 						; function _expectedExchange
 						;; push identifier a_amount
 						PUSH S2
-						;; push identifier fee_nominator
+						;; push identifier fee_numerator
 						GETGLOB 26
 						;; push identifier fee_denominator
 						GETGLOB 27
@@ -3993,7 +3993,7 @@ PUSHCONT {
 							; function _expectedExchange
 							;; push identifier a_amount
 							PUSH S2
-							;; push identifier fee_nominator
+							;; push identifier fee_numerator
 							GETGLOB 26
 							;; push identifier fee_denominator
 							GETGLOB 27
@@ -4311,7 +4311,7 @@ PUSHCONT {
 						PUSH S15
 						STSLICER
 						;; notify_receiver
-						FALSE
+						TRUE
 						STIR 1
 						;; payload
 						;; push identifier empty
@@ -4830,7 +4830,11 @@ PUSHCONT {
 		PUSH S3
 		;; push identifier right_amount
 		PUSH S3
-		PUSHINT 100000000000
+		;; push identifier left_amount
+		PUSH S5
+		;; push identifier right_amount
+		PUSH S5
+		MAX
 		FALSE
 		FALSE
 		PUSHINT 0
@@ -4964,7 +4968,7 @@ PUSHCONT {
 		;; push identifier fee_denominator
 		GETGLOB 27
 		;; -
-		;; push identifier fee_nominator
+		;; push identifier fee_numerator
 		GETGLOB 26
 		SUB
 		UFITS 16
@@ -5216,7 +5220,7 @@ PUSHCONT {
 			; function _expectedExchange
 			;; push identifier a_amount
 			PUSH S2
-			;; push identifier fee_nominator
+			;; push identifier fee_numerator
 			GETGLOB 26
 			;; push identifier fee_denominator
 			GETGLOB 27
@@ -5572,7 +5576,7 @@ PUSHCONT {
 				; function _expectedExchange
 				;; push identifier a_amount
 				PUSH S2
-				;; push identifier fee_nominator
+				;; push identifier fee_numerator
 				GETGLOB 26
 				;; push identifier fee_denominator
 				GETGLOB 27
@@ -6099,9 +6103,13 @@ PUSHINT 0
 GETGLOB 23
 EQINT 0
 PUSHCONT {
+	;; push identifier left_amount
+	PUSH S9
+	;; push identifier right_amount
+	PUSH S9
+	MAX
 	; expValue
 	; end expValue
-	PUSHINT 100000000000
 	; colValue
 	NIP
 	; end colValue
@@ -6254,7 +6262,7 @@ PUSHCONT {
 	;; push identifier fee_denominator
 	GETGLOB 27
 	;; -
-	;; push identifier fee_nominator
+	;; push identifier fee_numerator
 	GETGLOB 26
 	SUB
 	UFITS 16
@@ -6506,7 +6514,7 @@ PUSHCONT {
 		; function _expectedExchange
 		;; push identifier a_amount
 		PUSH S2
-		;; push identifier fee_nominator
+		;; push identifier fee_numerator
 		GETGLOB 26
 		;; push identifier fee_denominator
 		GETGLOB 27
@@ -6862,7 +6870,7 @@ PUSHCONT {
 			; function _expectedExchange
 			;; push identifier a_amount
 			PUSH S2
-			;; push identifier fee_nominator
+			;; push identifier fee_numerator
 			GETGLOB 26
 			;; push identifier fee_denominator
 			GETGLOB 27
@@ -8065,7 +8073,7 @@ PUSHCONT {
 		; function _expectedExchange
 		;; push identifier a_amount
 		PUSH S2
-		;; push identifier fee_nominator
+		;; push identifier fee_numerator
 		GETGLOB 26
 		;; push identifier fee_denominator
 		GETGLOB 27
@@ -8135,7 +8143,7 @@ PUSHCONT {
 		; function _expectedExchange
 		;; push identifier a_amount
 		PUSH S2
-		;; push identifier fee_nominator
+		;; push identifier fee_numerator
 		GETGLOB 26
 		;; push identifier fee_denominator
 		GETGLOB 27
@@ -8467,7 +8475,7 @@ PUSHCONT {
 	; function _expectedExchange
 	;; push identifier a_amount
 	PUSH S2
-	;; push identifier fee_nominator
+	;; push identifier fee_numerator
 	GETGLOB 26
 	;; push identifier fee_denominator
 	GETGLOB 27
@@ -8668,7 +8676,7 @@ PUSHCONT {
 		; function _expectedExchange
 		;; push identifier a_amount
 		PUSH S2
-		;; push identifier fee_nominator
+		;; push identifier fee_numerator
 		GETGLOB 26
 		;; push identifier fee_denominator
 		GETGLOB 27
@@ -9271,7 +9279,7 @@ PUSHCONT {
 	; expValue
 	DUP
 	; end expValue
-	;; push identifier fee_nominator
+	;; push identifier fee_numerator
 	GETGLOB 26
 	STUR 16
 	; colValue
@@ -9537,6 +9545,18 @@ INDEX 3
 PLDU 256
 EQINT 0
 PUSHCONT {
+	; expValue
+	; end expValue
+	PUSHINT 3
+	; colValue
+	SETGLOB 26
+	; end colValue
+	; expValue
+	; end expValue
+	PUSHINT 1000
+	; colValue
+	SETGLOB 27
+	; end colValue
 	;; Remote call IDexVault.addLiquidityToken
 	;; push identifier vault
 	GETGLOB 11
@@ -10034,9 +10054,11 @@ ENDS
 PUSH S1
 EQINT 0
 THROWIFNOT 100
+FALSE
+;; decl: need_set_callback
 ;; if
 ;; push identifier owner_address
-DUP
+PUSH S1
 MYADDR
 SDEQ
 PUSHCONT {
@@ -10063,9 +10085,15 @@ PUSHCONT {
 		; expValue
 		; end expValue
 		;; push identifier wallet
-		PUSH S2
+		PUSH S3
 		; colValue
 		SETGLOB 17
+		; end colValue
+		; expValue
+		; end expValue
+		TRUE
+		; colValue
+		NIP
 		; end colValue
 	}
 	PUSHCONT {
@@ -10092,9 +10120,15 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			;; push identifier wallet
-			PUSH S2
+			PUSH S3
 			; colValue
 			SETGLOB 18
+			; end colValue
+			; expValue
+			; end expValue
+			TRUE
+			; colValue
+			NIP
 			; end colValue
 		}
 		PUSHCONT {
@@ -10121,9 +10155,15 @@ PUSHCONT {
 				; expValue
 				; end expValue
 				;; push identifier wallet
-				PUSH S2
+				PUSH S3
 				; colValue
 				SETGLOB 19
+				; end colValue
+				; expValue
+				; end expValue
+				TRUE
+				; colValue
+				NIP
 				; end colValue
 			}
 			IF
@@ -10139,7 +10179,7 @@ IF
 ;; end if
 ;; if
 ;; push identifier owner_address
-DUP
+PUSH S1
 ;; push identifier vault
 GETGLOB 11
 SDEQ
@@ -10167,7 +10207,7 @@ PUSHCONT {
 		; expValue
 		; end expValue
 		;; push identifier wallet
-		PUSH S2
+		PUSH S3
 		; colValue
 		SETGLOB 20
 		; end colValue
@@ -10196,7 +10236,7 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			;; push identifier wallet
-			PUSH S2
+			PUSH S3
 			; colValue
 			SETGLOB 21
 			; end colValue
@@ -10276,12 +10316,16 @@ PUSHCONT {
 	; colValue
 	SETGLOB 16
 	; end colValue
-	PUSHINT 1000000000
-	PUSHINT 2
-	RAWRESERVE
-	;; transfer()
-	;; push identifier root
-	GETGLOB 10
+}
+IF
+;; end if
+;; if
+;; push identifier need_set_callback
+DUP
+PUSHCONT {
+	;; Remote call ITONTokenWallet.setReceiveCallback
+	;; push identifier wallet
+	PUSH S3
 	NEWC
 	STSLICECONST x62_
 	STSLICE
@@ -10289,16 +10333,20 @@ PUSHCONT {
 	STZEROES
 	STSLICECONST 0
 	STSLICECONST 0
+	STSLICECONST x71eee875
+	;; receive_callback
+	MYADDR
+	STSLICER
+	;; allow_non_notifiable
+	FALSE
+	STIR 1
 	ENDC
-	PUSHINT 128
-	;; +
-	PUSHINT 2
-	ADD
-	UFITS 8
+	PUSHINT 64
 	SENDRAWMSG
 }
 IF
 ;; end if
+DROP
 ; end function expectedWalletAddressCallback
 BLKDROP 3
 CALLREF {
@@ -10517,7 +10565,7 @@ PUSHCONT {
 	; init right_balance
 	PUSHINT 0
 	SETGLOB 25
-	; init fee_nominator
+	; init fee_numerator
 	PUSHINT 0
 	SETGLOB 26
 	; init fee_denominator
@@ -10537,12 +10585,6 @@ PUSHCONT {
 	SETGLOB 6
 	TRUE
 	SETGLOB 1
-	;; init state var: fee_nominator
-	PUSHINT 3
-	SETGLOB 26
-	;; init state var: fee_denominator
-	PUSHINT 1000
-	SETGLOB 27
 }
 IFELSE
 

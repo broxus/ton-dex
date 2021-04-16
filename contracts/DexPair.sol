@@ -58,8 +58,8 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     uint128 public left_balance;
     uint128 public right_balance;
     // Fee
-    uint16 fee_nominator = 3;
-    uint16 fee_denominator = 1000;
+    uint16 fee_numerator;
+    uint16 fee_denominator;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Base functions
@@ -106,13 +106,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (vault_left_wallet, vault_right_wallet);
     }
 
-    function setFeeParams(uint16 nominator, uint16 denominator) override external onlyRoot {
-        fee_nominator = nominator;
+    function setFeeParams(uint16 numerator, uint16 denominator) override external onlyRoot {
+        fee_numerator = numerator;
         fee_denominator = denominator;
     }
 
-    function getFeeParams() override external view responsible returns (uint16 nominator, uint16 denominator) {
-        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (fee_nominator, fee_denominator);
+    function getFeeParams() override external view responsible returns (uint16 numerator, uint16 denominator) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } (fee_numerator, fee_denominator);
     }
 
     function isActive() override external view responsible returns (bool) {
@@ -166,7 +166,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         TvmSlice payloadSlice = payload.toSlice();
 
-        bool need_cancel = !active && payloadSlice.bits() >= 136 && lp_supply != 0;
+        bool need_cancel = !active || payloadSlice.bits() < 136 || lp_supply != 0;
 
         bool notify_success = payloadSlice.refs() >= 1;
         bool notify_cancel = payloadSlice.refs() >= 2;
@@ -222,7 +222,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             0,
                             0,
                             original_gas_to,
-                            false,
+                            true,
                             empty
                         );
                     } else {
@@ -256,7 +256,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             0,
                             0,
                             original_gas_to,
-                            false,
+                            true,
                             empty
                         );
                     } else {
@@ -303,7 +303,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             0,
                             0,
                             original_gas_to,
-                            false,
+                            true,
                             empty
                         );
                     } else {
@@ -337,7 +337,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             0,
                             0,
                             original_gas_to,
-                            false,
+                            true,
                             empty
                         );
                     } else {
@@ -431,7 +431,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } DepositLiquidityResult(
                 left_amount,
                 right_amount,
-                10**11,
+                math.max(left_amount, right_amount),
                 false, false, 0, 0, 0, 0, 0, 0
             );
         } else {
@@ -458,7 +458,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint128 lp_tokens_amount;
 
         if (lp_supply == 0) {
-            lp_tokens_amount = 10**11;
+            lp_tokens_amount = math.max(left_amount, right_amount);
             left_balance = left_amount;
             right_balance = right_amount;
 
@@ -570,10 +570,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint128 step_3_right_deposit = 0;
         uint128 step_3_lp_reward = 0;
 
-        uint256 fee_d_minus_n = uint256(fee_denominator - fee_nominator);
+        uint256 fee_d_minus_n = uint256(fee_denominator - fee_numerator);
 
         if (auto_change && current_right_amount > 0) {
-            // step 2 (surplus TON exchange)
+            // step 2 (surplus RIGHT exchange)
             step_2_right_to_left = true;
             uint256 p = math.muldiv(current_right_balance, fee_d_minus_n + fee_denominator, fee_d_minus_n);
             uint256 q = math.muldiv(current_right_amount * current_right_balance, fee_denominator, fee_d_minus_n);
@@ -589,7 +589,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
             step_3_lp_reward = math.muldiv(current_right_amount, current_lp_supply, current_right_balance);
         } else if (auto_change && current_left_amount > 0) {
-            // step 2 (surplus tokens exchange)
+            // step 2 (surplus LEFT exchange)
             step_2_left_to_right = true;
             uint256 p = math.muldiv(current_left_balance, fee_d_minus_n + fee_denominator, fee_d_minus_n);
             uint256 q = math.muldiv(current_left_amount * current_left_balance, fee_denominator, fee_d_minus_n);
@@ -769,7 +769,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     }
 
     function _expectedExchange(uint128 a_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
-        uint128 a_fee = math.muldiv(a_amount, fee_nominator, fee_denominator);
+        uint128 a_fee = math.muldiv(a_amount, fee_numerator, fee_denominator);
 
         uint128 new_a_pool = a_pool + a_amount;
         uint128 new_b_pool = math.muldiv(a_pool, b_pool, new_a_pool - a_fee);
@@ -912,7 +912,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             dataBuilder.store(left_balance);
             dataBuilder.store(right_balance);
             // Fee
-            dataBuilder.store(fee_nominator);
+            dataBuilder.store(fee_numerator);
             dataBuilder.store(fee_denominator);
 
             builder.storeRef(dataBuilder);
@@ -967,6 +967,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     function afterInitialize(address send_gas_to) override external onlyRoot {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         if (lp_root.value == 0) {
+
+            fee_numerator = 3;
+            fee_denominator = 1000;
+
             IDexVault(vault).addLiquidityToken{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 address(this),
                 left_root,
@@ -1086,13 +1090,18 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     ) override external {
         require(wallet_public_key == 0);
 
+        bool need_set_callback = false;
+
         if (owner_address == address(this)) {
             if (msg.sender == lp_root && lp_wallet.value == 0) {
                 lp_wallet = wallet;
+                need_set_callback = true;
             } else if (msg.sender == left_root && left_wallet.value == 0) {
                 left_wallet = wallet;
+                need_set_callback = true;
             } else if (msg.sender == right_root && right_wallet.value == 0) {
                 right_wallet = wallet;
+                need_set_callback = true;
             }
         }
 
@@ -1107,8 +1116,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         if (lp_wallet.value != 0 && left_wallet.value != 0 && right_wallet.value != 0 &&
             vault_left_wallet.value != 0 && vault_right_wallet.value != 0) {
             active = true;
-            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-            root.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
+        }
+
+        if (need_set_callback) {
+            ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: MsgFlag.REMAINING_GAS }(address(this), false);
         }
     }
 

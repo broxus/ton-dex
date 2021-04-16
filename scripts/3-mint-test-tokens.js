@@ -8,7 +8,7 @@ const afterRun = async (tx) => {
 };
 
 const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 18;
+const BAR_DECIMALS = 9;
 
 async function main() {
   const migration = new Migration();
