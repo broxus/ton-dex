@@ -8,7 +8,8 @@ const migration = new Migration();
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
-let DexRoot;
+let DexRoot
+let DexVault;
 let DexPairFooBar;
 let FooVaultWallet;
 let BarVaultWallet;
@@ -148,6 +149,7 @@ describe('Check direct DexPairFooBar operations', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
+        DexVault = await locklift.factory.getContract('DexVault');
         DexPairFooBar = await locklift.factory.getContract('DexPair');
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
@@ -165,6 +167,7 @@ describe('Check direct DexPairFooBar operations', async function () {
         FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
+        migration.load(DexVault, 'DexVault');
         migration.load(DexPairFooBar, 'DexPairFooBar');
         migration.load(FooVaultWallet, 'FooVaultWallet');
         migration.load(BarVaultWallet, 'BarVaultWallet');
@@ -220,6 +223,7 @@ describe('Check direct DexPairFooBar operations', async function () {
         `);
 
         logger.log('DexRoot: ' + DexRoot.address);
+        logger.log('DexVault: ' + DexVault.address);
         logger.log('DexPairFooBar: ' + DexPairFooBar.address);
         logger.log('FooRoot: ' + FooRoot.address);
         logger.log('BarRoot: ' + BarRoot.address);
@@ -254,7 +258,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            const tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -270,6 +274,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logger.log(`Transaction: ${tx.id}`);
 
             await BarWallet3.setAddress(await BarRoot.call({
                 method: 'getWalletAddress', params: {
@@ -290,7 +296,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const expectedDexBar = new BigNumber(dexStart.bar)
                 .minus(new BigNumber(expected.expected_amount).div(BAR_DECIMALS_MODIFIER)).toString();
             const expectedAccountFoo = new BigNumber(accountStart.foo).minus(TOKENS_TO_EXCHANGE).toString();
-            const expectedAccountBar = new BigNumber(accountStart.bar)
+            const expectedAccountBar = new BigNumber(accountStart.bar || 0)
                 .plus(new BigNumber(expected.expected_amount).div(BAR_DECIMALS_MODIFIER)).toString();
 
             expect(expectedDexFoo).to.equal(dexEnd.foo.toString(), 'Wrong DEX FOO balance');
@@ -309,7 +315,7 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedExchange', params: {
-                    amount: new BigNumber(TOKENS_TO_EXCHANGE).times(FOO_DECIMALS_MODIFIER).toString(),
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).times(BAR_DECIMALS_MODIFIER).toString(),
                     is_left_to_right: !IS_FOO_LEFT
                 }
             });
@@ -407,10 +413,10 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             const expectedDexFoo = new BigNumber(dexStart.foo)
                 .minus(new BigNumber(expected.expected_amount).div(FOO_DECIMALS_MODIFIER)).toString();
-            const expectedDexBar = new BigNumber(dexStart.bar).plus(TOKENS_TO_EXCHANGE).toString();
+            const expectedDexBar = new BigNumber(dexStart.bar).plus(new BigNumber(1).div(BAR_DECIMALS_MODIFIER)).toString();
             const expectedAccountFoo = new BigNumber(accountStart.foo)
                 .plus(new BigNumber(expected.expected_amount).div(FOO_DECIMALS_MODIFIER)).toString();
-            const expectedAccountBar = new BigNumber(accountStart.bar).minus(TOKENS_TO_EXCHANGE).toString();
+            const expectedAccountBar = new BigNumber(accountStart.bar).minus(new BigNumber(1).div(BAR_DECIMALS_MODIFIER)).toString();
 
             expect(expectedDexFoo).to.equal(dexEnd.foo.toString(), 'Wrong DEX FOO balance');
             expect(expectedDexBar).to.equal(dexEnd.bar.toString(), 'Wrong DEX BAR balance');
@@ -475,10 +481,10 @@ describe('Check direct DexPairFooBar operations', async function () {
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
 
-            const expectedDexFoo = new BigNumber(dexStart.foo).plus(TOKENS_TO_DEPOSIT).toString();
-            const expectedAccountFoo = new BigNumber(accountStart.foo).minus(TOKENS_TO_DEPOSIT).toString();
+            const expectedDexFoo = new BigNumber(dexStart.foo).plus(new BigNumber(1).div(FOO_DECIMALS_MODIFIER)).toString();
+            const expectedAccountFoo = new BigNumber(accountStart.foo).minus(new BigNumber(1).div(FOO_DECIMALS_MODIFIER)).toString();
             const expectedAccountLp = new BigNumber(accountStart.lp || 0)
-                .plus(expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER)).toString();
+                .plus(expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(LP_DECIMALS_MODIFIER)).toString();
 
             expect(pairEnd.lp_supply_actual).to.equal(pairEnd.lp_supply, 'Wrong LP supply');
             expect(expectedDexFoo).to.equal(dexEnd.foo.toString(), 'Wrong DEX FOO balance');
@@ -686,7 +692,7 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedWithdrawLiquidity', params: {
-                    lp_amount: accountStart.lp
+                    lp_amount: new BigNumber(accountStart.lp).times(LP_DECIMALS_MODIFIER).toString()
                 }
             });
 
@@ -707,7 +713,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 params: {
                     recipient_public_key: 0,
                     recipient_address: DexPairFooBar.address,
-                    tokens: accountStart.lp,
+                    tokens: new BigNumber(accountStart.lp).times(LP_DECIMALS_MODIFIER).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
                     send_gas_to: Account3.address,

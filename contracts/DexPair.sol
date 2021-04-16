@@ -166,7 +166,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
         TvmSlice payloadSlice = payload.toSlice();
 
-        bool need_cancel = !active || payloadSlice.bits() < 136 || lp_supply != 0;
+        bool need_cancel = !active ||
+            payloadSlice.bits() < 136 ||
+            lp_supply == 0 ||
+            (tokens_amount < fee_denominator && token_root != lp_root);
 
         bool notify_success = payloadSlice.refs() >= 1;
         bool notify_cancel = payloadSlice.refs() >= 2;
@@ -231,7 +234,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 } else if (op == OperationTypes.DEPOSIT_LIQUIDITY) {
                     // deposit liquidity by left side with auto exchange
                     DepositLiquidityResult r = _expectedDepositLiquidity(tokens_amount, 0, true);
-                    if (r.step_3_lp_reward > 0) {
+                    if (r.step_3_lp_reward > 0 && r.step_2_received <= right_balance) {
                         lp_supply = lp_supply + r.step_3_lp_reward;
                         left_balance += tokens_amount;
 
@@ -312,7 +315,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 } else if (op == OperationTypes.DEPOSIT_LIQUIDITY) {
                     // deposit liquidity by right side with auto exchange
                     DepositLiquidityResult r = _expectedDepositLiquidity(0, tokens_amount, true);
-                    if (r.step_3_lp_reward > 0) {
+                    if (r.step_3_lp_reward > 0 && r.step_2_received <= left_balance) {
                         lp_supply = lp_supply + r.step_3_lp_reward;
                         right_balance += tokens_amount;
 
@@ -468,6 +471,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             lp_tokens_amount = r.step_1_lp_reward + r.step_3_lp_reward;
 
             if (auto_change) {
+                if (r.step_2_right_to_left) {
+                    require(r.step_2_received <= left_balance + r.step_1_left_deposit, DexErrors.NOT_ENOUGH_FUNDS);
+                } else if (r.step_2_left_to_right) {
+                    require(r.step_2_received <= right_balance + r.step_1_right_deposit, DexErrors.NOT_ENOUGH_FUNDS);
+                }
                 left_balance = left_balance + left_amount;
                 right_balance = right_balance + right_amount;
             } else {
@@ -547,12 +555,18 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         bool auto_change
     ) private inline view returns (DepositLiquidityResult) {
         // step 1 (first deposit)
-        uint128 step_1_left_deposit = math.min(left_amount, math.muldiv(left_balance, right_amount, right_balance));
-        uint128 step_1_right_deposit = math.min(right_amount, math.muldiv(right_balance, left_amount, left_balance));
-        uint128 step_1_lp_reward = math.max(
-            math.muldiv(step_1_right_deposit, lp_supply, right_balance),
-            math.muldiv(step_1_left_deposit, lp_supply, left_balance)
-        );
+        uint128 step_1_left_deposit = 0;
+        uint128 step_1_right_deposit = 0;
+        uint128 step_1_lp_reward = 0;
+
+        if (left_amount > 0 && right_amount > 0) {
+            step_1_left_deposit = math.min(left_amount, math.muldiv(left_balance, right_amount, right_balance));
+            step_1_right_deposit = math.min(right_amount, math.muldiv(right_balance, left_amount, left_balance));
+            step_1_lp_reward = math.max(
+                math.muldiv(step_1_right_deposit, lp_supply, right_balance),
+                math.muldiv(step_1_left_deposit, lp_supply, left_balance)
+            );
+        }
 
         uint128 current_left_amount = left_amount - step_1_left_deposit;
         uint128 current_right_amount = right_amount - step_1_right_deposit;

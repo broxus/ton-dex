@@ -1438,7 +1438,31 @@ PUSHCONT {
 		DROP
 		;; push identifier lp_supply
 		GETGLOB 23
-		NEQINT 0
+		EQINT 0
+		;; short-circuiting ||
+		DUP
+		PUSHCONT {
+			DROP
+			;; push identifier tokens_amount
+			PUSH S7
+			;; <
+			;; push identifier fee_denominator
+			GETGLOB 27
+			LESS
+			;; short-circuiting &&
+			DUP
+			PUSHCONT {
+				DROP
+				;; push identifier token_root
+				PUSH S8
+				;; push identifier lp_root
+				GETGLOB 22
+				SDEQ
+				NOT
+			}
+			IF
+		}
+		IFNOT
 	}
 	IFNOT
 }
@@ -1870,48 +1894,83 @@ PUSHCONT {
 				;; param: right_amount
 				;; param: auto_change
 				; function _expectedDepositLiquidity
-				;; push identifier left_amount
-				PUSH S2
-				;; push identifier left_balance
-				GETGLOB 24
-				;; push identifier right_amount
-				PUSH S3
-				;; push identifier right_balance
-				GETGLOB 25
-				MULDIV
-				UFITS 128
-				MIN
+				PUSHINT 0
 				;; decl: step_1_left_deposit
-				;; push identifier right_amount
-				PUSH S2
-				;; push identifier right_balance
-				GETGLOB 25
+				PUSHINT 0
+				;; decl: step_1_right_deposit
+				PUSHINT 0
+				;; decl: step_1_lp_reward
+				;; if
 				;; push identifier left_amount
 				PUSH S5
-				;; push identifier left_balance
-				GETGLOB 24
-				MULDIV
-				UFITS 128
-				MIN
-				;; decl: step_1_right_deposit
-				;; push identifier step_1_right_deposit
+				GTINT 0
+				;; short-circuiting &&
 				DUP
-				;; push identifier lp_supply
-				GETGLOB 23
-				;; push identifier right_balance
-				GETGLOB 25
-				MULDIV
-				UFITS 128
-				;; push identifier step_1_left_deposit
-				PUSH S2
-				;; push identifier lp_supply
-				GETGLOB 23
-				;; push identifier left_balance
-				GETGLOB 24
-				MULDIV
-				UFITS 128
-				MAX
-				;; decl: step_1_lp_reward
+				PUSHCONT {
+					DROP
+					;; push identifier right_amount
+					PUSH S4
+					GTINT 0
+				}
+				IF
+				PUSHCONT {
+					;; push identifier left_amount
+					PUSH S5
+					;; push identifier left_balance
+					GETGLOB 24
+					;; push identifier right_amount
+					PUSH S6
+					;; push identifier right_balance
+					GETGLOB 25
+					MULDIV
+					UFITS 128
+					MIN
+					; expValue
+					; end expValue
+					; colValue
+					POP S3
+					; end colValue
+					;; push identifier right_amount
+					PUSH S4
+					;; push identifier right_balance
+					GETGLOB 25
+					;; push identifier left_amount
+					PUSH S7
+					;; push identifier left_balance
+					GETGLOB 24
+					MULDIV
+					UFITS 128
+					MIN
+					; expValue
+					; end expValue
+					; colValue
+					POP S2
+					; end colValue
+					;; push identifier step_1_right_deposit
+					PUSH S1
+					;; push identifier lp_supply
+					GETGLOB 23
+					;; push identifier right_balance
+					GETGLOB 25
+					MULDIV
+					UFITS 128
+					;; push identifier step_1_left_deposit
+					PUSH S3
+					;; push identifier lp_supply
+					GETGLOB 23
+					;; push identifier left_balance
+					GETGLOB 24
+					MULDIV
+					UFITS 128
+					MAX
+					; expValue
+					; end expValue
+					; colValue
+					NIP
+					; end colValue
+				}
+				IF
+				;; end if
 				;; push identifier left_amount
 				PUSH S5
 				;; -
@@ -2731,6 +2790,20 @@ PUSHCONT {
 				DUP
 				INDEX 10
 				GTINT 0
+				;; short-circuiting &&
+				DUP
+				PUSHCONT {
+					DROP
+					;; get member step_2_received
+					;; push identifier r
+					DUP
+					INDEX 7
+					;; <=
+					;; push identifier right_balance
+					GETGLOB 25
+					LEQ
+				}
+				IF
 				PUSHCONT {
 					; expValue
 					; end expValue
@@ -3284,48 +3357,83 @@ PUSHCONT {
 					;; param: right_amount
 					;; param: auto_change
 					; function _expectedDepositLiquidity
-					;; push identifier left_amount
-					PUSH S2
-					;; push identifier left_balance
-					GETGLOB 24
-					;; push identifier right_amount
-					PUSH S3
-					;; push identifier right_balance
-					GETGLOB 25
-					MULDIV
-					UFITS 128
-					MIN
+					PUSHINT 0
 					;; decl: step_1_left_deposit
-					;; push identifier right_amount
-					PUSH S2
-					;; push identifier right_balance
-					GETGLOB 25
+					PUSHINT 0
+					;; decl: step_1_right_deposit
+					PUSHINT 0
+					;; decl: step_1_lp_reward
+					;; if
 					;; push identifier left_amount
 					PUSH S5
-					;; push identifier left_balance
-					GETGLOB 24
-					MULDIV
-					UFITS 128
-					MIN
-					;; decl: step_1_right_deposit
-					;; push identifier step_1_right_deposit
+					GTINT 0
+					;; short-circuiting &&
 					DUP
-					;; push identifier lp_supply
-					GETGLOB 23
-					;; push identifier right_balance
-					GETGLOB 25
-					MULDIV
-					UFITS 128
-					;; push identifier step_1_left_deposit
-					PUSH S2
-					;; push identifier lp_supply
-					GETGLOB 23
-					;; push identifier left_balance
-					GETGLOB 24
-					MULDIV
-					UFITS 128
-					MAX
-					;; decl: step_1_lp_reward
+					PUSHCONT {
+						DROP
+						;; push identifier right_amount
+						PUSH S4
+						GTINT 0
+					}
+					IF
+					PUSHCONT {
+						;; push identifier left_amount
+						PUSH S5
+						;; push identifier left_balance
+						GETGLOB 24
+						;; push identifier right_amount
+						PUSH S6
+						;; push identifier right_balance
+						GETGLOB 25
+						MULDIV
+						UFITS 128
+						MIN
+						; expValue
+						; end expValue
+						; colValue
+						POP S3
+						; end colValue
+						;; push identifier right_amount
+						PUSH S4
+						;; push identifier right_balance
+						GETGLOB 25
+						;; push identifier left_amount
+						PUSH S7
+						;; push identifier left_balance
+						GETGLOB 24
+						MULDIV
+						UFITS 128
+						MIN
+						; expValue
+						; end expValue
+						; colValue
+						POP S2
+						; end colValue
+						;; push identifier step_1_right_deposit
+						PUSH S1
+						;; push identifier lp_supply
+						GETGLOB 23
+						;; push identifier right_balance
+						GETGLOB 25
+						MULDIV
+						UFITS 128
+						;; push identifier step_1_left_deposit
+						PUSH S3
+						;; push identifier lp_supply
+						GETGLOB 23
+						;; push identifier left_balance
+						GETGLOB 24
+						MULDIV
+						UFITS 128
+						MAX
+						; expValue
+						; end expValue
+						; colValue
+						NIP
+						; end colValue
+					}
+					IF
+					;; end if
 					;; push identifier left_amount
 					PUSH S5
 					;; -
@@ -4145,6 +4253,20 @@ PUSHCONT {
 					DUP
 					INDEX 10
 					GTINT 0
+					;; short-circuiting &&
+					DUP
+					PUSHCONT {
+						DROP
+						;; get member step_2_received
+						;; push identifier r
+						DUP
+						INDEX 7
+						;; <=
+						;; push identifier left_balance
+						GETGLOB 24
+						LEQ
+					}
+					IF
 					PUSHCONT {
 						; expValue
 						; end expValue
@@ -4867,48 +4989,83 @@ PUSHCONT {
 		;; param: right_amount
 		;; param: auto_change
 		; function _expectedDepositLiquidity
-		;; push identifier left_amount
-		PUSH S2
-		;; push identifier left_balance
-		GETGLOB 24
-		;; push identifier right_amount
-		PUSH S3
-		;; push identifier right_balance
-		GETGLOB 25
-		MULDIV
-		UFITS 128
-		MIN
+		PUSHINT 0
 		;; decl: step_1_left_deposit
-		;; push identifier right_amount
-		PUSH S2
-		;; push identifier right_balance
-		GETGLOB 25
+		PUSHINT 0
+		;; decl: step_1_right_deposit
+		PUSHINT 0
+		;; decl: step_1_lp_reward
+		;; if
 		;; push identifier left_amount
 		PUSH S5
-		;; push identifier left_balance
-		GETGLOB 24
-		MULDIV
-		UFITS 128
-		MIN
-		;; decl: step_1_right_deposit
-		;; push identifier step_1_right_deposit
+		GTINT 0
+		;; short-circuiting &&
 		DUP
-		;; push identifier lp_supply
-		GETGLOB 23
-		;; push identifier right_balance
-		GETGLOB 25
-		MULDIV
-		UFITS 128
-		;; push identifier step_1_left_deposit
-		PUSH S2
-		;; push identifier lp_supply
-		GETGLOB 23
-		;; push identifier left_balance
-		GETGLOB 24
-		MULDIV
-		UFITS 128
-		MAX
-		;; decl: step_1_lp_reward
+		PUSHCONT {
+			DROP
+			;; push identifier right_amount
+			PUSH S4
+			GTINT 0
+		}
+		IF
+		PUSHCONT {
+			;; push identifier left_amount
+			PUSH S5
+			;; push identifier left_balance
+			GETGLOB 24
+			;; push identifier right_amount
+			PUSH S6
+			;; push identifier right_balance
+			GETGLOB 25
+			MULDIV
+			UFITS 128
+			MIN
+			; expValue
+			; end expValue
+			; colValue
+			POP S3
+			; end colValue
+			;; push identifier right_amount
+			PUSH S4
+			;; push identifier right_balance
+			GETGLOB 25
+			;; push identifier left_amount
+			PUSH S7
+			;; push identifier left_balance
+			GETGLOB 24
+			MULDIV
+			UFITS 128
+			MIN
+			; expValue
+			; end expValue
+			; colValue
+			POP S2
+			; end colValue
+			;; push identifier step_1_right_deposit
+			PUSH S1
+			;; push identifier lp_supply
+			GETGLOB 23
+			;; push identifier right_balance
+			GETGLOB 25
+			MULDIV
+			UFITS 128
+			;; push identifier step_1_left_deposit
+			PUSH S3
+			;; push identifier lp_supply
+			GETGLOB 23
+			;; push identifier left_balance
+			GETGLOB 24
+			MULDIV
+			UFITS 128
+			MAX
+			; expValue
+			; end expValue
+			; colValue
+			NIP
+			; end colValue
+		}
+		IF
+		;; end if
 		;; push identifier left_amount
 		PUSH S5
 		;; -
@@ -6161,48 +6318,83 @@ PUSHCONT {
 	;; param: right_amount
 	;; param: auto_change
 	; function _expectedDepositLiquidity
-	;; push identifier left_amount
-	PUSH S2
-	;; push identifier left_balance
-	GETGLOB 24
-	;; push identifier right_amount
-	PUSH S3
-	;; push identifier right_balance
-	GETGLOB 25
-	MULDIV
-	UFITS 128
-	MIN
+	PUSHINT 0
 	;; decl: step_1_left_deposit
-	;; push identifier right_amount
-	PUSH S2
-	;; push identifier right_balance
-	GETGLOB 25
+	PUSHINT 0
+	;; decl: step_1_right_deposit
+	PUSHINT 0
+	;; decl: step_1_lp_reward
+	;; if
 	;; push identifier left_amount
 	PUSH S5
-	;; push identifier left_balance
-	GETGLOB 24
-	MULDIV
-	UFITS 128
-	MIN
-	;; decl: step_1_right_deposit
-	;; push identifier step_1_right_deposit
+	GTINT 0
+	;; short-circuiting &&
 	DUP
-	;; push identifier lp_supply
-	GETGLOB 23
-	;; push identifier right_balance
-	GETGLOB 25
-	MULDIV
-	UFITS 128
-	;; push identifier step_1_left_deposit
-	PUSH S2
-	;; push identifier lp_supply
-	GETGLOB 23
-	;; push identifier left_balance
-	GETGLOB 24
-	MULDIV
-	UFITS 128
-	MAX
-	;; decl: step_1_lp_reward
+	PUSHCONT {
+		DROP
+		;; push identifier right_amount
+		PUSH S4
+		GTINT 0
+	}
+	IF
+	PUSHCONT {
+		;; push identifier left_amount
+		PUSH S5
+		;; push identifier left_balance
+		GETGLOB 24
+		;; push identifier right_amount
+		PUSH S6
+		;; push identifier right_balance
+		GETGLOB 25
+		MULDIV
+		UFITS 128
+		MIN
+		; expValue
+		; end expValue
+		; colValue
+		POP S3
+		; end colValue
+		;; push identifier right_amount
+		PUSH S4
+		;; push identifier right_balance
+		GETGLOB 25
+		;; push identifier left_amount
+		PUSH S7
+		;; push identifier left_balance
+		GETGLOB 24
+		MULDIV
+		UFITS 128
+		MIN
+		; expValue
+		; end expValue
+		; colValue
+		POP S2
+		; end colValue
+		;; push identifier step_1_right_deposit
+		PUSH S1
+		;; push identifier lp_supply
+		GETGLOB 23
+		;; push identifier right_balance
+		GETGLOB 25
+		MULDIV
+		UFITS 128
+		;; push identifier step_1_left_deposit
+		PUSH S3
+		;; push identifier lp_supply
+		GETGLOB 23
+		;; push identifier left_balance
+		GETGLOB 24
+		MULDIV
+		UFITS 128
+		MAX
+		; expValue
+		; end expValue
+		; colValue
+		NIP
+		; end colValue
+	}
+	IF
+	;; end if
 	;; push identifier left_amount
 	PUSH S5
 	;; -
@@ -7036,6 +7228,58 @@ PUSHCONT {
 	;; push identifier auto_change
 	PUSH S7
 	PUSHCONT {
+		;; if
+		;; get member step_2_right_to_left
+		;; push identifier r
+		DUP
+		INDEX 4
+		PUSHCONT {
+			;; get member step_2_received
+			;; push identifier r
+			DUP
+			INDEX 7
+			;; <=
+			;; push identifier left_balance
+			GETGLOB 24
+			;; +
+			;; get member step_1_left_deposit
+			;; push identifier r
+			PUSH S2
+			INDEX 0
+			ADD
+			UFITS 128
+			LEQ
+			THROWIFNOT 118
+		}
+		PUSHCONT {
+			;; if
+			;; get member step_2_left_to_right
+			;; push identifier r
+			DUP
+			INDEX 3
+			PUSHCONT {
+				;; get member step_2_received
+				;; push identifier r
+				DUP
+				INDEX 7
+				;; <=
+				;; push identifier right_balance
+				GETGLOB 25
+				;; +
+				;; get member step_1_right_deposit
+				;; push identifier r
+				PUSH S2
+				INDEX 1
+				ADD
+				UFITS 128
+				LEQ
+				THROWIFNOT 118
+			}
+			IF
+			;; end if
+		}
+		IFELSE
+		;; end if
 		; expValue
 		; end expValue
 		;; push identifier left_balance
