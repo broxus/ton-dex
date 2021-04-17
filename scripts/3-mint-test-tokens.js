@@ -1,4 +1,4 @@
-const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH, Constants} = require(process.cwd()+'/scripts/utils')
 
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
@@ -6,9 +6,6 @@ BigNumber.config({EXPONENTIAL_AT: 257});
 const afterRun = async (tx) => {
   await new Promise(resolve => setTimeout(resolve, 1000));
 };
-
-const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 9;
 
 async function main() {
   const migration = new Migration();
@@ -30,19 +27,19 @@ async function main() {
     {
       contract: tokenFoo,
       owner: account2.address,
-      tokens: new BigNumber(20000).times(new BigNumber(10).pow(FOO_DECIMALS)).toString(),
+      tokens: new BigNumber(20000).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
       alias: 'FooWallet2'
     },
     {
       contract: tokenBar,
       owner: account2.address,
-      tokens: new BigNumber(20000).times(new BigNumber(10).pow(BAR_DECIMALS)).toString(),
+      tokens: new BigNumber(20000).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
       alias: 'BarWallet2'
     },
     {
       contract: tokenFoo,
       owner: account3.address,
-      tokens: new BigNumber(110000).times(new BigNumber(10).pow(FOO_DECIMALS)).toString(),
+      tokens: new BigNumber(110000).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
       alias: 'FooWallet3'
     }
   ]

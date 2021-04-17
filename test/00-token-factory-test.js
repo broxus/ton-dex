@@ -113,7 +113,7 @@ describe('TokeFactory contract', async function () {
             decimals: tokenData.decimals
           }
         })
-        await sleep();
+        await sleep(5000);
         const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
           method: 'getDeployedToken',
           params: {answer_id: index}

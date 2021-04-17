@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, afterRun} = require(process.cwd() + '/scripts/utils');
+const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -16,15 +16,6 @@ let FooBarLpRoot;
 let Account2;
 let DexAccount2;
 
-const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 9;
-const LP_DECIMALS = 9;
-
-const FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(FOO_DECIMALS).toNumber();
-const BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(BAR_DECIMALS).toNumber();
-const LP_DECIMALS_MODIFIER = new BigNumber(10).pow(LP_DECIMALS).toNumber();
-const TON_DECIMALS_MODIFIER = new BigNumber(10).pow(9).toNumber();
-
 const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
 
 let IS_FOO_LEFT;
@@ -33,8 +24,8 @@ let keyPairs;
 
 function logExpectedDeposit(expected) {
 
-    const left_decimals = IS_FOO_LEFT ? FOO_DECIMALS_MODIFIER : BAR_DECIMALS_MODIFIER;
-    const right_decimals = IS_FOO_LEFT ? BAR_DECIMALS_MODIFIER : FOO_DECIMALS_MODIFIER;
+    const left_decimals = IS_FOO_LEFT ? Constants.FOO_DECIMALS_MODIFIER : Constants.BAR_DECIMALS_MODIFIER;
+    const right_decimals = IS_FOO_LEFT ? Constants.BAR_DECIMALS_MODIFIER : Constants.FOO_DECIMALS_MODIFIER;
 
     logger.log(`Expected result: `);
     if (expected.step_1_lp_reward.isZero()) {
@@ -43,7 +34,7 @@ function logExpectedDeposit(expected) {
         logger.log(`    Step 1: `);
         logger.log(`        Left deposit = ${expected.step_1_left_deposit.div(left_decimals).toString()}`);
         logger.log(`        Right deposit = ${expected.step_1_right_deposit.div(right_decimals).toString()}`);
-        logger.log(`        LP reward = ${expected.step_1_lp_reward.div(TON_DECIMALS_MODIFIER).toString()}`);
+        logger.log(`        LP reward = ${expected.step_1_lp_reward.div(Constants.TON_DECIMALS_MODIFIER).toString()}`);
     }
     if (expected.step_2_left_to_right) {
         logger.log(`    Step 2: `);
@@ -64,10 +55,10 @@ function logExpectedDeposit(expected) {
         logger.log(`    Step 3: `);
         logger.log(`        Left deposit = ${expected.step_3_left_deposit.div(left_decimals).toString()}`);
         logger.log(`        Right deposit = ${expected.step_3_right_deposit.div(right_decimals).toString()}`);
-        logger.log(`        LP reward = ${expected.step_3_lp_reward.div(TON_DECIMALS_MODIFIER).toString()}`);
+        logger.log(`        LP reward = ${expected.step_3_lp_reward.div(Constants.TON_DECIMALS_MODIFIER).toString()}`);
     }
     logger.log(`    TOTAL: `);
-    logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString()}`);
+    logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString()}`);
 }
 
 async function dexAccountBalances(account) {
@@ -76,19 +67,19 @@ async function dexAccountBalances(account) {
             _answer_id: 0,
             token_root: FooRoot.address
         }
-    })).balance).div(FOO_DECIMALS_MODIFIER).toString();
+    })).balance).div(Constants.FOO_DECIMALS_MODIFIER).toString();
     const bar = new BigNumber((await account.call({
         method: 'getWalletData', params: {
             _answer_id: 0,
             token_root: BarRoot.address
         }
-    })).balance).div(BAR_DECIMALS_MODIFIER).toString();
+    })).balance).div(Constants.BAR_DECIMALS_MODIFIER).toString();
     const lp = new BigNumber((await account.call({
         method: 'getWalletData', params: {
             _answer_id: 0,
             token_root: FooBarLpRoot.address
         }
-    })).balance).div(LP_DECIMALS_MODIFIER).toString();
+    })).balance).div(Constants.LP_DECIMALS_MODIFIER).toString();
 
     return {foo, bar, lp};
 }
@@ -98,18 +89,18 @@ async function dexPairInfo() {
     const total_supply = await FooBarLpRoot.call({method: 'total_supply', params: {}});
     let foo, bar;
     if (IS_FOO_LEFT) {
-        foo = new BigNumber(balances.left_balance).div(FOO_DECIMALS_MODIFIER).toString();
-        bar = new BigNumber(balances.right_balance).div(BAR_DECIMALS_MODIFIER).toString();
+        foo = new BigNumber(balances.left_balance).div(Constants.FOO_DECIMALS_MODIFIER).toString();
+        bar = new BigNumber(balances.right_balance).div(Constants.BAR_DECIMALS_MODIFIER).toString();
     } else {
-        foo = new BigNumber(balances.right_balance).div(FOO_DECIMALS_MODIFIER).toString();
-        bar = new BigNumber(balances.left_balance).div(BAR_DECIMALS_MODIFIER).toString();
+        foo = new BigNumber(balances.right_balance).div(Constants.FOO_DECIMALS_MODIFIER).toString();
+        bar = new BigNumber(balances.left_balance).div(Constants.BAR_DECIMALS_MODIFIER).toString();
     }
 
     return {
         foo: foo,
         bar: bar,
-        lp_supply: new BigNumber(balances.lp_supply).div(LP_DECIMALS_MODIFIER).toString(),
-        lp_supply_actual: new BigNumber(total_supply).div(LP_DECIMALS_MODIFIER).toString()
+        lp_supply: new BigNumber(balances.lp_supply).div(Constants.LP_DECIMALS_MODIFIER).toString(),
+        lp_supply_actual: new BigNumber(total_supply).div(Constants.LP_DECIMALS_MODIFIER).toString()
     };
 }
 
@@ -165,12 +156,12 @@ describe('Deposit liquidity', async function () {
             const BAR_DEPOSIT = 6000;
 
             const LEFT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() :
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString();
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString() :
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString();
 
             const RIGHT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() :
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString();
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString() :
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString();
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedDepositLiquidity',
@@ -181,7 +172,8 @@ describe('Deposit liquidity', async function () {
                 }
             });
 
-            const LP_REWARD = new BigNumber(expected.step_1_lp_reward).plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString();
+            const LP_REWARD = new BigNumber(expected.step_1_lp_reward)
+                .plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString();
 
             logExpectedDeposit(expected);
 
@@ -242,12 +234,12 @@ describe('Deposit liquidity', async function () {
             const BAR_DEPOSIT = 0;
 
             const LEFT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() :
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString();
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString() :
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString();
 
             const RIGHT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() :
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString();
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString() :
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString();
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedDepositLiquidity',
@@ -258,7 +250,8 @@ describe('Deposit liquidity', async function () {
                 }
             });
 
-            const LP_REWARD = new BigNumber(expected.step_1_lp_reward).plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString();
+            const LP_REWARD = new BigNumber(expected.step_1_lp_reward)
+                .plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString();
 
             logExpectedDeposit(expected);
 
@@ -319,12 +312,12 @@ describe('Deposit liquidity', async function () {
             const BAR_DEPOSIT = 1000;
 
             const LEFT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() :
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString();
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString() :
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString();
 
             const RIGHT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() :
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString();
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString() :
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString();
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedDepositLiquidity',
@@ -335,7 +328,8 @@ describe('Deposit liquidity', async function () {
                 }
             });
 
-            const LP_REWARD = new BigNumber(expected.step_1_lp_reward).plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString();
+            const LP_REWARD = new BigNumber(expected.step_1_lp_reward)
+                .plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString();
 
             logExpectedDeposit(expected);
 
@@ -396,12 +390,12 @@ describe('Deposit liquidity', async function () {
             const BAR_DEPOSIT = 200;
 
             const LEFT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() :
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString();
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString() :
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString();
 
             const RIGHT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() :
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString();
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString() :
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString();
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedDepositLiquidity',
@@ -412,7 +406,8 @@ describe('Deposit liquidity', async function () {
                 }
             });
 
-            const LP_REWARD = new BigNumber(expected.step_1_lp_reward).plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString();
+            const LP_REWARD = new BigNumber(expected.step_1_lp_reward)
+                .plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString();
 
             logExpectedDeposit(expected);
 
@@ -473,12 +468,12 @@ describe('Deposit liquidity', async function () {
             const BAR_DEPOSIT = 1000;
 
             const LEFT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString() :
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString();
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString() :
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString();
 
             const RIGHT_AMOUNT = IS_FOO_LEFT ?
-                new BigNumber(BAR_DEPOSIT).times(BAR_DECIMALS_MODIFIER).toString() :
-                new BigNumber(FOO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString();
+                new BigNumber(BAR_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString() :
+                new BigNumber(FOO_DEPOSIT).times(Constants.FOO_DECIMALS_MODIFIER).toString();
 
             const expected = await DexPairFooBar.call({
                 method: 'expectedDepositLiquidity',
@@ -489,10 +484,11 @@ describe('Deposit liquidity', async function () {
                 }
             });
 
-            const LP_REWARD = new BigNumber(expected.step_1_lp_reward).plus(expected.step_3_lp_reward).div(TON_DECIMALS_MODIFIER).toString();
+            const LP_REWARD = new BigNumber(expected.step_1_lp_reward)
+                .plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString();
             const BAR_BACK_AMOUNT = new BigNumber(BAR_DEPOSIT)
                 .minus(new BigNumber(IS_FOO_LEFT ? expected.step_1_right_deposit : expected.step_1_left_deposit)
-                    .div(BAR_DECIMALS_MODIFIER));
+                    .div(Constants.BAR_DECIMALS_MODIFIER));
 
             logExpectedDeposit(expected);
 

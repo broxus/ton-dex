@@ -2,7 +2,7 @@ const {expect} = require('chai');
 const logger = require('mocha-logger');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
-const {Migration, TOKEN_CONTRACTS_PATH, afterRun, EMPTY_TVM_CELL} = require(process.cwd() + '/scripts/utils');
+const {Migration, TOKEN_CONTRACTS_PATH, afterRun, EMPTY_TVM_CELL, Constants} = require(process.cwd() + '/scripts/utils');
 
 if (!Array.prototype.last) {
   Array.prototype.last = function () {
@@ -10,9 +10,6 @@ if (!Array.prototype.last) {
   };
 }
 const migration = new Migration();
-
-const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 9;
 
 let DexAccount;
 let dexAccount2;
@@ -25,9 +22,9 @@ let fooData = {
     accountWallet: 'FooWallet2',
   },
   history: [],
-  decimals: FOO_DECIMALS,
-  decimals_modifier: new BigNumber(10).pow(FOO_DECIMALS).toNumber(),
-  deposit_amount: new BigNumber(10000).times(new BigNumber(10).pow(FOO_DECIMALS))
+  decimals: Constants.FOO_DECIMALS,
+  decimals_modifier: Constants.FOO_DECIMALS_MODIFIER,
+  deposit_amount: new BigNumber(10000).times(Constants.FOO_DECIMALS_MODIFIER)
 };
 let barData = {
   aliases: {
@@ -36,9 +33,9 @@ let barData = {
     accountWallet: 'BarWallet2',
   },
   history: [],
-  decimals: BAR_DECIMALS,
-  decimals_modifier: new BigNumber(10).pow(BAR_DECIMALS).toNumber(),
-  deposit_amount: new BigNumber(10000).times(new BigNumber(10).pow(BAR_DECIMALS))
+  decimals: Constants.BAR_DECIMALS,
+  decimals_modifier: Constants.BAR_DECIMALS_MODIFIER,
+  deposit_amount: new BigNumber(10000).times(Constants.BAR_DECIMALS_MODIFIER)
 
 
 };

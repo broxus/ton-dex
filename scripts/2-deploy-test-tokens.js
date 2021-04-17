@@ -1,7 +1,4 @@
-const {getRandomNonce, Migration, stringToBytesArray, afterRun} = require(process.cwd()+'/scripts/utils')
-
-const FOO_DECIMALS = 3;
-const BAR_DECIMALS = 9;
+const {getRandomNonce, Migration, stringToBytesArray, afterRun, Constants} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();
@@ -26,14 +23,14 @@ async function main() {
     {
       name: 'Foo',
       symbol: 'Foo',
-      decimals: FOO_DECIMALS,
+      decimals: Constants.FOO_DECIMALS,
       owner: account.address,
       amount: 3
     },
     {
       name: 'Bar',
       symbol: 'Bar',
-      decimals: BAR_DECIMALS,
+      decimals: Constants.BAR_DECIMALS,
       owner: account.address,
       amount: 3
     }

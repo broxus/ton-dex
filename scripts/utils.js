@@ -2,6 +2,8 @@ const fs = require('fs');
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build'
 const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
+const BigNumber = require('bignumber.js');
+BigNumber.config({EXPONENTIAL_AT: 257});
 
 const getRandomNonce = () => Math.random() * 64000 | 0;
 
@@ -77,9 +79,20 @@ class Migration {
   }
 }
 
+const Constants = {
+  FOO_DECIMALS: 3,
+  BAR_DECIMALS: 9,
+  LP_DECIMALS: 9,
+
+}
+Constants.FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.FOO_DECIMALS).toNumber();
+Constants.BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.BAR_DECIMALS).toNumber();
+Constants.LP_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.LP_DECIMALS).toNumber();
+Constants.TON_DECIMALS_MODIFIER = new BigNumber(10).pow(9).toNumber();
 
 module.exports = {
   Migration,
+  Constants,
   getRandomNonce,
   stringToBytesArray,
   sleep,
