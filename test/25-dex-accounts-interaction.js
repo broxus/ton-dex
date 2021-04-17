@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require(process.cwd()+'/scripts/utils');
+const {Migration, afterRun} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -57,15 +57,15 @@ async function account3balances() {
     let foo;
     await FooWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         foo = new BigNumber(n).div(FOO_DECIMALS_MODIFIER).toString();
-    });
+    }).catch(e => {/*ignored*/});
     let bar;
     await BarWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         bar = new BigNumber(n).div(BAR_DECIMALS_MODIFIER).toString();
-    });
+    }).catch(e => {/*ignored*/});
     let lp;
     await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
         lp = new BigNumber(n).div(LP_DECIMALS_MODIFIER).toString();
-    });
+    }).catch(e => {/*ignored*/});
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
     return {foo, bar, lp, ton};
 }
@@ -87,7 +87,7 @@ async function dexAccountBalances(account) {
     return {foo, bar, lp};
 }
 
-describe('Check direct DexPairFooBar operations', async function () {
+describe('Check DEX accounts interaction', async function () {
     this.timeout(120000);
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
@@ -101,7 +101,9 @@ describe('Check direct DexPairFooBar operations', async function () {
         BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount();
+        Account2.afterRun = afterRun;
         Account3 = await locklift.factory.getAccount();
+        Account3.afterRun = afterRun;
         DexAccount2 = await locklift.factory.getContract('DexAccount');
         DexAccount3 = await locklift.factory.getContract('DexAccount');
         FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
@@ -119,12 +121,58 @@ describe('Check direct DexPairFooBar operations', async function () {
         migration.load(Account2, 'Account2');
         migration.load(Account3, 'Account3');
         migration.load(DexAccount2, 'DexAccount2');
-        migration.load(FooWallet3, 'FooWallet3');
-        migration.load(BarWallet3, 'BarWallet3');
-        migration.load(FooBarLpWallet3, 'FooBarLpWallet3');
 
         const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
+
+
+        if (migration.exists('BarWallet3')) {
+            migration.load(BarWallet3, 'BarWallet3');
+            logger.log(`BarWallet#3: ${BarWallet3.address}`);
+        } else {
+            const expected = await BarRoot.call({
+                method: 'getWalletAddress', params: {
+                    _answer_id: 0,
+                    wallet_public_key_: `0x0`,
+                    owner_address_: Account3.address
+                }
+            });
+            BarWallet3.setAddress(expected);
+            migration.store(BarWallet3, 'BarWallet3');
+            logger.log(`BarWallet#3: ${expected} (not deployed)`);
+        }
+
+        if (migration.exists('FooWallet3')) {
+            migration.load(FooWallet3, 'FooWallet3');
+            logger.log(`FooWallet#3: ${FooWallet3.address}`);
+        } else {
+            const expected = await FooRoot.call({
+                method: 'getWalletAddress', params: {
+                    _answer_id: 0,
+                    wallet_public_key_: `0x0`,
+                    owner_address_: Account3.address
+                }
+            });
+            FooWallet3.setAddress(expected);
+            migration.store(FooWallet3, 'FooWallet3');
+            logger.log(`FooWallet#3: ${expected} (not deployed)`);
+        }
+
+        if (migration.exists('FooBarLpWallet3')) {
+            migration.load(FooBarLpWallet3, 'FooBarLpWallet3');
+            logger.log(`FooBarLpWallet#3: ${FooBarLpWallet3.address}`);
+        } else {
+            const expected = await FooRoot.call({
+                method: 'getWalletAddress', params: {
+                    _answer_id: 0,
+                    wallet_public_key_: `0x0`,
+                    owner_address_: Account3.address
+                }
+            });
+            FooWallet3.setAddress(expected);
+            migration.store(FooBarLpWallet3, 'FooBarLpWallet3');
+            logger.log(`FooBarLpWallet#3: ${expected} (not deployed)`);
+        }
 
         logger.log('DexRoot: ' + DexRoot.address);
         logger.log('DexPairFooBar: ' + DexPairFooBar.address);
@@ -154,7 +202,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     account_owner: Account3.address,
                     send_gas_to: Account3.address
                 },
-                value: locklift.utils.convertCrystal('1.1', 'nano'),
+                value: locklift.utils.convertCrystal('4', 'nano'),
                 keyPair: keyPairs[2]
             });
 
@@ -182,7 +230,7 @@ describe('Check direct DexPairFooBar operations', async function () {
 
     describe('Internal DexAccount transfers', async function () {
 
-        it('DexAccount#2 transfer FOO to DexAccount#3 (willing_to_deploy = false)', async function () {
+        it('DexAccount#2 transfer FOO to DexAccount#3 (willing_to_deploy = false, must be bounced)', async function () {
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
 
@@ -204,7 +252,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -215,13 +263,8 @@ describe('Check direct DexPairFooBar operations', async function () {
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
 
-            const expectedDexAccount2Foo = new BigNumber(dexAccount2Start.foo)
-                .minus(AMOUNT_TO_TRANSFER).toString();
-            const expectedDexAccount3Foo = new BigNumber(dexAccount2Start.foo)
-                .plus(AMOUNT_TO_TRANSFER).toString();
-
-            expect(expectedDexAccount2Foo).to.equal(dexAccount2End.foo.toString(), 'Wrong DexAccount#2 FOO balance');
-            expect(expectedDexAccount3Foo).to.equal(dexAccount3End.foo.toString(), 'Wrong DexAccount#3 FOO balance');
+            expect(dexAccount2Start.foo).to.equal(dexAccount2End.foo, 'Wrong DexAccount#2 FOO balance');
+            expect(dexAccount3Start.foo).to.equal(dexAccount3End.foo, 'Wrong DexAccount#3 FOO balance');
         });
 
         it('DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = true)', async function () {
@@ -246,7 +289,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
@@ -259,60 +302,53 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             const expectedDexAccount2Bar = new BigNumber(dexAccount2Start.bar)
                 .minus(AMOUNT_TO_TRANSFER).toString();
-            const expectedDexAccount3Bar = new BigNumber(dexAccount2Start.bar)
+            const expectedDexAccount3Bar = new BigNumber(dexAccount3Start.bar)
                 .plus(AMOUNT_TO_TRANSFER).toString();
 
             expect(expectedDexAccount2Bar).to.equal(dexAccount2End.bar.toString(), 'Wrong DexAccount#2 BAR balance');
             expect(expectedDexAccount3Bar).to.equal(dexAccount3End.bar.toString(), 'Wrong DexAccount#3 BAR balance');
         });
 
-        it('Account#3 transfer FOO to DexAccount#3 (must be bounced)', async function () {
+        it('DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = false)', async function () {
+            const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
-            const dexStart = await dexBalances();
-            const accountStart = await account3balances();
 
-            const TOKENS_TO_DEPOSIT = 10;
+            const AMOUNT_TO_TRANSFER = 10;
 
-            logger.log(`DEX balance start: ${dexStart.foo} FOO, ${dexStart.bar} BAR, ${dexStart.lp} LP`);
-            logger.log(`Account#3 balance start:` +
-                `${accountStart.foo ? accountStart.foo + ' FOO' : '(not deployed)'}, ` +
-                `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
-                `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
+            logger.log(`DexAccount#2 balance start: ` +
+                `${dexAccount2Start.foo} FOO, ${dexAccount2Start.bar} BAR, ${dexAccount2Start.lp} LP`);
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
-            await Account3.runTarget({
-                contract: FooWallet3,
-                method: 'transferToRecipient',
+            await Account2.runTarget({
+                contract: DexAccount2,
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexAccount3.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).times(FOO_DECIMALS_MODIFIER).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
-                    payload: EMPTY_TVM_CELL
+                    amount: new BigNumber(AMOUNT_TO_TRANSFER).times(BAR_DECIMALS_MODIFIER).toString(),
+                    token_root: BarRoot.address,
+                    to_dex_account: DexAccount3.address,
+                    willing_to_deploy: false,
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
-                keyPair: keyPairs[2]
+                keyPair: keyPairs[1]
             });
 
+            const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexAccount3End = await dexAccountBalances(DexAccount3);
-            const dexEnd = await dexBalances();
-            const accountEnd = await account3balances();
 
-            logger.log(`DEX balance end: ${dexStart.foo} FOO, ${dexStart.bar} BAR, ${dexStart.lp} LP`);
-            logger.log(`Account#3 balance end:` +
-                `${accountStart.foo ? accountStart.foo + ' FOO' : '(not deployed)'}, ` +
-                `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
-                `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
+            logger.log(`DexAccount#2 balance end: ` +
+                `${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR, ${dexAccount2End.lp} LP`);
             logger.log(`DexAccount#3 balance end: ` +
-                `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
+                `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
 
-            expect(dexAccount3Start.foo).to.equal(dexAccount3End.foo, 'Wrong DexAccount#3 FOO balance');
-            expect(accountStart.foo).to.equal(accountEnd.foo, 'Wrong Account#3 FOO balance');
-            expect(dexStart.foo).to.equal(dexEnd.foo, 'Wrong Dex FOO balance');
+            const expectedDexAccount2Bar = new BigNumber(dexAccount2Start.bar)
+                .minus(AMOUNT_TO_TRANSFER).toString();
+            const expectedDexAccount3Bar = new BigNumber(dexAccount3Start.bar)
+                .plus(AMOUNT_TO_TRANSFER).toString();
+
+            expect(expectedDexAccount2Bar).to.equal(dexAccount2End.bar.toString(), 'Wrong DexAccount#2 BAR balance');
+            expect(expectedDexAccount3Bar).to.equal(dexAccount3End.bar.toString(), 'Wrong DexAccount#3 BAR balance');
         });
 
         it('Account#3 transfer BAR to DexAccount#3', async function () {
@@ -323,10 +359,11 @@ describe('Check direct DexPairFooBar operations', async function () {
             const TOKENS_TO_DEPOSIT = 10;
 
             logger.log(`DEX balance start: ${dexStart.foo} FOO, ${dexStart.bar} BAR, ${dexStart.lp} LP`);
-            logger.log(`Account#3 balance start:` +
-                `${accountStart.foo ? accountStart.foo + ' FOO' : '(not deployed)'}, ` +
-                `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
-                `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
+            logger.log(`Account#3 balance start: ` +
+                `${accountStart.foo !== undefined ? accountStart.foo + ' FOO' : 'FOO (not deployed)'}, ` +
+                `${accountStart.bar !== undefined ? accountStart.bar + ' BAR' : 'BAR (not deployed)'}, ` +
+                `${accountStart.lp !== undefined ? accountStart.lp + ' LP' : 'LP (not deployed)'}, ` +
+                `${accountStart.ton} TON`);
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
@@ -351,19 +388,20 @@ describe('Check direct DexPairFooBar operations', async function () {
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
 
-            logger.log(`DEX balance end: ${dexStart.foo} FOO, ${dexStart.bar} BAR, ${dexStart.lp} LP`);
-            logger.log(`Account#3 balance end:` +
-                `${accountStart.foo ? accountStart.foo + ' FOO' : '(not deployed)'}, ` +
-                `${accountStart.bar ? accountStart.bar + ' BAR' : '(not deployed)'}, ` +
-                `${accountStart.lp ? accountStart.lp + ' LP' : '(not deployed)'}, ${accountStart.ton} TON`);
+            logger.log(`DEX balance end: ${dexEnd.foo} FOO, ${dexEnd.bar} BAR, ${dexEnd.lp} LP`);
+            logger.log(`Account#3 balance end: ` +
+                `${accountEnd.foo !== undefined ? accountEnd.foo + ' FOO' : 'FOO (not deployed)'}, ` +
+                `${accountEnd.bar !== undefined ? accountEnd.bar + ' BAR' : 'BAR (not deployed)'}, ` +
+                `${accountEnd.lp !== undefined ? accountEnd.lp + ' LP' : 'LP (not deployed)'}, ` +
+                `${accountEnd.ton} TON`);
             logger.log(`DexAccount#3 balance end: ` +
-                `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
+                `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
 
             expect(new BigNumber(dexAccount3Start.bar).plus(TOKENS_TO_DEPOSIT).toString())
                 .to.equal(dexAccount3End.bar, 'Wrong DexAccount#3 BAR balance');
             expect(new BigNumber(accountStart.bar).minus(TOKENS_TO_DEPOSIT).toString())
                 .to.equal(accountEnd.bar, 'Wrong DexAccount#3 BAR balance');
-            expect(new BigNumber(accountStart.bar).plus(TOKENS_TO_DEPOSIT).toString())
+            expect(new BigNumber(dexStart.bar).plus(TOKENS_TO_DEPOSIT).toString())
                 .to.equal(dexEnd.bar, 'Wrong Dex BAR balance');
         });
 

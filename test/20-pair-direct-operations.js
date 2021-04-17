@@ -258,7 +258,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            const tx = await Account3.runTarget({
+            await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -275,9 +275,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 keyPair: keyPairs[2]
             });
 
-            logger.log(`Transaction: ${tx.id}`);
-
-            await BarWallet3.setAddress(await BarRoot.call({
+            BarWallet3.setAddress(await BarRoot.call({
                 method: 'getWalletAddress', params: {
                     _answer_id: 0,
                     wallet_public_key_: `0x0`,
@@ -466,7 +464,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 keyPair: keyPairs[2]
             });
 
-            await FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
+            FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
                 method: 'getWalletAddress', params: {
                     _answer_id: 0,
                     wallet_public_key_: `0x0`,
