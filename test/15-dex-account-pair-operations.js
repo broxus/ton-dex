@@ -548,7 +548,7 @@ describe('DexAccount interact with DexPair', async function () {
             const expected = await DexPairFooBar.call({
                 method: 'expectedExchange', params: {
                     amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
-                    is_left_to_right: IS_FOO_LEFT
+                    spent_token_root: FooRoot.address
                 }
             });
 
@@ -601,7 +601,7 @@ describe('DexAccount interact with DexPair', async function () {
             const expected = await DexPairFooBar.call({
                 method: 'expectedExchange', params: {
                     amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
-                    is_left_to_right: !IS_FOO_LEFT
+                    spent_token_root: BarRoot.address
                 }
             });
 
@@ -654,7 +654,7 @@ describe('DexAccount interact with DexPair', async function () {
             const expected = await DexPairFooBar.call({
                 method: 'expectedExchange', params: {
                     amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
-                    is_left_to_right: IS_FOO_LEFT
+                    spent_token_root: FooRoot.address
                 }
             });
 

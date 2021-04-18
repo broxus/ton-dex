@@ -706,12 +706,14 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
     function expectedExchange(
         uint128 amount,
-        bool is_left_to_right
+        address spent_token_root
     ) override external view responsible returns (uint128 expected_amount, uint128 expected_fee) {
-        if (is_left_to_right) {
+        if (spent_token_root == left_root) {
             return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedExchange(amount, left_balance, right_balance);
-        } else {
+        } else if (spent_token_root == right_root) {
             return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedExchange(amount, right_balance, left_balance);
+        } else {
+            revert(DexErrors.NOT_TOKEN_ROOT);
         }
     }
 
@@ -778,7 +780,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
 
         } else {
-            revert();
+            revert(DexErrors.NOT_TOKEN_ROOT);
         }
     }
 

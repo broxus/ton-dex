@@ -1837,44 +1837,21 @@ GETGLOB 15
 SDEQ
 THROWIFNOT 100
 ; function upgrade
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+;; >
+PUSHINT 5000000000
+GREATER
+THROWIFNOT 103
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
 NEWC
 ;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier platform_code
-GETGLOB 11
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier has_platform_code
-GETGLOB 12
-STIR 1
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier lp_token_pending_code
-GETGLOB 13
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier root
-GETGLOB 14
-STSLICER
-; colValue
-NIP
-; end colValue
+NEWC
+;; decl: owners_data_builder
 ; expValue
 DUP
 ; end expValue
@@ -1894,29 +1871,65 @@ STSLICER
 NIP
 ; end colValue
 ; expValue
-DUP
+PUSH S1
+; end expValue
+;; push identifier root
+GETGLOB 14
+STSLICER
+; colValue
+POP S2
+; end colValue
+; expValue
+PUSH S1
 ; end expValue
 ;; push identifier token_factory
 GETGLOB 17
 STSLICER
 ; colValue
-NIP
+POP S2
+; end colValue
+; expValue
+PUSH S1
+; end expValue
+;; push identifier owners_data_builder
+PUSH S1
+STBREFR
+; colValue
+POP S2
+; end colValue
+; expValue
+PUSH S1
+; end expValue
+;; push identifier platform_code
+GETGLOB 11
+STREFR
+; colValue
+POP S2
+; end colValue
+; expValue
+PUSH S1
+; end expValue
+;; push identifier lp_token_pending_code
+GETGLOB 13
+STREFR
+; colValue
+POP S2
 ; end colValue
 ;; push identifier code
-PUSH S1
+PUSH S2
 SETCODE
 ;; push identifier code
-PUSH S1
+PUSH S2
 CTOS
 BLESS
 POP c3
 ;; push identifier builder
-DUP
+PUSH S1
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
-DROP
+DROP2
 ; end function upgrade
 ; end modifier onlyOwner
 DROP

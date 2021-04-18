@@ -213,7 +213,7 @@
 			"inputs": [
 				{"name":"_answer_id","type":"uint32"},
 				{"name":"amount","type":"uint128"},
-				{"name":"is_left_to_right","type":"bool"}
+				{"name":"spent_token_root","type":"address"}
 			],
 			"outputs": [
 				{"name":"expected_amount","type":"uint128"},

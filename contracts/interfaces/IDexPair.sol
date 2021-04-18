@@ -51,7 +51,7 @@ interface IDexPair {
 
     function expectedExchange(
         uint128 amount,
-        bool is_left_to_right
+        address spent_token_root
     ) external view responsible returns (uint128 expected_amount, uint128 expected_fee);
 
     function expectedDepositLiquidity(
