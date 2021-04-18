@@ -215,6 +215,15 @@
 			]
 		},
 		{
+			"name": "onPairCreated",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "platform_code",
 			"inputs": [
 			],
@@ -243,5 +252,80 @@
 		{"key":1,"name":"_nonce","type":"uint32"}
 	],
 	"events": [
+		{
+			"name": "AccountCodeUpgraded",
+			"inputs": [
+				{"name":"version","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "PairCodeUpgraded",
+			"inputs": [
+				{"name":"version","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "RootCodeUpgraded",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ActiveUpdated",
+			"inputs": [
+				{"name":"new_active","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "RequestedPairUpgrade",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "RequestedForceAccountUpgrade",
+			"inputs": [
+				{"name":"account_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "RequestedOwnerTransfer",
+			"inputs": [
+				{"name":"old_owner","type":"address"},
+				{"name":"new_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "OwnerTransferAccepted",
+			"inputs": [
+				{"name":"old_owner","type":"address"},
+				{"name":"new_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "NewPairCreated",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"}
+			],
+			"outputs": [
+			]
+		}
 	]
 }
