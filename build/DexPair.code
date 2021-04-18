@@ -2036,15 +2036,19 @@ PUSHCONT {
 				UFITS 16
 				;; uint256
 				;; decl: fee_d_minus_n
+				;; push identifier fee_denominator
+				GETGLOB 27
+				;; uint256
+				;; decl: fee_d
 				;; if
 				;; push identifier auto_change
-				PUSH S17
+				PUSH S18
 				;; short-circuiting &&
 				DUP
 				PUSHCONT {
 					DROP
 					;; push identifier current_right_amount
-					PUSH S12
+					PUSH S13
 					GTINT 0
 				}
 				IF
@@ -2053,32 +2057,34 @@ PUSHCONT {
 					; end expValue
 					TRUE
 					; colValue
-					POP S8
+					POP S9
 					; end colValue
 					;; push identifier current_right_balance
-					PUSH S10
-					;; push identifier fee_d_minus_n
-					PUSH S1
-					;; +
-					;; push identifier fee_denominator
-					GETGLOB 27
-					ADD
+					PUSH S11
+					;; uint256
 					;; push identifier fee_d_minus_n
 					PUSH S2
+					;; +
+					;; push identifier fee_d
+					PUSH S2
+					ADD
+					;; push identifier fee_d_minus_n
+					PUSH S3
 					MULDIV
 					UFITS 256
 					;; decl: p
-					;; push identifier current_right_amount
-					PUSH S13
-					;; *
 					;; push identifier current_right_balance
 					PUSH S12
+					;; uint256
+					;; push identifier fee_d
+					PUSH S2
+					;; *
+					;; push identifier current_right_amount
+					PUSH S16
+					;; uint256
 					MUL
-					UFITS 128
-					;; push identifier fee_denominator
-					GETGLOB 27
 					;; push identifier fee_d_minus_n
-					PUSH S3
+					PUSH S4
 					MULDIV
 					UFITS 256
 					;; decl: q
@@ -2268,14 +2274,14 @@ PUSHCONT {
 					; expValue
 					; end expValue
 					; colValue
-					POP S9
+					POP S10
 					; end colValue
 					;; push identifier step_2_spent
-					PUSH S8
+					PUSH S9
 					;; push identifier current_right_balance
-					PUSH S13
+					PUSH S14
 					;; push identifier current_left_balance
-					PUSH S15
+					PUSH S16
 					;; param: a_amount
 					;; param: a_pool
 					;; param: b_pool
@@ -2331,76 +2337,76 @@ PUSHCONT {
 					; expValue
 					; end expValue
 					; colValue
-					POP S8
+					POP S9
 					; end colValue
 					; expValue
 					; end expValue
 					; colValue
-					POP S8
+					POP S9
 					; end colValue
 					; expValue
 					; end expValue
 					;; push identifier current_right_amount
-					PUSH S14
+					PUSH S15
 					;; -
 					;; push identifier step_2_spent
-					PUSH S9
+					PUSH S10
 					SUB
 					UFITS 128
 					; colValue
-					POP S15
+					POP S16
 					; end colValue
 					; expValue
 					; end expValue
 					;; push identifier current_right_balance
-					PUSH S12
+					PUSH S13
 					;; +
 					;; push identifier step_2_spent
-					PUSH S9
+					PUSH S10
 					ADD
 					UFITS 128
 					; colValue
-					POP S13
+					POP S14
 					; end colValue
 					; expValue
 					; end expValue
 					;; push identifier current_right_amount
-					PUSH S14
+					PUSH S15
 					; colValue
-					POP S5
+					POP S6
 					; end colValue
 					; expValue
 					; end expValue
 					;; push identifier step_2_received
-					PUSH S6
+					PUSH S7
 					; colValue
-					POP S6
+					POP S7
 					; end colValue
 					;; push identifier current_right_amount
-					PUSH S14
+					PUSH S15
 					;; push identifier current_lp_supply
-					PUSH S12
+					PUSH S13
 					;; push identifier current_right_balance
-					PUSH S14
+					PUSH S15
 					MULDIV
 					UFITS 128
 					; expValue
 					; end expValue
 					; colValue
-					POP S4
+					POP S5
 					; end colValue
 					DROP2
 				}
 				PUSHCONT {
 					;; if
 					;; push identifier auto_change
-					PUSH S17
+					PUSH S18
 					;; short-circuiting &&
 					DUP
 					PUSHCONT {
 						DROP
 						;; push identifier current_left_amount
-						PUSH S13
+						PUSH S14
 						GTINT 0
 					}
 					IF
@@ -2409,32 +2415,34 @@ PUSHCONT {
 						; end expValue
 						TRUE
 						; colValue
-						POP S9
+						POP S10
 						; end colValue
 						;; push identifier current_left_balance
-						PUSH S11
-						;; push identifier fee_d_minus_n
-						PUSH S1
-						;; +
-						;; push identifier fee_denominator
-						GETGLOB 27
-						ADD
+						PUSH S12
+						;; uint256
 						;; push identifier fee_d_minus_n
 						PUSH S2
+						;; +
+						;; push identifier fee_d
+						PUSH S2
+						ADD
+						;; push identifier fee_d_minus_n
+						PUSH S3
 						MULDIV
 						UFITS 256
 						;; decl: p
-						;; push identifier current_left_amount
-						PUSH S14
-						;; *
 						;; push identifier current_left_balance
 						PUSH S13
+						;; uint256
+						;; push identifier fee_d
+						PUSH S2
+						;; *
+						;; push identifier current_left_amount
+						PUSH S17
+						;; uint256
 						MUL
-						UFITS 128
-						;; push identifier fee_denominator
-						GETGLOB 27
 						;; push identifier fee_d_minus_n
-						PUSH S3
+						PUSH S4
 						MULDIV
 						UFITS 256
 						;; decl: q
@@ -2624,14 +2632,14 @@ PUSHCONT {
 						; expValue
 						; end expValue
 						; colValue
-						POP S9
+						POP S10
 						; end colValue
 						;; push identifier step_2_spent
-						PUSH S8
+						PUSH S9
 						;; push identifier current_left_balance
-						PUSH S14
+						PUSH S15
 						;; push identifier current_right_balance
-						PUSH S14
+						PUSH S15
 						;; param: a_amount
 						;; param: a_pool
 						;; param: b_pool
@@ -2687,63 +2695,63 @@ PUSHCONT {
 						; expValue
 						; end expValue
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 						; expValue
 						; end expValue
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_left_amount
-						PUSH S15
+						PUSH S16
 						;; -
 						;; push identifier step_2_spent
-						PUSH S9
+						PUSH S10
 						SUB
 						UFITS 128
 						; colValue
-						POP S16
+						POP S17
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_left_balance
-						PUSH S13
+						PUSH S14
 						;; +
 						;; push identifier step_2_spent
-						PUSH S9
+						PUSH S10
 						ADD
 						UFITS 128
 						; colValue
-						POP S14
+						POP S15
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_left_amount
-						PUSH S15
+						PUSH S16
 						; colValue
-						POP S6
+						POP S7
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier step_2_received
-						PUSH S6
+						PUSH S7
 						; colValue
-						POP S5
+						POP S6
 						; end colValue
 						;; push identifier current_left_amount
-						PUSH S15
+						PUSH S16
 						;; push identifier current_lp_supply
-						PUSH S12
+						PUSH S13
 						;; push identifier current_left_balance
-						PUSH S15
+						PUSH S16
 						MULDIV
 						UFITS 128
 						; expValue
 						; end expValue
 						; colValue
-						POP S4
+						POP S5
 						; end colValue
 						DROP2
 					}
@@ -2754,32 +2762,32 @@ PUSHCONT {
 				;; end if
 				;; return
 				;; push identifier step_1_left_deposit
-				PUSH S16
+				PUSH S17
 				;; push identifier step_1_right_deposit
-				PUSH S16
+				PUSH S17
 				;; push identifier step_1_lp_reward
-				PUSH S16
+				PUSH S17
 				;; push identifier step_2_left_to_right
-				PUSH S11
+				PUSH S12
 				;; push identifier step_2_right_to_left
-				PUSH S11
+				PUSH S12
 				;; push identifier step_2_spent
-				PUSH S11
+				PUSH S12
 				;; push identifier step_2_fee
-				PUSH S11
+				PUSH S12
 				;; push identifier step_2_received
-				PUSH S11
+				PUSH S12
 				;; push identifier step_3_left_deposit
-				PUSH S11
+				PUSH S12
 				;; push identifier step_3_right_deposit
-				PUSH S11
+				PUSH S12
 				;; push identifier step_3_lp_reward
-				PUSH S11
+				PUSH S12
 				TUPLE 11
-				PUSHINT 17
+				PUSHINT 18
 				PUSHINT 1
 				BLKSWX
-				PUSHINT 17
+				PUSHINT 18
 				DROPX
 				; end function _expectedDepositLiquidity
 				BLKDROP2 3, 1
@@ -3499,15 +3507,19 @@ PUSHCONT {
 					UFITS 16
 					;; uint256
 					;; decl: fee_d_minus_n
+					;; push identifier fee_denominator
+					GETGLOB 27
+					;; uint256
+					;; decl: fee_d
 					;; if
 					;; push identifier auto_change
-					PUSH S17
+					PUSH S18
 					;; short-circuiting &&
 					DUP
 					PUSHCONT {
 						DROP
 						;; push identifier current_right_amount
-						PUSH S12
+						PUSH S13
 						GTINT 0
 					}
 					IF
@@ -3516,32 +3528,34 @@ PUSHCONT {
 						; end expValue
 						TRUE
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 						;; push identifier current_right_balance
-						PUSH S10
-						;; push identifier fee_d_minus_n
-						PUSH S1
-						;; +
-						;; push identifier fee_denominator
-						GETGLOB 27
-						ADD
+						PUSH S11
+						;; uint256
 						;; push identifier fee_d_minus_n
 						PUSH S2
+						;; +
+						;; push identifier fee_d
+						PUSH S2
+						ADD
+						;; push identifier fee_d_minus_n
+						PUSH S3
 						MULDIV
 						UFITS 256
 						;; decl: p
-						;; push identifier current_right_amount
-						PUSH S13
-						;; *
 						;; push identifier current_right_balance
 						PUSH S12
+						;; uint256
+						;; push identifier fee_d
+						PUSH S2
+						;; *
+						;; push identifier current_right_amount
+						PUSH S16
+						;; uint256
 						MUL
-						UFITS 128
-						;; push identifier fee_denominator
-						GETGLOB 27
 						;; push identifier fee_d_minus_n
-						PUSH S3
+						PUSH S4
 						MULDIV
 						UFITS 256
 						;; decl: q
@@ -3731,14 +3745,14 @@ PUSHCONT {
 						; expValue
 						; end expValue
 						; colValue
-						POP S9
+						POP S10
 						; end colValue
 						;; push identifier step_2_spent
-						PUSH S8
+						PUSH S9
 						;; push identifier current_right_balance
-						PUSH S13
+						PUSH S14
 						;; push identifier current_left_balance
-						PUSH S15
+						PUSH S16
 						;; param: a_amount
 						;; param: a_pool
 						;; param: b_pool
@@ -3794,76 +3808,76 @@ PUSHCONT {
 						; expValue
 						; end expValue
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 						; expValue
 						; end expValue
 						; colValue
-						POP S8
+						POP S9
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_right_amount
-						PUSH S14
+						PUSH S15
 						;; -
 						;; push identifier step_2_spent
-						PUSH S9
+						PUSH S10
 						SUB
 						UFITS 128
 						; colValue
-						POP S15
+						POP S16
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_right_balance
-						PUSH S12
+						PUSH S13
 						;; +
 						;; push identifier step_2_spent
-						PUSH S9
+						PUSH S10
 						ADD
 						UFITS 128
 						; colValue
-						POP S13
+						POP S14
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier current_right_amount
-						PUSH S14
+						PUSH S15
 						; colValue
-						POP S5
+						POP S6
 						; end colValue
 						; expValue
 						; end expValue
 						;; push identifier step_2_received
-						PUSH S6
+						PUSH S7
 						; colValue
-						POP S6
+						POP S7
 						; end colValue
 						;; push identifier current_right_amount
-						PUSH S14
+						PUSH S15
 						;; push identifier current_lp_supply
-						PUSH S12
+						PUSH S13
 						;; push identifier current_right_balance
-						PUSH S14
+						PUSH S15
 						MULDIV
 						UFITS 128
 						; expValue
 						; end expValue
 						; colValue
-						POP S4
+						POP S5
 						; end colValue
 						DROP2
 					}
 					PUSHCONT {
 						;; if
 						;; push identifier auto_change
-						PUSH S17
+						PUSH S18
 						;; short-circuiting &&
 						DUP
 						PUSHCONT {
 							DROP
 							;; push identifier current_left_amount
-							PUSH S13
+							PUSH S14
 							GTINT 0
 						}
 						IF
@@ -3872,32 +3886,34 @@ PUSHCONT {
 							; end expValue
 							TRUE
 							; colValue
-							POP S9
+							POP S10
 							; end colValue
 							;; push identifier current_left_balance
-							PUSH S11
-							;; push identifier fee_d_minus_n
-							PUSH S1
-							;; +
-							;; push identifier fee_denominator
-							GETGLOB 27
-							ADD
+							PUSH S12
+							;; uint256
 							;; push identifier fee_d_minus_n
 							PUSH S2
+							;; +
+							;; push identifier fee_d
+							PUSH S2
+							ADD
+							;; push identifier fee_d_minus_n
+							PUSH S3
 							MULDIV
 							UFITS 256
 							;; decl: p
-							;; push identifier current_left_amount
-							PUSH S14
-							;; *
 							;; push identifier current_left_balance
 							PUSH S13
+							;; uint256
+							;; push identifier fee_d
+							PUSH S2
+							;; *
+							;; push identifier current_left_amount
+							PUSH S17
+							;; uint256
 							MUL
-							UFITS 128
-							;; push identifier fee_denominator
-							GETGLOB 27
 							;; push identifier fee_d_minus_n
-							PUSH S3
+							PUSH S4
 							MULDIV
 							UFITS 256
 							;; decl: q
@@ -4087,14 +4103,14 @@ PUSHCONT {
 							; expValue
 							; end expValue
 							; colValue
-							POP S9
+							POP S10
 							; end colValue
 							;; push identifier step_2_spent
-							PUSH S8
+							PUSH S9
 							;; push identifier current_left_balance
-							PUSH S14
+							PUSH S15
 							;; push identifier current_right_balance
-							PUSH S14
+							PUSH S15
 							;; param: a_amount
 							;; param: a_pool
 							;; param: b_pool
@@ -4150,63 +4166,63 @@ PUSHCONT {
 							; expValue
 							; end expValue
 							; colValue
-							POP S8
+							POP S9
 							; end colValue
 							; expValue
 							; end expValue
 							; colValue
-							POP S8
+							POP S9
 							; end colValue
 							; expValue
 							; end expValue
 							;; push identifier current_left_amount
-							PUSH S15
+							PUSH S16
 							;; -
 							;; push identifier step_2_spent
-							PUSH S9
+							PUSH S10
 							SUB
 							UFITS 128
 							; colValue
-							POP S16
+							POP S17
 							; end colValue
 							; expValue
 							; end expValue
 							;; push identifier current_left_balance
-							PUSH S13
+							PUSH S14
 							;; +
 							;; push identifier step_2_spent
-							PUSH S9
+							PUSH S10
 							ADD
 							UFITS 128
 							; colValue
-							POP S14
+							POP S15
 							; end colValue
 							; expValue
 							; end expValue
 							;; push identifier current_left_amount
-							PUSH S15
+							PUSH S16
 							; colValue
-							POP S6
+							POP S7
 							; end colValue
 							; expValue
 							; end expValue
 							;; push identifier step_2_received
-							PUSH S6
+							PUSH S7
 							; colValue
-							POP S5
+							POP S6
 							; end colValue
 							;; push identifier current_left_amount
-							PUSH S15
+							PUSH S16
 							;; push identifier current_lp_supply
-							PUSH S12
+							PUSH S13
 							;; push identifier current_left_balance
-							PUSH S15
+							PUSH S16
 							MULDIV
 							UFITS 128
 							; expValue
 							; end expValue
 							; colValue
-							POP S4
+							POP S5
 							; end colValue
 							DROP2
 						}
@@ -4217,32 +4233,32 @@ PUSHCONT {
 					;; end if
 					;; return
 					;; push identifier step_1_left_deposit
-					PUSH S16
+					PUSH S17
 					;; push identifier step_1_right_deposit
-					PUSH S16
+					PUSH S17
 					;; push identifier step_1_lp_reward
-					PUSH S16
+					PUSH S17
 					;; push identifier step_2_left_to_right
-					PUSH S11
+					PUSH S12
 					;; push identifier step_2_right_to_left
-					PUSH S11
+					PUSH S12
 					;; push identifier step_2_spent
-					PUSH S11
+					PUSH S12
 					;; push identifier step_2_fee
-					PUSH S11
+					PUSH S12
 					;; push identifier step_2_received
-					PUSH S11
+					PUSH S12
 					;; push identifier step_3_left_deposit
-					PUSH S11
+					PUSH S12
 					;; push identifier step_3_right_deposit
-					PUSH S11
+					PUSH S12
 					;; push identifier step_3_lp_reward
-					PUSH S11
+					PUSH S12
 					TUPLE 11
-					PUSHINT 17
+					PUSHINT 18
 					PUSHINT 1
 					BLKSWX
-					PUSHINT 17
+					PUSHINT 18
 					DROPX
 					; end function _expectedDepositLiquidity
 					BLKDROP2 3, 1
@@ -5131,15 +5147,19 @@ PUSHCONT {
 		UFITS 16
 		;; uint256
 		;; decl: fee_d_minus_n
+		;; push identifier fee_denominator
+		GETGLOB 27
+		;; uint256
+		;; decl: fee_d
 		;; if
 		;; push identifier auto_change
-		PUSH S17
+		PUSH S18
 		;; short-circuiting &&
 		DUP
 		PUSHCONT {
 			DROP
 			;; push identifier current_right_amount
-			PUSH S12
+			PUSH S13
 			GTINT 0
 		}
 		IF
@@ -5148,32 +5168,34 @@ PUSHCONT {
 			; end expValue
 			TRUE
 			; colValue
-			POP S8
+			POP S9
 			; end colValue
 			;; push identifier current_right_balance
-			PUSH S10
-			;; push identifier fee_d_minus_n
-			PUSH S1
-			;; +
-			;; push identifier fee_denominator
-			GETGLOB 27
-			ADD
+			PUSH S11
+			;; uint256
 			;; push identifier fee_d_minus_n
 			PUSH S2
+			;; +
+			;; push identifier fee_d
+			PUSH S2
+			ADD
+			;; push identifier fee_d_minus_n
+			PUSH S3
 			MULDIV
 			UFITS 256
 			;; decl: p
-			;; push identifier current_right_amount
-			PUSH S13
-			;; *
 			;; push identifier current_right_balance
 			PUSH S12
+			;; uint256
+			;; push identifier fee_d
+			PUSH S2
+			;; *
+			;; push identifier current_right_amount
+			PUSH S16
+			;; uint256
 			MUL
-			UFITS 128
-			;; push identifier fee_denominator
-			GETGLOB 27
 			;; push identifier fee_d_minus_n
-			PUSH S3
+			PUSH S4
 			MULDIV
 			UFITS 256
 			;; decl: q
@@ -5363,14 +5385,14 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			; colValue
-			POP S9
+			POP S10
 			; end colValue
 			;; push identifier step_2_spent
-			PUSH S8
+			PUSH S9
 			;; push identifier current_right_balance
-			PUSH S13
+			PUSH S14
 			;; push identifier current_left_balance
-			PUSH S15
+			PUSH S16
 			;; param: a_amount
 			;; param: a_pool
 			;; param: b_pool
@@ -5426,76 +5448,76 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			; colValue
-			POP S8
+			POP S9
 			; end colValue
 			; expValue
 			; end expValue
 			; colValue
-			POP S8
+			POP S9
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_right_amount
-			PUSH S14
+			PUSH S15
 			;; -
 			;; push identifier step_2_spent
-			PUSH S9
+			PUSH S10
 			SUB
 			UFITS 128
 			; colValue
-			POP S15
+			POP S16
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_right_balance
-			PUSH S12
+			PUSH S13
 			;; +
 			;; push identifier step_2_spent
-			PUSH S9
+			PUSH S10
 			ADD
 			UFITS 128
 			; colValue
-			POP S13
+			POP S14
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_right_amount
-			PUSH S14
+			PUSH S15
 			; colValue
-			POP S5
+			POP S6
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier step_2_received
-			PUSH S6
+			PUSH S7
 			; colValue
-			POP S6
+			POP S7
 			; end colValue
 			;; push identifier current_right_amount
-			PUSH S14
+			PUSH S15
 			;; push identifier current_lp_supply
-			PUSH S12
+			PUSH S13
 			;; push identifier current_right_balance
-			PUSH S14
+			PUSH S15
 			MULDIV
 			UFITS 128
 			; expValue
 			; end expValue
 			; colValue
-			POP S4
+			POP S5
 			; end colValue
 			DROP2
 		}
 		PUSHCONT {
 			;; if
 			;; push identifier auto_change
-			PUSH S17
+			PUSH S18
 			;; short-circuiting &&
 			DUP
 			PUSHCONT {
 				DROP
 				;; push identifier current_left_amount
-				PUSH S13
+				PUSH S14
 				GTINT 0
 			}
 			IF
@@ -5504,32 +5526,34 @@ PUSHCONT {
 				; end expValue
 				TRUE
 				; colValue
-				POP S9
+				POP S10
 				; end colValue
 				;; push identifier current_left_balance
-				PUSH S11
-				;; push identifier fee_d_minus_n
-				PUSH S1
-				;; +
-				;; push identifier fee_denominator
-				GETGLOB 27
-				ADD
+				PUSH S12
+				;; uint256
 				;; push identifier fee_d_minus_n
 				PUSH S2
+				;; +
+				;; push identifier fee_d
+				PUSH S2
+				ADD
+				;; push identifier fee_d_minus_n
+				PUSH S3
 				MULDIV
 				UFITS 256
 				;; decl: p
-				;; push identifier current_left_amount
-				PUSH S14
-				;; *
 				;; push identifier current_left_balance
 				PUSH S13
+				;; uint256
+				;; push identifier fee_d
+				PUSH S2
+				;; *
+				;; push identifier current_left_amount
+				PUSH S17
+				;; uint256
 				MUL
-				UFITS 128
-				;; push identifier fee_denominator
-				GETGLOB 27
 				;; push identifier fee_d_minus_n
-				PUSH S3
+				PUSH S4
 				MULDIV
 				UFITS 256
 				;; decl: q
@@ -5719,14 +5743,14 @@ PUSHCONT {
 				; expValue
 				; end expValue
 				; colValue
-				POP S9
+				POP S10
 				; end colValue
 				;; push identifier step_2_spent
-				PUSH S8
+				PUSH S9
 				;; push identifier current_left_balance
-				PUSH S14
+				PUSH S15
 				;; push identifier current_right_balance
-				PUSH S14
+				PUSH S15
 				;; param: a_amount
 				;; param: a_pool
 				;; param: b_pool
@@ -5782,63 +5806,63 @@ PUSHCONT {
 				; expValue
 				; end expValue
 				; colValue
-				POP S8
+				POP S9
 				; end colValue
 				; expValue
 				; end expValue
 				; colValue
-				POP S8
+				POP S9
 				; end colValue
 				; expValue
 				; end expValue
 				;; push identifier current_left_amount
-				PUSH S15
+				PUSH S16
 				;; -
 				;; push identifier step_2_spent
-				PUSH S9
+				PUSH S10
 				SUB
 				UFITS 128
 				; colValue
-				POP S16
+				POP S17
 				; end colValue
 				; expValue
 				; end expValue
 				;; push identifier current_left_balance
-				PUSH S13
+				PUSH S14
 				;; +
 				;; push identifier step_2_spent
-				PUSH S9
+				PUSH S10
 				ADD
 				UFITS 128
 				; colValue
-				POP S14
+				POP S15
 				; end colValue
 				; expValue
 				; end expValue
 				;; push identifier current_left_amount
-				PUSH S15
+				PUSH S16
 				; colValue
-				POP S6
+				POP S7
 				; end colValue
 				; expValue
 				; end expValue
 				;; push identifier step_2_received
-				PUSH S6
+				PUSH S7
 				; colValue
-				POP S5
+				POP S6
 				; end colValue
 				;; push identifier current_left_amount
-				PUSH S15
+				PUSH S16
 				;; push identifier current_lp_supply
-				PUSH S12
+				PUSH S13
 				;; push identifier current_left_balance
-				PUSH S15
+				PUSH S16
 				MULDIV
 				UFITS 128
 				; expValue
 				; end expValue
 				; colValue
-				POP S4
+				POP S5
 				; end colValue
 				DROP2
 			}
@@ -5849,32 +5873,32 @@ PUSHCONT {
 		;; end if
 		;; return
 		;; push identifier step_1_left_deposit
-		PUSH S16
+		PUSH S17
 		;; push identifier step_1_right_deposit
-		PUSH S16
+		PUSH S17
 		;; push identifier step_1_lp_reward
-		PUSH S16
+		PUSH S17
 		;; push identifier step_2_left_to_right
-		PUSH S11
+		PUSH S12
 		;; push identifier step_2_right_to_left
-		PUSH S11
+		PUSH S12
 		;; push identifier step_2_spent
-		PUSH S11
+		PUSH S12
 		;; push identifier step_2_fee
-		PUSH S11
+		PUSH S12
 		;; push identifier step_2_received
-		PUSH S11
+		PUSH S12
 		;; push identifier step_3_left_deposit
-		PUSH S11
+		PUSH S12
 		;; push identifier step_3_right_deposit
-		PUSH S11
+		PUSH S12
 		;; push identifier step_3_lp_reward
-		PUSH S11
+		PUSH S12
 		TUPLE 11
-		PUSHINT 17
+		PUSHINT 18
 		PUSHINT 1
 		BLKSWX
-		PUSHINT 17
+		PUSHINT 18
 		DROPX
 		; end function _expectedDepositLiquidity
 		BLKDROP2 3, 1
@@ -6460,15 +6484,19 @@ PUSHCONT {
 	UFITS 16
 	;; uint256
 	;; decl: fee_d_minus_n
+	;; push identifier fee_denominator
+	GETGLOB 27
+	;; uint256
+	;; decl: fee_d
 	;; if
 	;; push identifier auto_change
-	PUSH S17
+	PUSH S18
 	;; short-circuiting &&
 	DUP
 	PUSHCONT {
 		DROP
 		;; push identifier current_right_amount
-		PUSH S12
+		PUSH S13
 		GTINT 0
 	}
 	IF
@@ -6477,32 +6505,34 @@ PUSHCONT {
 		; end expValue
 		TRUE
 		; colValue
-		POP S8
+		POP S9
 		; end colValue
 		;; push identifier current_right_balance
-		PUSH S10
-		;; push identifier fee_d_minus_n
-		PUSH S1
-		;; +
-		;; push identifier fee_denominator
-		GETGLOB 27
-		ADD
+		PUSH S11
+		;; uint256
 		;; push identifier fee_d_minus_n
 		PUSH S2
+		;; +
+		;; push identifier fee_d
+		PUSH S2
+		ADD
+		;; push identifier fee_d_minus_n
+		PUSH S3
 		MULDIV
 		UFITS 256
 		;; decl: p
-		;; push identifier current_right_amount
-		PUSH S13
-		;; *
 		;; push identifier current_right_balance
 		PUSH S12
+		;; uint256
+		;; push identifier fee_d
+		PUSH S2
+		;; *
+		;; push identifier current_right_amount
+		PUSH S16
+		;; uint256
 		MUL
-		UFITS 128
-		;; push identifier fee_denominator
-		GETGLOB 27
 		;; push identifier fee_d_minus_n
-		PUSH S3
+		PUSH S4
 		MULDIV
 		UFITS 256
 		;; decl: q
@@ -6692,14 +6722,14 @@ PUSHCONT {
 		; expValue
 		; end expValue
 		; colValue
-		POP S9
+		POP S10
 		; end colValue
 		;; push identifier step_2_spent
-		PUSH S8
+		PUSH S9
 		;; push identifier current_right_balance
-		PUSH S13
+		PUSH S14
 		;; push identifier current_left_balance
-		PUSH S15
+		PUSH S16
 		;; param: a_amount
 		;; param: a_pool
 		;; param: b_pool
@@ -6755,76 +6785,76 @@ PUSHCONT {
 		; expValue
 		; end expValue
 		; colValue
-		POP S8
+		POP S9
 		; end colValue
 		; expValue
 		; end expValue
 		; colValue
-		POP S8
+		POP S9
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier current_right_amount
-		PUSH S14
+		PUSH S15
 		;; -
 		;; push identifier step_2_spent
-		PUSH S9
+		PUSH S10
 		SUB
 		UFITS 128
 		; colValue
-		POP S15
+		POP S16
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier current_right_balance
-		PUSH S12
+		PUSH S13
 		;; +
 		;; push identifier step_2_spent
-		PUSH S9
+		PUSH S10
 		ADD
 		UFITS 128
 		; colValue
-		POP S13
+		POP S14
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier current_right_amount
-		PUSH S14
+		PUSH S15
 		; colValue
-		POP S5
+		POP S6
 		; end colValue
 		; expValue
 		; end expValue
 		;; push identifier step_2_received
-		PUSH S6
+		PUSH S7
 		; colValue
-		POP S6
+		POP S7
 		; end colValue
 		;; push identifier current_right_amount
-		PUSH S14
+		PUSH S15
 		;; push identifier current_lp_supply
-		PUSH S12
+		PUSH S13
 		;; push identifier current_right_balance
-		PUSH S14
+		PUSH S15
 		MULDIV
 		UFITS 128
 		; expValue
 		; end expValue
 		; colValue
-		POP S4
+		POP S5
 		; end colValue
 		DROP2
 	}
 	PUSHCONT {
 		;; if
 		;; push identifier auto_change
-		PUSH S17
+		PUSH S18
 		;; short-circuiting &&
 		DUP
 		PUSHCONT {
 			DROP
 			;; push identifier current_left_amount
-			PUSH S13
+			PUSH S14
 			GTINT 0
 		}
 		IF
@@ -6833,32 +6863,34 @@ PUSHCONT {
 			; end expValue
 			TRUE
 			; colValue
-			POP S9
+			POP S10
 			; end colValue
 			;; push identifier current_left_balance
-			PUSH S11
-			;; push identifier fee_d_minus_n
-			PUSH S1
-			;; +
-			;; push identifier fee_denominator
-			GETGLOB 27
-			ADD
+			PUSH S12
+			;; uint256
 			;; push identifier fee_d_minus_n
 			PUSH S2
+			;; +
+			;; push identifier fee_d
+			PUSH S2
+			ADD
+			;; push identifier fee_d_minus_n
+			PUSH S3
 			MULDIV
 			UFITS 256
 			;; decl: p
-			;; push identifier current_left_amount
-			PUSH S14
-			;; *
 			;; push identifier current_left_balance
 			PUSH S13
+			;; uint256
+			;; push identifier fee_d
+			PUSH S2
+			;; *
+			;; push identifier current_left_amount
+			PUSH S17
+			;; uint256
 			MUL
-			UFITS 128
-			;; push identifier fee_denominator
-			GETGLOB 27
 			;; push identifier fee_d_minus_n
-			PUSH S3
+			PUSH S4
 			MULDIV
 			UFITS 256
 			;; decl: q
@@ -7048,14 +7080,14 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			; colValue
-			POP S9
+			POP S10
 			; end colValue
 			;; push identifier step_2_spent
-			PUSH S8
+			PUSH S9
 			;; push identifier current_left_balance
-			PUSH S14
+			PUSH S15
 			;; push identifier current_right_balance
-			PUSH S14
+			PUSH S15
 			;; param: a_amount
 			;; param: a_pool
 			;; param: b_pool
@@ -7111,63 +7143,63 @@ PUSHCONT {
 			; expValue
 			; end expValue
 			; colValue
-			POP S8
+			POP S9
 			; end colValue
 			; expValue
 			; end expValue
 			; colValue
-			POP S8
+			POP S9
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_left_amount
-			PUSH S15
+			PUSH S16
 			;; -
 			;; push identifier step_2_spent
-			PUSH S9
+			PUSH S10
 			SUB
 			UFITS 128
 			; colValue
-			POP S16
+			POP S17
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_left_balance
-			PUSH S13
+			PUSH S14
 			;; +
 			;; push identifier step_2_spent
-			PUSH S9
+			PUSH S10
 			ADD
 			UFITS 128
 			; colValue
-			POP S14
+			POP S15
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier current_left_amount
-			PUSH S15
+			PUSH S16
 			; colValue
-			POP S6
+			POP S7
 			; end colValue
 			; expValue
 			; end expValue
 			;; push identifier step_2_received
-			PUSH S6
+			PUSH S7
 			; colValue
-			POP S5
+			POP S6
 			; end colValue
 			;; push identifier current_left_amount
-			PUSH S15
+			PUSH S16
 			;; push identifier current_lp_supply
-			PUSH S12
+			PUSH S13
 			;; push identifier current_left_balance
-			PUSH S15
+			PUSH S16
 			MULDIV
 			UFITS 128
 			; expValue
 			; end expValue
 			; colValue
-			POP S4
+			POP S5
 			; end colValue
 			DROP2
 		}
@@ -7178,32 +7210,32 @@ PUSHCONT {
 	;; end if
 	;; return
 	;; push identifier step_1_left_deposit
-	PUSH S16
+	PUSH S17
 	;; push identifier step_1_right_deposit
-	PUSH S16
+	PUSH S17
 	;; push identifier step_1_lp_reward
-	PUSH S16
+	PUSH S17
 	;; push identifier step_2_left_to_right
-	PUSH S11
+	PUSH S12
 	;; push identifier step_2_right_to_left
-	PUSH S11
+	PUSH S12
 	;; push identifier step_2_spent
-	PUSH S11
+	PUSH S12
 	;; push identifier step_2_fee
-	PUSH S11
+	PUSH S12
 	;; push identifier step_2_received
-	PUSH S11
+	PUSH S12
 	;; push identifier step_3_left_deposit
-	PUSH S11
+	PUSH S12
 	;; push identifier step_3_right_deposit
-	PUSH S11
+	PUSH S12
 	;; push identifier step_3_lp_reward
-	PUSH S11
+	PUSH S12
 	TUPLE 11
-	PUSHINT 17
+	PUSHINT 18
 	PUSHINT 1
 	BLKSWX
-	PUSHINT 17
+	PUSHINT 18
 	DROPX
 	; end function _expectedDepositLiquidity
 	BLKDROP2 3, 1

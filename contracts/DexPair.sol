@@ -585,12 +585,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint128 step_3_lp_reward = 0;
 
         uint256 fee_d_minus_n = uint256(fee_denominator - fee_numerator);
+        uint256 fee_d = uint256(fee_denominator);
 
         if (auto_change && current_right_amount > 0) {
             // step 2 (surplus RIGHT exchange)
             step_2_right_to_left = true;
-            uint256 p = math.muldiv(current_right_balance, fee_d_minus_n + fee_denominator, fee_d_minus_n);
-            uint256 q = math.muldiv(current_right_amount * current_right_balance, fee_denominator, fee_d_minus_n);
+            uint256 p = math.muldiv(uint256(current_right_balance), fee_d_minus_n + fee_d, fee_d_minus_n);
+            uint256 q = math.muldiv(uint256(current_right_balance), fee_d * uint256(current_right_amount), fee_d_minus_n);
             step_2_spent = _solveQuadraticEquationPQ(p, q);
             (step_2_received, step_2_fee) = _expectedExchange(step_2_spent, current_right_balance, current_left_balance);
 
@@ -605,8 +606,8 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         } else if (auto_change && current_left_amount > 0) {
             // step 2 (surplus LEFT exchange)
             step_2_left_to_right = true;
-            uint256 p = math.muldiv(current_left_balance, fee_d_minus_n + fee_denominator, fee_d_minus_n);
-            uint256 q = math.muldiv(current_left_amount * current_left_balance, fee_denominator, fee_d_minus_n);
+            uint256 p = math.muldiv(uint256(current_left_balance), fee_d_minus_n + fee_d, fee_d_minus_n);
+            uint256 q = math.muldiv(uint256(current_left_balance), fee_d * uint256(current_left_amount), fee_d_minus_n);
             step_2_spent = _solveQuadraticEquationPQ(p, q);
             (step_2_received, step_2_fee) = _expectedExchange(step_2_spent, current_left_balance, current_right_balance);
 
