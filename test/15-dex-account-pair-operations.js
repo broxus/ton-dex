@@ -669,7 +669,7 @@ describe('DexAccount interact with DexPair', async function () {
                     spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
                     spent_token_root: FooRoot.address,
                     receive_token_root: BarRoot.address,
-                    expected_amount: new BigNumber(expected.expected_amount).plus(1).toNumber(),
+                    expected_amount: new BigNumber(expected.expected_amount).plus(1).toString(),
                     send_gas_to: DexAccount2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
