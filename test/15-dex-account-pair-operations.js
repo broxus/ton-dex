@@ -16,8 +16,6 @@ let FooBarLpRoot;
 let Account2;
 let DexAccount2;
 
-const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
-
 let IS_FOO_LEFT;
 
 let keyPairs;
@@ -104,7 +102,7 @@ async function dexPairInfo() {
     };
 }
 
-describe('Deposit liquidity', async function () {
+describe('DexAccount interact with DexPair', async function () {
     this.timeout(120000);
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
@@ -536,4 +534,159 @@ describe('Deposit liquidity', async function () {
 
     });
 
+    describe('Exchanges', async function () {
+
+        it('DexAccount#2 exchange FOO to BAR', async function () {
+            const dexAccount2Start = await dexAccountBalances(DexAccount2);
+            const dexPairInfoStart = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance start: ${dexAccount2Start.foo} FOO, ${dexAccount2Start.bar} BAR`);
+            logger.log(`DexPair start: ${dexPairInfoStart.foo} FOO, ${dexPairInfoStart.bar} BAR`);
+
+            const TOKENS_TO_EXCHANGE = 100;
+
+            const expected = await DexPairFooBar.call({
+                method: 'expectedExchange', params: {
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
+                    is_left_to_right: IS_FOO_LEFT
+                }
+            });
+
+            logger.log(`Spent amount: ${TOKENS_TO_EXCHANGE} FOO`);
+            logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(Constants.FOO_DECIMALS_MODIFIER).toString()} FOO`);
+            logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(Constants.BAR_DECIMALS_MODIFIER).toString()} BAR`);
+
+            await Account2.runTarget({
+                contract: DexAccount2,
+                method: 'exchange',
+                params: {
+                    spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
+                    spent_token_root: FooRoot.address,
+                    receive_token_root: BarRoot.address,
+                    expected_amount: expected.expected_amount,
+                    send_gas_to: DexAccount2.address
+                },
+                value: locklift.utils.convertCrystal('1.1', 'nano'),
+                keyPair: keyPairs[1]
+            });
+
+            const dexAccount2End = await dexAccountBalances(DexAccount2);
+            const dexPairInfoEnd = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
+            logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
+
+            const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(TOKENS_TO_EXCHANGE).toString();
+            const expectedPairBar = new BigNumber(dexPairInfoStart.bar)
+                .minus(new BigNumber(expected.expected_amount).div(Constants.BAR_DECIMALS_MODIFIER)).toString();
+            const expectedDexAccountFoo = new BigNumber(dexAccount2Start.foo).minus(TOKENS_TO_EXCHANGE).toString();
+            const expectedDexAccountBar = new BigNumber(dexAccount2Start.bar)
+                .plus(new BigNumber(expected.expected_amount).div(Constants.BAR_DECIMALS_MODIFIER)).toString();
+
+            expect(expectedPairFoo).to.equal(dexPairInfoEnd.foo.toString(), 'Wrong DEX FOO balance');
+            expect(expectedPairBar).to.equal(dexPairInfoEnd.bar.toString(), 'Wrong DEX BAR balance');
+            expect(expectedDexAccountFoo).to.equal(dexAccount2End.foo.toString(), 'Wrong DexAccount#2 FOO balance');
+            expect(expectedDexAccountBar).to.equal(dexAccount2End.bar.toString(), 'Wrong DexAccount#2 BAR balance');
+        });
+
+        it('DexAccount#2 exchange BAR to FOO', async function () {
+            const dexAccount2Start = await dexAccountBalances(DexAccount2);
+            const dexPairInfoStart = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance start: ${dexAccount2Start.foo} FOO, ${dexAccount2Start.bar} BAR`);
+            logger.log(`DexPair start: ${dexPairInfoStart.foo} FOO, ${dexPairInfoStart.bar} BAR`);
+
+            const TOKENS_TO_EXCHANGE = 100;
+
+            const expected = await DexPairFooBar.call({
+                method: 'expectedExchange', params: {
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    is_left_to_right: !IS_FOO_LEFT
+                }
+            });
+
+            logger.log(`Spent amount: ${TOKENS_TO_EXCHANGE} BAR`);
+            logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(Constants.BAR_DECIMALS_MODIFIER).toString()} BAR`);
+            logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER).toString()} FOO`);
+
+            await Account2.runTarget({
+                contract: DexAccount2,
+                method: 'exchange',
+                params: {
+                    spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    spent_token_root: BarRoot.address,
+                    receive_token_root: FooRoot.address,
+                    expected_amount: 0,
+                    send_gas_to: DexAccount2.address
+                },
+                value: locklift.utils.convertCrystal('1.1', 'nano'),
+                keyPair: keyPairs[1]
+            });
+
+            const dexAccount2End = await dexAccountBalances(DexAccount2);
+            const dexPairInfoEnd = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
+            logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
+
+            const expectedPairFoo = new BigNumber(dexPairInfoStart.foo)
+                .minus(new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
+            const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(TOKENS_TO_EXCHANGE).toString();
+            const expectedDexAccountFoo = new BigNumber(dexAccount2Start.foo)
+                .plus(new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
+            const expectedDexAccountBar = new BigNumber(dexAccount2Start.bar).minus(TOKENS_TO_EXCHANGE).toString();
+
+            expect(expectedPairFoo).to.equal(dexPairInfoEnd.foo.toString(), 'Wrong DEX FOO balance');
+            expect(expectedPairBar).to.equal(dexPairInfoEnd.bar.toString(), 'Wrong DEX BAR balance');
+            expect(expectedDexAccountFoo).to.equal(dexAccount2End.foo.toString(), 'Wrong DexAccount#2 FOO balance');
+            expect(expectedDexAccountBar).to.equal(dexAccount2End.bar.toString(), 'Wrong DexAccount#2 BAR balance');
+        });
+
+        it('DexAccount#2 exchange FOO to BAR (wrong rate)', async function () {
+            const dexAccount2Start = await dexAccountBalances(DexAccount2);
+            const dexPairInfoStart = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance start: ${dexAccount2Start.foo} FOO, ${dexAccount2Start.bar} BAR`);
+            logger.log(`DexPair start: ${dexPairInfoStart.foo} FOO, ${dexPairInfoStart.bar} BAR`);
+
+            const TOKENS_TO_EXCHANGE = 100;
+
+            const expected = await DexPairFooBar.call({
+                method: 'expectedExchange', params: {
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
+                    is_left_to_right: IS_FOO_LEFT
+                }
+            });
+
+            logger.log(`Spent amount: ${TOKENS_TO_EXCHANGE} FOO`);
+            logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).div(Constants.FOO_DECIMALS_MODIFIER).toString()} FOO`);
+            logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).div(Constants.BAR_DECIMALS_MODIFIER).toString()} BAR`);
+
+            await Account2.runTarget({
+                contract: DexAccount2,
+                method: 'exchange',
+                params: {
+                    spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
+                    spent_token_root: FooRoot.address,
+                    receive_token_root: BarRoot.address,
+                    expected_amount: new BigNumber(expected.expected_amount).plus(1).toNumber(),
+                    send_gas_to: DexAccount2.address
+                },
+                value: locklift.utils.convertCrystal('1.1', 'nano'),
+                keyPair: keyPairs[1]
+            });
+
+            const dexAccount2End = await dexAccountBalances(DexAccount2);
+            const dexPairInfoEnd = await dexPairInfo();
+
+            logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
+            logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
+
+            expect(dexPairInfoStart.foo).to.equal(dexPairInfoEnd.foo, 'Wrong DEX FOO balance');
+            expect(dexPairInfoStart.bar).to.equal(dexPairInfoEnd.bar, 'Wrong DEX BAR balance');
+            expect(dexAccount2Start.foo).to.equal(dexAccount2End.foo, 'Wrong DexAccount#2 FOO balance');
+            expect(dexAccount2Start.bar).to.equal(dexAccount2End.bar, 'Wrong DexAccount#2 BAR balance');
+        });
+
+    });
 });
