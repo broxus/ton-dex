@@ -261,5 +261,146 @@
 	"data": [
 	],
 	"events": [
+		{
+			"name": "AddPair",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"},
+				{"name":"pair","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "WithdrawTokens",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"balance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "TransferTokens",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"balance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExchangeTokens",
+			"inputs": [
+				{"name":"from","type":"address"},
+				{"name":"to","type":"address"},
+				{"name":"spent_amount","type":"uint128"},
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"balance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "DepositLiquidity",
+			"inputs": [
+				{"name":"left_root","type":"address"},
+				{"name":"left_amount","type":"uint128"},
+				{"name":"right_root","type":"address"},
+				{"name":"right_amount","type":"uint128"},
+				{"name":"auto_change","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "WithdrawLiquidity",
+			"inputs": [
+				{"name":"lp_amount","type":"uint128"},
+				{"name":"lp_balance","type":"uint128"},
+				{"name":"lp_root","type":"address"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "TokensReceived",
+			"inputs": [
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"balance","type":"uint128"},
+				{"name":"sender_wallet","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "TokensReceivedFromAccount",
+			"inputs": [
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"balance","type":"uint128"},
+				{"name":"sender","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "TokensReceivedFromPair",
+			"inputs": [
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"balance","type":"uint128"},
+				{"name":"left_root","type":"address"},
+				{"name":"right_root","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "OperationRollback",
+			"inputs": [
+				{"name":"token_root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"balance","type":"uint128"},
+				{"name":"from","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExpectedPairNotExist",
+			"inputs": [
+				{"name":"pair","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountCodeUpgraded",
+			"inputs": [
+				{"name":"version","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "CodeUpgradeRequested",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "GarbageCollected",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		}
 	]
 }
