@@ -154,9 +154,6 @@ contract DexAccount is
             } else {
                 _balances[token_root] = tokens_amount;
             }
-
-            emit TokensReceived(token_root, tokens_amount, _balances[token_root], sender_wallet);
-
             TvmCell empty;
             ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 0,                          // recipient_public_key
@@ -203,8 +200,6 @@ contract DexAccount is
 
         _balances[token_root] -= amount;
 
-        emit WithdrawTokens(token_root, amount, _balances[token_root]);
-
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
         _nonce++;
@@ -244,8 +239,6 @@ contract DexAccount is
 
         _balances[token_root] -= amount;
 
-        emit TransferTokens(token_root, amount, _balances[token_root]);
-
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
         _nonce++;
@@ -280,7 +273,6 @@ contract DexAccount is
         } else {
             _balances[token_root] = amount;
         }
-        emit TokensReceivedFromAccount(token_root, amount, _balances[token_root], sender_owner);
 
         if (willing_to_deploy && !_wallets.exists(token_root) && !_tmp_deploying_wallets.exists(token_root)) {
             _deployWallet(token_root, send_gas_to);
@@ -303,7 +295,6 @@ contract DexAccount is
         } else {
             _balances[token_root] = amount;
         }
-        emit TokensReceivedFromPair(token_root, amount, _balances[token_root], sender_left_root, sender_right_root);
 
         send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
@@ -332,14 +323,6 @@ contract DexAccount is
         )));
 
         _balances[spent_token_root] -= spent_amount;
-
-        emit ExchangeTokens(
-            spent_token_root,
-            receive_token_root,
-            spent_amount,
-            expected_amount,
-            _balances[spent_token_root]
-        );
 
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
@@ -391,8 +374,6 @@ contract DexAccount is
         _balances[left_root] -= left_amount;
         _balances[right_root] -= right_amount;
 
-        emit DepositLiquidity(left_root, left_amount, right_root, right_amount, auto_change);
-
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
         _nonce++;
@@ -439,8 +420,6 @@ contract DexAccount is
 
         _balances[lp_root] -= lp_amount;
 
-        emit WithdrawLiquidity(lp_amount, _balances[lp_root], lp_root, left_root, right_root);
-
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
         _nonce++;
@@ -477,8 +456,6 @@ contract DexAccount is
             PlatformTypes.Pair,
             _buildPairParams(left_root, right_root)
         )));
-
-        emit AddPair(left_root, right_root, expected);
 
         address send_gas_to_ = send_gas_to.value == 0 ? owner : send_gas_to;
 
@@ -646,7 +623,6 @@ contract DexAccount is
     function requestUpgrade(address send_gas_to) external view onlyOwner {
         require(msg.value >= Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
-        emit CodeUpgradeRequested();
         IDexRoot(root).requestUpgradeAccount{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(current_version, owner, send_gas_to);
     }
 
@@ -656,8 +632,6 @@ contract DexAccount is
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
             send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else {
-            emit AccountCodeUpgraded(new_version);
-
             TvmBuilder builder;
 
             builder.store(root);
@@ -742,7 +716,6 @@ contract DexAccount is
         delete _tmp_send_gas_to;
         delete _tmp_expected_callback_sender;
         delete _tmp_withdrawals;
-        emit GarbageCollected();
     }
 
     // onBounce
@@ -762,7 +735,6 @@ contract DexAccount is
             {
                 for (TokenOperation op : _tmp_operations.at(call_id)) { // iteration over array
                     _balances[op.root] += op.amount;
-                    emit OperationRollback(op.root, op.amount, _balances[op.root], msg.sender);
                 }
             }
 
@@ -774,7 +746,6 @@ contract DexAccount is
 
             send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else if(functionId == tvm.functionId(IDexPair.checkPair)) {
-            emit ExpectedPairNotExist(msg.sender);
             uint64 call_id = body.decode(uint64);
 
             address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;

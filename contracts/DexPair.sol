@@ -109,7 +109,6 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     function setFeeParams(uint16 numerator, uint16 denominator) override external onlyRoot {
         fee_numerator = numerator;
         fee_denominator = denominator;
-        emit FeesParamsUpdated(fee_numerator, fee_denominator);
     }
 
     function getFeeParams() override external view responsible returns (uint16 numerator, uint16 denominator) {
@@ -901,8 +900,6 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
             send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else {
-            emit PairCodeUpgraded(new_version);
-
             TvmBuilder builder;
 
             builder.store(root);
@@ -1164,7 +1161,6 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         if (lp_wallet.value != 0 && left_wallet.value != 0 && right_wallet.value != 0 &&
             vault_left_wallet.value != 0 && vault_right_wallet.value != 0) {
             active = true;
-            IDexRoot(root).onPairCreated{ value: 0, flag: MsgFlag.REMAINING_GAS }(left_root, right_root);
         }
 
         if (need_set_callback) {
