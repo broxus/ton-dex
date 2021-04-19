@@ -698,8 +698,10 @@ contract DexAccount is
     function successCallback(
         uint64 call_id
     ) override external {
-        require(!_tmp_expected_callback_sender.exists(call_id), DexErrors.INVALID_CALLBACK);
+        require(_tmp_expected_callback_sender.exists(call_id), DexErrors.INVALID_CALLBACK);
         require(_tmp_expected_callback_sender.at(call_id) == msg.sender, DexErrors.INVALID_CALLBACK_SENDER);
+
+        tvm.rawReserve(Gas.ACCOUNT_INITIAL_BALANCE, 2);
 
         delete _tmp_operations[call_id];
         delete _tmp_expected_callback_sender[call_id];
@@ -741,14 +743,14 @@ contract DexAccount is
             delete _tmp_operations[call_id];
             delete _tmp_expected_callback_sender[call_id];
 
-            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
+            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to[call_id] : owner;
             delete _tmp_send_gas_to[call_id];
 
             send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
         } else if(functionId == tvm.functionId(IDexPair.checkPair)) {
             uint64 call_id = body.decode(uint64);
 
-            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
+            address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to[call_id] : owner;
             delete _tmp_send_gas_to[call_id];
 
             send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });

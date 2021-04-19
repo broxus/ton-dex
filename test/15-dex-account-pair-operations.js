@@ -200,7 +200,7 @@ describe('DexAccount interact with DexPair', async function () {
                     right_amount: RIGHT_AMOUNT,
                     expected_lp_root: FooBarLpRoot.address,
                     auto_change: false,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -282,7 +282,7 @@ describe('DexAccount interact with DexPair', async function () {
                     right_amount: RIGHT_AMOUNT,
                     expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -364,7 +364,7 @@ describe('DexAccount interact with DexPair', async function () {
                     right_amount: RIGHT_AMOUNT,
                     expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -446,7 +446,7 @@ describe('DexAccount interact with DexPair', async function () {
                     right_amount: RIGHT_AMOUNT,
                     expected_lp_root: FooBarLpRoot.address,
                     auto_change: true,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -531,7 +531,7 @@ describe('DexAccount interact with DexPair', async function () {
                     right_amount: RIGHT_AMOUNT,
                     expected_lp_root: FooBarLpRoot.address,
                     auto_change: false,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -599,7 +599,7 @@ describe('DexAccount interact with DexPair', async function () {
                     spent_token_root: FooRoot.address,
                     receive_token_root: BarRoot.address,
                     expected_amount: expected.expected_amount,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -656,7 +656,7 @@ describe('DexAccount interact with DexPair', async function () {
                     spent_token_root: BarRoot.address,
                     receive_token_root: FooRoot.address,
                     expected_amount: 0,
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
@@ -713,7 +713,7 @@ describe('DexAccount interact with DexPair', async function () {
                     spent_token_root: FooRoot.address,
                     receive_token_root: BarRoot.address,
                     expected_amount: new BigNumber(expected.expected_amount).plus(1).toString(),
-                    send_gas_to: DexAccount2.address
+                    send_gas_to: Account2.address
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]

@@ -5693,7 +5693,6 @@ LDU 64
 ENDS
 ;; param: call_id
 ; function successCallback
-;; !
 ;; map.exists
 ;; push identifier call_id
 DUP
@@ -5706,7 +5705,6 @@ PUSHCONT {
 	NIP
 }
 IF
-NOT
 THROWIFNOT 119
 ;; map.at
 ;; push identifier call_id
@@ -5720,6 +5718,9 @@ THROWIFNOT 50
 GETGLOB 9
 SDEQ
 THROWIFNOT 120
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
 ;; delete
 ; expValue
 ;; fetch _tmp_operations
@@ -6124,14 +6125,17 @@ PUSHCONT {
 	}
 	IF
 	PUSHCONT {
-		;; map.at
+		;; index
 		;; push identifier call_id
 		DUP
 		;; push identifier _tmp_send_gas_to
 		GETGLOB 20
 		PUSHINT 64
 		DICTUGET
-		THROWIFNOT 50
+		PUSHCONT {
+			PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+		}
+		IFNOT
 	}
 	PUSHCONT {
 		;; push identifier owner
@@ -6200,14 +6204,17 @@ PUSHCONT {
 		}
 		IF
 		PUSHCONT {
-			;; map.at
+			;; index
 			;; push identifier call_id
 			DUP
 			;; push identifier _tmp_send_gas_to
 			GETGLOB 20
 			PUSHINT 64
 			DICTUGET
-			THROWIFNOT 50
+			PUSHCONT {
+				PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+			}
+			IFNOT
 		}
 		PUSHCONT {
 			;; push identifier owner
