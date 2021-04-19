@@ -90,8 +90,7 @@ function logBalances(header, dex, account, pair) {
     logger.log(`Account#3 balance ${header}: ` +
         `${account.foo !== undefined ? account.foo + ' FOO' : 'FOO (not deployed)'}, ` +
         `${account.bar !== undefined ? account.bar + ' BAR' : 'BAR (not deployed)'}, ` +
-        `${account.lp !== undefined ? account.lp + ' LP' : 'LP (not deployed)'}, ` +
-        `${account.ton} TON`);
+        `${account.lp !== undefined ? account.lp + ' LP' : 'LP (not deployed)'}`);
 }
 
 function logExpectedDeposit(expected) {
@@ -131,6 +130,17 @@ function logExpectedDeposit(expected) {
     }
     logger.log(`    TOTAL: `);
     logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).div(Constants.TON_DECIMALS_MODIFIER).toString()}`);
+}
+
+async function logGas() {
+    await migration.balancesCheckpoint();
+    const diff = await migration.balancesLastDiff();
+    if (diff) {
+        logger.log(`### GAS STATS ###`);
+        for (let alias in diff) {
+            logger.log(`${alias}: ${diff[alias].gt(0) ? '+' : ''}${diff[alias].toFixed(9)} TON`);
+        }
+    }
 }
 
 describe('Check direct DexPairFooBar operations', async function () {
@@ -219,10 +229,14 @@ describe('Check direct DexPairFooBar operations', async function () {
         logger.log('BarRoot: ' + BarRoot.address);
         logger.log('Account#3: ' + Account3.address);
         logger.log('FooWallet#3: ' + FooWallet3.address);
+        
+        await migration.balancesCheckpoint();
     });
 
     describe('Direct exchange (positive)', async function () {
         it('Account#3 exchange FOO to BAR (with deploy BarWallet#3)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange FOO to BAR (with deploy BarWallet#3)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -279,6 +293,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo).plus(TOKENS_TO_EXCHANGE).toString();
             const expectedDexBar = new BigNumber(dexStart.bar)
@@ -294,6 +309,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 exchange BAR to FOO', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange BAR to FOO');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -340,6 +357,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo)
                 .minus(new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
@@ -355,6 +373,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 exchange BAR to FOO (small amount)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange BAR to FOO (small amount)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -398,6 +418,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo)
                 .minus(new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
@@ -416,6 +437,8 @@ describe('Check direct DexPairFooBar operations', async function () {
     describe('Direct deposit liquidity (positive)', async function () {
 
         it('Account#3 deposit FOO liquidity (small amount)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 deposit FOO liquidity (small amount)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -468,6 +491,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo).plus(new BigNumber(1000).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
             const expectedAccountFoo = new BigNumber(accountStart.foo).minus(new BigNumber(1000).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
@@ -481,6 +505,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 deposit FOO liquidity', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 deposit FOO liquidity');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -535,6 +561,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo).plus(TOKENS_TO_DEPOSIT).toString();
             const expectedAccountFoo = new BigNumber(accountStart.foo).minus(TOKENS_TO_DEPOSIT).toString();
@@ -548,6 +575,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 deposit BAR liquidity', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 deposit BAR liquidity');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -592,6 +621,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexBar = new BigNumber(dexStart.bar).plus(TOKENS_TO_DEPOSIT).toString();
             const expectedAccountBar = new BigNumber(accountStart.bar).minus(TOKENS_TO_DEPOSIT).toString();
@@ -608,6 +638,8 @@ describe('Check direct DexPairFooBar operations', async function () {
 
     describe('Direct withdraw liquidity (positive)', async function () {
         it('Account#3 direct withdraw liquidity (small amount)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 direct withdraw liquidity (small amount)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -653,6 +685,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo)
                 .minus(new BigNumber(IS_FOO_LEFT ? expected.expected_left_amount : expected.expected_right_amount).div(Constants.FOO_DECIMALS_MODIFIER))
@@ -675,6 +708,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 direct withdraw liquidity', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 direct withdraw liquidity');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -720,6 +755,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             const expectedDexFoo = new BigNumber(dexStart.foo)
                 .minus(new BigNumber(IS_FOO_LEFT ? expected.expected_left_amount : expected.expected_right_amount).div(Constants.FOO_DECIMALS_MODIFIER))
@@ -747,6 +783,8 @@ describe('Check direct DexPairFooBar operations', async function () {
     describe('Direct exchange (negative)', async function () {
 
         it('Account#3 exchange FOO to BAR (empty payload)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange FOO to BAR (empty payload)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -782,6 +820,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             expect(dexStart.foo).to.equal(dexEnd.foo, 'Wrong DEX FOO balance');
             expect(dexStart.bar).to.equal(dexEnd.bar, 'Wrong DEX BAR balance');
@@ -790,6 +829,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 exchange FOO to BAR (low gas)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange FOO to BAR (low gas)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -832,6 +873,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             expect(dexStart.foo).to.equal(dexEnd.foo, 'Wrong DEX FOO balance');
             expect(dexStart.bar).to.equal(dexEnd.bar, 'Wrong DEX BAR balance');
@@ -840,6 +882,8 @@ describe('Check direct DexPairFooBar operations', async function () {
         });
 
         it('Account#3 exchange FOO to BAR (wrong rate)', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 exchange FOO to BAR (wrong rate)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -882,6 +926,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             const accountEnd = await account3balances();
             const pairEnd = await dexPairInfo();
             logBalances('end', dexEnd, accountEnd, pairEnd);
+            await logGas();
 
             expect(dexStart.foo).to.equal(dexEnd.foo, 'Wrong DEX FOO balance');
             expect(dexStart.bar).to.equal(dexEnd.bar, 'Wrong DEX BAR balance');

@@ -102,6 +102,17 @@ async function dexPairInfo() {
     };
 }
 
+async function logGas() {
+    await migration.balancesCheckpoint();
+    const diff = await migration.balancesLastDiff();
+    if (diff) {
+        logger.log(`### GAS STATS ###`);
+        for (let alias in diff) {
+            logger.log(`${alias}: ${diff[alias].gt(0) ? '+' : ''}${diff[alias].toFixed(9)} TON`);
+        }
+    }
+}
+
 describe('DexAccount interact with DexPair', async function () {
     this.timeout(120000);
     before('Load contracts', async function () {
@@ -135,11 +146,15 @@ describe('DexAccount interact with DexPair', async function () {
         logger.log('FooBarLpRoot: ' + FooBarLpRoot.address);
         logger.log('Account#2: ' + Account2.address);
         logger.log('DexAccount#2: ' + DexAccount2.address);
+
+        await migration.balancesCheckpoint();
     });
 
     describe('Deposits', async function () {
 
         it('Add initial liquidity to Foo/Bar', async function () {
+            logger.log('#################################################');
+            logger.log('# Add initial liquidity to Foo/Bar');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -201,6 +216,8 @@ describe('DexAccount interact with DexPair', async function () {
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
                 `LP SUPPLY (ACTUAL): ${dexPairInfoEnd.lp_supply_actual || "0"} LP`);
 
+            await logGas();
+
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
             const expectedAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
@@ -218,6 +235,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('Add FOO liquidity (auto_change=true)', async function () {
+            logger.log('#################################################');
+            logger.log('# Add FOO liquidity (auto_change=true)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -279,6 +298,8 @@ describe('DexAccount interact with DexPair', async function () {
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
                 `LP SUPPLY (ACTUAL): ${dexPairInfoEnd.lp_supply_actual || "0"} LP`);
 
+            await logGas();
+
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
             const expectedAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
@@ -296,6 +317,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('Add BAR liquidity (auto_change=true)', async function () {
+            logger.log('#################################################');
+            logger.log('# Add BAR liquidity (auto_change=true)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -357,6 +380,8 @@ describe('DexAccount interact with DexPair', async function () {
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
                 `LP SUPPLY (ACTUAL): ${dexPairInfoEnd.lp_supply_actual || "0"} LP`);
 
+            await logGas();
+
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
             const expectedAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
@@ -374,6 +399,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('Add FOO+BAR liquidity (auto_change=true)', async function () {
+            logger.log('#################################################');
+            logger.log('# Add FOO+BAR liquidity (auto_change=true)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -435,6 +462,8 @@ describe('DexAccount interact with DexPair', async function () {
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
                 `LP SUPPLY (ACTUAL): ${dexPairInfoEnd.lp_supply_actual || "0"} LP`);
 
+            await logGas();
+
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
             const expectedAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
@@ -452,6 +481,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('Add FOO+BAR liquidity (auto_change=false), surplus BAR must returns', async function () {
+            logger.log('#################################################');
+            logger.log('# Add FOO+BAR liquidity (auto_change=false), surplus BAR must returns');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -516,6 +547,8 @@ describe('DexAccount interact with DexPair', async function () {
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
                 `LP SUPPLY (ACTUAL): ${dexPairInfoEnd.lp_supply_actual || "0"} LP`);
 
+            await logGas();
+
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).plus(BAR_BACK_AMOUNT).toString();
             const expectedAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
@@ -537,6 +570,8 @@ describe('DexAccount interact with DexPair', async function () {
     describe('Exchanges', async function () {
 
         it('DexAccount#2 exchange FOO to BAR', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 exchange FOO to BAR');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -576,6 +611,8 @@ describe('DexAccount interact with DexPair', async function () {
             logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
             logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
 
+            await logGas();
+
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(TOKENS_TO_EXCHANGE).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar)
                 .minus(new BigNumber(expected.expected_amount).div(Constants.BAR_DECIMALS_MODIFIER)).toString();
@@ -590,6 +627,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('DexAccount#2 exchange BAR to FOO', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 exchange BAR to FOO');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -629,6 +668,8 @@ describe('DexAccount interact with DexPair', async function () {
             logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
             logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
 
+            await logGas();
+
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo)
                 .minus(new BigNumber(expected.expected_amount).div(Constants.FOO_DECIMALS_MODIFIER)).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(TOKENS_TO_EXCHANGE).toString();
@@ -643,6 +684,8 @@ describe('DexAccount interact with DexPair', async function () {
         });
 
         it('DexAccount#2 exchange FOO to BAR (wrong rate)', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 exchange FOO to BAR (wrong rate)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexPairInfoStart = await dexPairInfo();
 
@@ -681,6 +724,8 @@ describe('DexAccount interact with DexPair', async function () {
 
             logger.log(`DexAccount#2 balance end: ${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR`);
             logger.log(`DexPair end: ${dexPairInfoEnd.foo} FOO, ${dexPairInfoEnd.bar} BAR`);
+
+            await logGas();
 
             expect(dexPairInfoStart.foo).to.equal(dexPairInfoEnd.foo, 'Wrong DEX FOO balance');
             expect(dexPairInfoStart.bar).to.equal(dexPairInfoEnd.bar, 'Wrong DEX BAR balance');

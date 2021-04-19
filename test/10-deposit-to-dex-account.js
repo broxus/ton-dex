@@ -40,6 +40,17 @@ let barData = {
 
 };
 
+async function logGas() {
+  await migration.balancesCheckpoint();
+  const diff = await migration.balancesLastDiff();
+  if (diff) {
+    logger.log(`### GAS STATS ###`);
+    for (let alias in diff) {
+      logger.log(`${alias}: ${diff[alias].gt(0) ? '+' : ''}${diff[alias].toFixed(9)} TON`);
+    }
+  }
+}
+
 const loadWallets = async (data) => {
   data.tokenRoot = migration.load(
     await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
@@ -110,10 +121,14 @@ describe('Check Deposit to Dex Account', async function () {
     await loadWallets(barData);
     displayBalances('Bar', barData);
 
+    await migration.balancesCheckpoint();
+
   })
 
   describe('Check Foo make deposit to dex account', async function () {
     before('Make Foo deposit', async function () {
+      logger.log('#################################################');
+      logger.log('# Make Foo deposit');
       await account2.runTarget({
         contract: fooData.accountWallet,
         method: 'transfer',
@@ -130,7 +145,7 @@ describe('Check Deposit to Dex Account', async function () {
       });
       logger.log('Foo balance changes:')
       await displayBalancesChanges(fooData);
-
+      await logGas();
     });
     it('Check Foo Balances after deposit', async function () {
       expect(fooData.accountWalletBalance)
@@ -161,6 +176,8 @@ describe('Check Deposit to Dex Account', async function () {
 
   describe('Check Bar make deposit to dex account', async function () {
     before('Make Bar deposit', async function () {
+      logger.log('#################################################');
+      logger.log('# Make Bar deposit');
       await account2.runTarget({
         contract: barData.accountWallet,
         method: 'transfer',
@@ -177,6 +194,7 @@ describe('Check Deposit to Dex Account', async function () {
       });
       logger.log('Bar balance changes:')
       await displayBalancesChanges(barData);
+      await logGas();
 
     });
     it('Check Bar Balances after deposit', async function () {

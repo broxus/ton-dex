@@ -77,6 +77,17 @@ async function dexAccountBalances(account) {
     return {foo, bar, lp};
 }
 
+async function logGas() {
+    await migration.balancesCheckpoint();
+    const diff = await migration.balancesLastDiff();
+    if (diff) {
+        logger.log(`### GAS STATS ###`);
+        for (let alias in diff) {
+            logger.log(`${alias}: ${diff[alias].gt(0) ? '+' : ''}${diff[alias].toFixed(9)} TON`);
+        }
+    }
+}
+
 describe('Check DEX accounts interaction', async function () {
     this.timeout(120000);
     before('Load contracts', async function () {
@@ -176,11 +187,15 @@ describe('Check DEX accounts interaction', async function () {
         logger.log('FooWallet#3: ' + FooWallet3.address);
         logger.log('BarWallet#3: ' + BarWallet3.address);
         logger.log('LpWallet#3: ' + FooBarLpWallet3.address);
+
+        await migration.balancesCheckpoint();
     });
 
     describe('Create DexAccount#3', async function () {
 
         it('Account#3 deploy DexAccount#3 using DexRoot.deployAccount', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 deploy DexAccount#3 using DexRoot.deployAccount');
             const accountStart = await account3balances();
             logger.log(`Account balance start: ${accountStart.foo} FOO, ${accountStart.bar} BAR, ` +
                 `${accountStart.lp} LP, ${accountStart.ton} TON`);
@@ -210,6 +225,7 @@ describe('Check DEX accounts interaction', async function () {
             const accountEnd = await account3balances();
             logger.log(`Account balance end: ${accountEnd.foo} FOO, ${accountEnd.bar} BAR, ` +
                 `${accountEnd.lp} LP, ${accountEnd.ton} TON`);
+            await logGas();
 
             expect((await locklift.ton.getAccountType(DexAccount3.address)).acc_type)
                 .to
@@ -221,6 +237,8 @@ describe('Check DEX accounts interaction', async function () {
     describe('Internal DexAccount transfers', async function () {
 
         it('DexAccount#2 transfer FOO to DexAccount#3 (willing_to_deploy = false, must be bounced)', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 transfer FOO to DexAccount#3 (willing_to_deploy = false, must be bounced)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
 
@@ -252,12 +270,15 @@ describe('Check DEX accounts interaction', async function () {
                 `${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR, ${dexAccount2End.lp} LP`);
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
+            await logGas();
 
             expect(dexAccount2Start.foo).to.equal(dexAccount2End.foo, 'Wrong DexAccount#2 FOO balance');
             expect(dexAccount3Start.foo).to.equal(dexAccount3End.foo, 'Wrong DexAccount#3 FOO balance');
         });
 
         it('DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = true)', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = true)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
 
@@ -289,6 +310,7 @@ describe('Check DEX accounts interaction', async function () {
                 `${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR, ${dexAccount2End.lp} LP`);
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
+            await logGas();
 
             const expectedDexAccount2Bar = new BigNumber(dexAccount2Start.bar)
                 .minus(AMOUNT_TO_TRANSFER).toString();
@@ -300,6 +322,8 @@ describe('Check DEX accounts interaction', async function () {
         });
 
         it('DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = false)', async function () {
+            logger.log('#################################################');
+            logger.log('# DexAccount#2 transfer BAR to DexAccount#3 (willing_to_deploy = false)');
             const dexAccount2Start = await dexAccountBalances(DexAccount2);
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
 
@@ -331,6 +355,7 @@ describe('Check DEX accounts interaction', async function () {
                 `${dexAccount2End.foo} FOO, ${dexAccount2End.bar} BAR, ${dexAccount2End.lp} LP`);
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
+            await logGas();
 
             const expectedDexAccount2Bar = new BigNumber(dexAccount2Start.bar)
                 .minus(AMOUNT_TO_TRANSFER).toString();
@@ -342,6 +367,8 @@ describe('Check DEX accounts interaction', async function () {
         });
 
         it('Account#3 transfer BAR to DexAccount#3', async function () {
+            logger.log('#################################################');
+            logger.log('# Account#3 transfer BAR to DexAccount#3');
             const dexAccount3Start = await dexAccountBalances(DexAccount3);
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
@@ -386,6 +413,7 @@ describe('Check DEX accounts interaction', async function () {
                 `${accountEnd.ton} TON`);
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3End.foo} FOO, ${dexAccount3End.bar} BAR, ${dexAccount3End.lp} LP`);
+            await logGas();
 
             expect(new BigNumber(dexAccount3Start.bar).plus(TOKENS_TO_DEPOSIT).toString())
                 .to.equal(dexAccount3End.bar, 'Wrong DexAccount#3 BAR balance');

@@ -31,10 +31,22 @@ const afterRun = async (tx) => {
   await new Promise(resolve => setTimeout(resolve, 10000));
 };
 
+const Constants = {
+  FOO_DECIMALS: 3,
+  BAR_DECIMALS: 9,
+  LP_DECIMALS: 9,
+
+}
+Constants.FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.FOO_DECIMALS).toNumber();
+Constants.BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.BAR_DECIMALS).toNumber();
+Constants.LP_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.LP_DECIMALS).toNumber();
+Constants.TON_DECIMALS_MODIFIER = new BigNumber(10).pow(9).toNumber();
+
 class Migration {
   constructor(log_path = 'migration-log.json') {
     this.log_path = log_path;
     this.migration_log = {};
+    this.balance_history = [];
     this._loadMigrationLog();
   }
 
@@ -47,6 +59,7 @@ class Migration {
 
   reset() {
     this.migration_log = {};
+    this.balance_history = [];
     this._saveMigrationLog();
   }
 
@@ -77,18 +90,30 @@ class Migration {
     }
     this._saveMigrationLog();
   }
-}
 
-const Constants = {
-  FOO_DECIMALS: 3,
-  BAR_DECIMALS: 9,
-  LP_DECIMALS: 9,
+  async balancesCheckpoint() {
+    const b = {};
+    for (let alias in this.migration_log) {
+      await locklift.ton.getBalance(this.migration_log[alias].address)
+          .then(e => b[alias] = e.toString())
+          .catch(e => { /* ignored */ });
+    }
+    this.balance_history.push(b);
+  }
 
+  async balancesLastDiff() {
+    const d = {};
+    for (let alias in this.migration_log) {
+      const start = this.balance_history[this.balance_history.length - 2][alias];
+      const end = this.balance_history[this.balance_history.length - 1][alias];
+      if (end !== start) {
+        const change = new BigNumber(end).minus(start || 0).div(Constants.TON_DECIMALS_MODIFIER);
+        d[alias] = change;
+      }
+    }
+    return d;
+  }
 }
-Constants.FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.FOO_DECIMALS).toNumber();
-Constants.BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.BAR_DECIMALS).toNumber();
-Constants.LP_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.LP_DECIMALS).toNumber();
-Constants.TON_DECIMALS_MODIFIER = new BigNumber(10).pow(9).toNumber();
 
 module.exports = {
   Migration,
