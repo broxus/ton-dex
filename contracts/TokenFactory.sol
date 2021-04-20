@@ -54,6 +54,14 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         returnChange();
     }
 
+    function getOwner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner;
+    }
+
+    function getPendingOwner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pending_owner;
+    }
+
     function setRootCode(TvmCell root_code_) public override onlyOwner {
         root_code = root_code_;
         returnChange();

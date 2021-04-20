@@ -27,6 +27,24 @@
 			]
 		},
 		{
+			"name": "getOwner",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"dex_owner","type":"address"}
+			]
+		},
+		{
+			"name": "getPendingOwner",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"dex_pending_owner","type":"address"}
+			]
+		},
+		{
 			"name": "setRootCode",
 			"inputs": [
 				{"name":"root_code_","type":"cell"}

@@ -86,6 +86,14 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
+    function getOwner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner;
+    }
+
+    function getPendingOwner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pending_owner;
+    }
+
     function setTokenFactory(address new_token_factory) public override onlyOwner {
         tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
         emit TokenFactoryAddressUpdated(token_factory, new_token_factory);
