@@ -56,6 +56,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         account_code = code;
         account_version++;
+        emit AccountCodeUpgraded(account_version);
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
@@ -63,6 +64,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
         pair_code = code;
         pair_version++;
+        emit PairCodeUpgraded(pair_version);
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
@@ -101,6 +103,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         } else {
             active = false;
         }
+        emit ActiveUpdated(active);
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
@@ -120,6 +123,8 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         require(msg.value > Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
 
         tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
+
+        emit RootCodeUpgraded();
 
         active = false;
 
@@ -167,6 +172,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     ) external view onlyOwner {
         require(msg.value >= Gas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        emit RequestedForceAccountUpgrade(account_owner);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Account,
             _buildAccountParams(account_owner)
@@ -180,6 +186,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     ) external view onlyOwner {
         require(msg.value >= Gas.UPGRADE_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        emit RequestedPairUpgrade(left_root, right_root);
         IUpgradableByRequest(address(tvm.hash(_buildInitData(
             PlatformTypes.Pair,
             _buildPairParams(left_root, right_root)
@@ -214,11 +221,13 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
     }
 
     function transferOwner(address new_owner) external onlyOwner {
+        emit RequestedOwnerTransfer(owner, new_owner);
         pending_owner = new_owner;
     }
 
     function acceptOwner() external {
         require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
+        emit OwnerTransferAccepted(owner, pending_owner);
         owner = pending_owner;
         pending_owner = address.makeAddrStd(0, 0);
     }
@@ -352,4 +361,13 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         IAfterInitialize(platform).afterInitialize{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(send_gas_to);
     }
 
+    function onPairCreated(
+        address left_root,
+        address right_root,
+        address send_gas_to
+    ) override external onlyPair(left_root, right_root) {
+        tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        emit NewPairCreated(left_root, right_root);
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
+    }
 }

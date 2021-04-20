@@ -2,6 +2,46 @@ pragma ton-solidity ^0.39.0;
 
 interface IDexAccount {
 
+    event AddPair(address left_root, address right_root, address pair);
+
+    event WithdrawTokens(address root, uint128 amount, uint128 balance);
+    event TransferTokens(address root, uint128 amount, uint128 balance);
+    event ExchangeTokens(address from, address to, uint128 spent_amount, uint128 expected_amount, uint128 balance);
+    event DepositLiquidity(
+        address left_root,
+        uint128 left_amount,
+        address right_root,
+        uint128 right_amount,
+        bool auto_change
+    );
+
+    event WithdrawLiquidity(
+        uint128 lp_amount,
+        uint128 lp_balance,
+        address lp_root,
+        address left_root,
+        address right_root
+    );
+
+    event TokensReceived(address token_root, uint128 tokens_amount, uint128 balance, address sender_wallet);
+    event TokensReceivedFromAccount(address token_root, uint128 tokens_amount, uint128 balance, address sender);
+    event TokensReceivedFromPair(
+        address token_root,
+        uint128 tokens_amount,
+        uint128 balance,
+        address left_root,
+        address right_root
+    );
+
+
+    event OperationRollback(address token_root, uint128 amount, uint128 balance, address from);
+    event ExpectedPairNotExist(address pair);
+
+    event AccountCodeUpgraded(uint32 version);
+    event CodeUpgradeRequested();
+    event GarbageCollected();
+
+
     function getRoot() external view responsible returns (address);
 
     function getOwner() external view responsible returns (address);

@@ -72,6 +72,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
 
     function transferOwner(address new_owner) public override onlyOwner {
         tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        emit RequestedOwnerTransfer(owner, new_owner);
         pending_owner = new_owner;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
@@ -79,6 +80,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     function acceptOwner() public override {
         require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
         tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        emit OwnerTransferAccepted(owner, pending_owner);
         owner = pending_owner;
         pending_owner = address(0);
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
@@ -86,6 +88,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
 
     function setTokenFactory(address new_token_factory) public override onlyOwner {
         tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        emit TokenFactoryAddressUpdated(token_factory, new_token_factory);
         token_factory = new_token_factory;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
@@ -158,7 +161,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     ) external override onlyAccount(account_owner) {
         tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        // TODO event
+        emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_public_key, recipient_address);
 
         TvmCell empty;
         ITONTokenWallet(vault_wallet).transferToRecipient{
@@ -195,7 +198,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     ) external override onlyPair(left_root, right_root) {
         tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        // TODO event
+        emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_public_key, recipient_address);
 
         ITONTokenWallet(vault_wallet).transferToRecipient{
             value: 0,
@@ -266,6 +269,8 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     function upgrade(TvmCell code) public override onlyOwner {
         require(msg.value > Gas.UPGRADE_VAULT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+
+        emit VaultCodeUpgraded();
 
         TvmBuilder builder;
         TvmBuilder owners_data_builder;

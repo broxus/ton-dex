@@ -2,6 +2,9 @@ pragma ton-solidity ^0.39.0;
 
 interface IDexPair {
 
+    event PairCodeUpgraded(uint32 version);
+    event FeesParamsUpdated(uint16 numerator, uint16 denominator);
+
     event DepositLiquidity(uint128 left, uint128 right, uint128 lp);
     event WithdrawLiquidity(uint128 lp, uint128 left, uint128 right);
     event ExchangeLeftToRight(uint128 left, uint128 fee, uint128 right);
