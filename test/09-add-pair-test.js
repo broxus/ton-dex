@@ -1,4 +1,5 @@
 const {expect} = require('chai');
+const logger = require('mocha-logger');
 const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
@@ -13,6 +14,17 @@ let right_root;
 let lp_root;
 let keyPairs;
 
+async function logGas() {
+  await migration.balancesCheckpoint();
+  const diff = await migration.balancesLastDiff();
+  if (diff) {
+    logger.log(`### GAS STATS ###`);
+    for (let alias in diff) {
+      logger.log(`${alias}: ${diff[alias].gt(0) ? '+' : ''}${diff[alias].toFixed(9)} TON`);
+    }
+  }
+}
+
 describe('Check DexAccount add Pair', async function () {
   this.timeout(120000);
   before('Load contracts', async function () {
@@ -26,6 +38,7 @@ describe('Check DexAccount add Pair', async function () {
     left_root = dexPairFooBarRoots.left;
     right_root = dexPairFooBarRoots.right;
     lp_root = dexPairFooBarRoots.lp;
+    await migration.balancesCheckpoint();
   })
 
   describe('Check pair not added already', async function () {
@@ -54,6 +67,7 @@ describe('Check DexAccount add Pair', async function () {
         value: locklift.utils.convertCrystal(4, 'nano'),
         keyPair: keyPairs[1]
       });
+      await logGas();
     });
     it('Check FooBar pair in DexAccount2', async function () {
       expect((await dexAccount2.call({method: 'getWalletData', params: {token_root: left_root}})).wallet)

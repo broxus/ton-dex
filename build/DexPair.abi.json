@@ -377,6 +377,23 @@
 	],
 	"events": [
 		{
+			"name": "PairCodeUpgraded",
+			"inputs": [
+				{"name":"version","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FeesParamsUpdated",
+			"inputs": [
+				{"name":"numerator","type":"uint16"},
+				{"name":"denominator","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "DepositLiquidity",
 			"inputs": [
 				{"name":"left","type":"uint128"},
