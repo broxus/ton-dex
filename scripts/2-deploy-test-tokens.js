@@ -15,7 +15,7 @@ async function main() {
     constructorParams: {factory: tokenFactory.address},
     initParams: {_randomNonce: getRandomNonce()},
     keyPair,
-  }, locklift.utils.convertCrystal(100, 'nano'));
+  }, locklift.utils.convertCrystal(10, 'nano'));
 
   TokenFactoryCreateNewTokenFor.afterRun = afterRun;
 

@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {Migration, TOKEN_CONTRACTS_PATH, afterRun} = require(process.cwd() + '/scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH, afterRun, Constants} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
 
@@ -53,7 +53,7 @@ const loadPairData = async (pair) => {
 }
 
 describe('Test Dex Pair contract upgrade', async function () {
-  this.timeout(120000);
+  this.timeout(Constants.TESTS_TIMEOUT);
 
   before('Load contracts', async function () {
     account = migration.load(await locklift.factory.getAccount(), 'Account1');

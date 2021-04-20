@@ -144,7 +144,7 @@ async function logGas() {
 }
 
 describe('Check direct DexPairFooBar operations', async function () {
-    this.timeout(120000);
+    this.timeout(Constants.TESTS_TIMEOUT);
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 

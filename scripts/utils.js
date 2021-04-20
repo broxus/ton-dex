@@ -36,6 +36,7 @@ const Constants = {
   BAR_DECIMALS: 9,
   LP_DECIMALS: 9,
 
+  TESTS_TIMEOUT: 1200000
 }
 Constants.FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.FOO_DECIMALS).toNumber();
 Constants.BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.BAR_DECIMALS).toNumber();

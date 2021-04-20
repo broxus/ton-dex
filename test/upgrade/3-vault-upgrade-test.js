@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
+const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
 
@@ -31,6 +31,7 @@ const loadVaultData = async (vault) => {
 }
 
 describe('Test Dex Vault contract upgrade', async function () {
+  this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
     account = migration.load(await locklift.factory.getAccount(), 'Account1');
     account.afterRun = afterRun;

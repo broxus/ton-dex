@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+'/scripts/utils')
+const {Migration, TOKEN_CONTRACTS_PATH, Constants} = require(process.cwd()+'/scripts/utils')
 
 const migration = new Migration();
 
@@ -12,6 +12,7 @@ let fooWallet2;
 let fooWallet2Balance;
 
 describe('Check Dex Deposits', async function () {
+  this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
     DexAccount = await locklift.factory.getContract('DexAccount');
     account2 = migration.load(await locklift.factory.getAccount(), 'Account2');

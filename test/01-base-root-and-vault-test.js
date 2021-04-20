@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration} = require(process.cwd()+'/scripts/utils')
+const {Migration, Constants} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
 
@@ -16,6 +16,7 @@ let dexVault;
 let tokenFactory;
 
 describe('Check for correct deployment', async function () {
+  this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
     DexRoot = await locklift.factory.getContract('DexRoot');
     DexVault = await locklift.factory.getContract('DexVault');

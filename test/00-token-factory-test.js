@@ -4,8 +4,9 @@ const {
   getRandomNonce,
   Migration,
   stringToBytesArray,
-  sleep,
-  TOKEN_CONTRACTS_PATH
+  TOKEN_CONTRACTS_PATH,
+  Constants,
+  afterRun
 } = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
@@ -20,6 +21,7 @@ let tokenFactoryCreateNewTokenFor
 let account;
 
 describe('TokeFactory contract', async function () {
+  this.timeout(Constants.TESTS_TIMEOUT);
   describe('Contracts', async function () {
     it('Load contract factory', async function () {
       TokenFactory = await locklift.factory.getContract('TokenFactory');
@@ -68,8 +70,6 @@ describe('TokeFactory contract', async function () {
     });
 
     it('Deploy contracts for tests', async function () {
-      this.timeout(20000);
-
       const [keyPair] = await locklift.keys.getKeyPairs();
 
       tokenFactoryCreateNewTokenFor = await locklift.giver.deployContract({
@@ -77,13 +77,13 @@ describe('TokeFactory contract', async function () {
         constructorParams: {factory: tokenFactory.address},
         initParams: {_randomNonce: getRandomNonce()},
         keyPair,
-      }, locklift.utils.convertCrystal(100, 'nano'));
+      }, locklift.utils.convertCrystal(50, 'nano'));
+      tokenFactoryCreateNewTokenFor.afterRun = afterRun;
 
       logger.log(`TokenFactoryCreateNewTokenFor address: ${tokenFactoryCreateNewTokenFor.address}`)
     });
 
     it('Interact with contract', async function () {
-      this.timeout(200000);
       let tokensToCreate = [
         {
           name: 'Test1',
@@ -113,7 +113,6 @@ describe('TokeFactory contract', async function () {
             decimals: tokenData.decimals
           }
         })
-        await sleep(5000);
         const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
           method: 'getDeployedToken',
           params: {answer_id: index}

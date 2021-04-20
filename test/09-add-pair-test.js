@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
+const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils')
 
 const migration = new Migration();
 
@@ -26,7 +26,7 @@ async function logGas() {
 }
 
 describe('Check DexAccount add Pair', async function () {
-  this.timeout(120000);
+  this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
     DexAccount = await locklift.factory.getContract('DexAccount');

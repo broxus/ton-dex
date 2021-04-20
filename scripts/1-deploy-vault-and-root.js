@@ -1,8 +1,9 @@
-const {getRandomNonce, Migration} = require(process.cwd()+'/scripts/utils')
+const {getRandomNonce, Migration, afterRun} = require(process.cwd()+'/scripts/utils')
 
 async function main() {
   const migration = new Migration();
   const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  account.afterRun = afterRun;
 
   const DexPlatform = await locklift.factory.getContract('DexPlatform');
   const DexAccount = await locklift.factory.getContract('DexAccount');

@@ -106,8 +106,7 @@ const displayBalances = (tokenName, data) => {
 
 
 describe('Check Deposit to Dex Account', async function () {
-  this.timeout(120000);
-
+  this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts and balances', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
     DexAccount = await locklift.factory.getContract('DexAccount');

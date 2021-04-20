@@ -16,7 +16,7 @@ async function main() {
         _randomNonce: Math.random() * 6400 | 0,
       },
       keyPair: keyPairs[i],
-    }, locklift.utils.convertCrystal(100, 'nano'));
+    }, locklift.utils.convertCrystal(30, 'nano'));
     const name = `${account.name}${i+1}`;
     migration.store(account, name);
     console.log(`${name}: ${account.address}`);
