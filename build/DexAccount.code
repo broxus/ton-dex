@@ -967,6 +967,44 @@ PUSHCONT {
 	}
 	IFELSE
 	;; end if
+	;; emit TokensReceived
+	NEWC
+	PUSHSLICE xc0000000000000000000000002_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x6f6f65e8
+	;; token_root
+	;; push identifier token_root
+	PUSH S11
+	STSLICER
+	;; tokens_amount
+	;; push identifier tokens_amount
+	PUSH S10
+	STUR 128
+	;; balance
+	;; index
+	;; push identifier token_root
+	PUSH S11
+	;; push identifier _balances
+	GETGLOB 17
+	PUSHINT 267
+	DICTGET
+	PUSHCONT {
+		PLDU 128
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	STUR 128
+	;; sender_wallet
+	;; push identifier sender_wallet
+	PUSH S7
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
 	NEWC
 	ENDC
 	;; decl: empty
@@ -1302,6 +1340,40 @@ PUSHINT 267
 DICTSETB
 SETGLOB 17
 ; end colValue
+;; emit WithdrawTokens
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x7edc3e6a
+;; root
+;; push identifier token_root
+PUSH S5
+STSLICER
+;; amount
+;; push identifier amount
+PUSH S6
+STUR 128
+;; balance
+;; index
+;; push identifier token_root
+PUSH S5
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 DUP
@@ -1443,8 +1515,8 @@ STI 1
 PUSHINT 3
 STZEROES
 STSLICE
-PUSHSLICE x405f5e100000000000000000000000000004_
-STSLICER
+PUSHINT 109
+STZEROES
 STSLICECONST 0
 STSLICECONST 1
 NEWC
@@ -1640,6 +1712,40 @@ PUSHINT 267
 DICTSETB
 SETGLOB 17
 ; end colValue
+;; emit TransferTokens
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x22744b8f
+;; root
+;; push identifier token_root
+PUSH S4
+STSLICER
+;; amount
+;; push identifier amount
+PUSH S5
+STUR 128
+;; balance
+;; index
+;; push identifier token_root
+PUSH S4
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 DUP
@@ -2052,6 +2158,44 @@ PUSHCONT {
 }
 IFELSE
 ;; end if
+;; emit TokensReceivedFromAccount
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x548b77c8
+;; token_root
+;; push identifier token_root
+PUSH S6
+STSLICER
+;; tokens_amount
+;; push identifier amount
+PUSH S7
+STUR 128
+;; balance
+;; index
+;; push identifier token_root
+PUSH S6
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+;; sender
+;; push identifier sender_owner
+PUSH S5
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; if
 ;; push identifier willing_to_deploy
 PUSH S3
@@ -2406,6 +2550,52 @@ PUSHCONT {
 }
 IFELSE
 ;; end if
+;; emit TokensReceivedFromPair
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x66f50c2e
+;; token_root
+;; push identifier token_root
+PUSH S8
+STSLICER
+;; tokens_amount
+;; push identifier amount
+PUSH S9
+STUR 128
+;; balance
+;; index
+;; push identifier token_root
+PUSH S8
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+;; left_root
+;; push identifier sender_left_root
+PUSH S7
+STSLICER
+NEWC
+;; right_root
+;; push identifier sender_right_root
+PUSH S7
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; transfer()
 ;; push identifier send_gas_to
 PUSH S3
@@ -2736,6 +2926,50 @@ PUSHINT 267
 DICTSETB
 SETGLOB 17
 ; end colValue
+;; emit ExchangeTokens
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x3290e576
+;; from
+;; push identifier spent_token_root
+PUSH S6
+STSLICER
+;; to
+;; push identifier receive_token_root
+PUSH S5
+STSLICER
+;; spent_amount
+;; push identifier spent_amount
+PUSH S7
+STUR 128
+;; expected_amount
+;; push identifier expected_amount
+PUSH S4
+STUR 128
+;; balance
+;; index
+;; push identifier spent_token_root
+PUSH S6
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 PUSH S1
@@ -3384,6 +3618,36 @@ PUSHINT 267
 DICTSETB
 SETGLOB 17
 ; end colValue
+;; emit DepositLiquidity
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x2ee441e3
+;; left_root
+;; push identifier left_root
+PUSH S8
+STSLICER
+;; left_amount
+;; push identifier left_amount
+PUSH S7
+STUR 128
+;; right_root
+;; push identifier right_root
+PUSH S6
+STSLICER
+;; right_amount
+;; push identifier right_amount
+PUSH S5
+STUR 128
+;; auto_change
+;; push identifier auto_change
+PUSH S3
+STIR 1
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 PUSH S1
@@ -3921,6 +4185,52 @@ PUSHINT 267
 DICTSETB
 SETGLOB 17
 ; end colValue
+;; emit WithdrawLiquidity
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x3f1e115a
+;; lp_amount
+;; push identifier lp_amount
+PUSH S7
+STUR 128
+;; lp_balance
+;; index
+;; push identifier lp_root
+PUSH S6
+;; push identifier _balances
+GETGLOB 17
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PLDU 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+STUR 128
+;; lp_root
+;; push identifier lp_root
+PUSH S6
+STSLICER
+;; left_root
+;; push identifier left_root
+PUSH S5
+STSLICER
+NEWC
+;; right_root
+;; push identifier right_root
+PUSH S5
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 PUSH S1
@@ -4291,6 +4601,30 @@ STU 256
 ENDC
 CTOS
 ;; decl: expected
+;; emit AddPair
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x4c8d5667
+;; left_root
+;; push identifier left_root
+PUSH S5
+STSLICER
+;; right_root
+;; push identifier right_root
+PUSH S4
+STSLICER
+;; pair
+;; push identifier expected
+PUSH S2
+STSLICER
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; get member value
 ;; push identifier send_gas_to
 PUSH S1
@@ -5263,6 +5597,16 @@ THROWIFNOT 103
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+;; emit CodeUpgradeRequested
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x4bf79f89
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; Remote call IDexRoot.requestUpgradeAccount
 ;; push identifier root
 GETGLOB 10
@@ -5409,6 +5753,20 @@ PUSHCONT {
 	SENDRAWMSG
 }
 PUSHCONT {
+	;; emit AccountCodeUpgraded
+	NEWC
+	PUSHSLICE xc0000000000000000000000002_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x5e12d57f
+	;; version
+	;; push identifier new_version
+	PUSH S2
+	STUR 32
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
 	NEWC
 	;; decl: builder
 	; expValue
@@ -5874,6 +6232,16 @@ NEWDICT
 ; colValue
 SETGLOB 22
 ; end colValue
+;; emit GarbageCollected
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x5c4f679b
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ; end function gc
 ; end modifier onlyOwner
 CALLREF {
@@ -6068,6 +6436,50 @@ PUSHCONT {
 			DICTSETB
 			SETGLOB 17
 			; end colValue
+			;; emit OperationRollback
+			NEWC
+			PUSHSLICE xc0000000000000000000000002_
+			STSLICER
+			STSLICECONST 0
+			STSLICECONST 0
+			STSLICECONST x70369606
+			;; token_root
+			;; get member root
+			;; push identifier op
+			PUSH S1
+			INDEX 1
+			STSLICER
+			;; amount
+			;; get member amount
+			;; push identifier op
+			PUSH S1
+			INDEX 0
+			STUR 128
+			;; balance
+			;; index
+			;; get member root
+			;; push identifier op
+			PUSH S1
+			INDEX 1
+			;; push identifier _balances
+			GETGLOB 17
+			PUSHINT 267
+			DICTGET
+			PUSHCONT {
+				PLDU 128
+			}
+			PUSHCONT {
+				PUSHINT 0
+			}
+			IFELSE
+			STUR 128
+			;; from
+			;; get member sender
+			GETGLOB 9
+			STSLICER
+			ENDC
+			PUSHINT 0
+			SENDRAWMSG
 			PUSH S1
 			INC
 			POP S2
@@ -6183,6 +6595,20 @@ PUSHCONT {
 	PUSHINT 2066445604
 	EQUAL
 	PUSHCONT {
+		;; emit ExpectedPairNotExist
+		NEWC
+		PUSHSLICE xc0000000000000000000000002_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x1301b5c2
+		;; pair
+		;; get member sender
+		GETGLOB 9
+		STSLICER
+		ENDC
+		PUSHINT 0
+		SENDRAWMSG
 		; expValue
 		PUSH S1
 		; end expValue

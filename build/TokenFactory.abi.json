@@ -32,7 +32,7 @@
 				{"name":"_answer_id","type":"uint32"}
 			],
 			"outputs": [
-				{"name":"dex_owner","type":"address"}
+				{"name":"value0","type":"address"}
 			]
 		},
 		{
@@ -41,7 +41,7 @@
 				{"name":"_answer_id","type":"uint32"}
 			],
 			"outputs": [
-				{"name":"dex_pending_owner","type":"address"}
+				{"name":"value0","type":"address"}
 			]
 		},
 		{
