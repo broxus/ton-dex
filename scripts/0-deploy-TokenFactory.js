@@ -22,7 +22,7 @@ async function main() {
       _nonce: getRandomNonce(),
     },
     keyPair,
-  });
+  }, locklift.utils.convertCrystal(2, 'nano'));
   migration.store(tokenFactory, 'TokenFactory');
 
   console.log(`TokenFactory: ${tokenFactory.address}`);

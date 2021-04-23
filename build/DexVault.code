@@ -107,6 +107,24 @@ THROWIFNOT 100
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+;; emit RequestedOwnerTransfer
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x39a1cc5a
+;; old_owner
+;; push identifier owner
+GETGLOB 15
+STSLICER
+;; new_owner
+;; push identifier new_owner
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ; expValue
 ; end expValue
 ;; push identifier new_owner
@@ -164,6 +182,24 @@ THROWIFNOT 102
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+;; emit OwnerTransferAccepted
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x1251dc40
+;; old_owner
+;; push identifier owner
+GETGLOB 15
+STSLICER
+;; new_owner
+;; push identifier pending_owner
+GETGLOB 16
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ; expValue
 ; end expValue
 ;; push identifier pending_owner
@@ -191,6 +227,190 @@ ENDC
 PUSHINT 128
 SENDRAWMSG
 ; end function acceptOwner
+
+.macro getOwner
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getOwner
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier owner
+GETGLOB 15
+; end function getOwner
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe2c3961c
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STSLICER
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro getPendingOwner
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getPendingOwner
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier pending_owner
+GETGLOB 16
+; end function getPendingOwner
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa9697b62
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STSLICER
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
 
 .macro setTokenFactory
 DROP
@@ -230,6 +450,24 @@ THROWIFNOT 100
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+;; emit TokenFactoryAddressUpdated
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x3467985a
+;; old_token_factory
+;; push identifier token_factory
+GETGLOB 17
+STSLICER
+;; new_token_factory
+;; push identifier new_token_factory
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ; expValue
 ; end expValue
 ;; push identifier new_token_factory
@@ -1362,6 +1600,40 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
+;; emit WithdrawTokens
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x32b028aa
+;; vault_token_wallet
+;; push identifier vault_wallet
+PUSH S10
+STSLICER
+;; amount
+;; push identifier amount
+PUSH S12
+STUR 128
+;; account_owner
+;; push identifier account_owner
+PUSH S6
+STSLICER
+;; recipient_public_key
+;; push identifier recipient_public_key
+PUSH S9
+STUR 256
+NEWC
+;; recipient_address
+;; push identifier recipient_address
+PUSH S9
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 NEWC
 ENDC
 ;; decl: empty
@@ -1741,6 +2013,44 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
+;; emit PairTransferTokens
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 1
+NEWC
+STSLICECONST x3207caba
+;; vault_token_wallet
+;; push identifier vault_wallet
+PUSH S14
+STSLICER
+;; amount
+;; push identifier amount
+PUSH S16
+STUR 128
+;; pair_left_root
+;; push identifier left_root
+PUSH S8
+STSLICER
+NEWC
+;; pair_right_root
+;; push identifier right_root
+PUSH S8
+STSLICER
+;; recipient_public_key
+;; push identifier recipient_public_key
+PUSH S14
+STUR 256
+;; recipient_address
+;; push identifier recipient_address
+PUSH S13
+STSLICER
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 ;; Remote call ITONTokenWallet.transferToRecipient
 ;; push identifier vault_wallet
 PUSH S12
@@ -1848,6 +2158,16 @@ THROWIFNOT 103
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+;; emit VaultCodeUpgraded
+NEWC
+PUSHSLICE xc0000000000000000000000002_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x766c0548
+ENDC
+PUSHINT 0
+SENDRAWMSG
 NEWC
 ;; decl: builder
 NEWC
@@ -2223,6 +2543,22 @@ LDMSGADDR   ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
+; beg set default params for responsible func
+GETGLOB 4
+; bounce
+TRUE
+SETINDEXQ 1
+; tons
+PUSHINT 10000000
+SETINDEXQ 2
+; currency
+NULL
+SETINDEXQ 3
+; flag
+PUSHINT 0
+SETINDEXQ 4
+SETGLOB 4
+; end set default params for responsible func
 IFRET
 PUSH S1    ; body
 SEMPTY     ; isEmpty
@@ -2389,7 +2725,7 @@ SETGLOB 7
 
 .macro public_function_selector
 DUP
-PUSHINT 925457952
+PUSHINT 694778722
 LEQ
 PUSHCONT {
 	DUP
@@ -2429,7 +2765,7 @@ PUSHCONT {
 	}
 	IFJMP
 	DUP
-	PUSHINT 925457952
+	PUSHINT 694778722
 	LEQ
 	PUSHCONT {
 		DUP
@@ -2439,94 +2775,112 @@ PUSHCONT {
 			CALL $transferOwner$
 		}
 		DUP
-		PUSHINT 925457952
+		PUSHINT 694778722
 		EQUAL
 		IFJMPREF {
-			CALL $root$
+			CALL $getPendingOwner$
 		}
 	}
 	IFJMP
 }
 IFJMP
 DUP
-PUSHINT 1235162033
+PUSHINT 1230190815
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 1049055520
+	PUSHINT 980413887
 	LEQ
 	PUSHCONT {
+		DUP
+		PUSHINT 925457952
+		EQUAL
+		IFJMPREF {
+			CALL $root$
+		}
 		DUP
 		PUSHINT 980413887
 		EQUAL
 		IFJMPREF {
 			CALL $lp_token_pending_code$
 		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 1202340658
+	LEQ
+	PUSHCONT {
 		DUP
 		PUSHINT 1049055520
 		EQUAL
 		IFJMPREF {
 			CALL $pending_owner$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1213446967
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1202340658
 		EQUAL
 		IFJMPREF {
 			CALL $addLiquidityToken$
 		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 1230190815
+	LEQ
+	PUSHCONT {
 		DUP
 		PUSHINT 1213446967
 		EQUAL
 		IFJMPREF {
 			CALL $notifyWalletDeployed$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1235162033
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1230190815
 		EQUAL
 		IFJMPREF {
 			CALL $setTokenFactory$
 		}
+	}
+	IFJMP
+}
+IFJMP
+DUP
+PUSHINT 1725189621
+LEQ
+PUSHCONT {
+	DUP
+	PUSHINT 1555916068
+	LEQ
+	PUSHCONT {
 		DUP
 		PUSHINT 1235162033
 		EQUAL
 		IFJMPREF {
 			CALL $installOrUpdateLpTokenPendingCode$
 		}
-	}
-	IFJMP
-}
-IFJMP
-DUP
-PUSHINT 1809145905
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1594609630
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1555916068
 		EQUAL
 		IFJMPREF {
 			CALL $onLiquidityTokenNotDeployed$
 		}
+	}
+	IFJMP
+	DUP
+	PUSHINT 1656985116
+	LEQ
+	PUSHCONT {
 		DUP
 		PUSHINT 1594609630
 		EQUAL
 		IFJMPREF {
 			CALL $owner$
+		}
+		DUP
+		PUSHINT 1656985116
+		EQUAL
+		IFJMPREF {
+			CALL $getOwner$
 		}
 	}
 	IFJMP
@@ -2548,6 +2902,12 @@ PUSHCONT {
 		}
 	}
 	IFJMP
+}
+IFJMP
+DUP
+PUSHINT 2144984146
+LEQ
+PUSHCONT {
 	DUP
 	PUSHINT 1809145905
 	LEQ
@@ -2566,24 +2926,24 @@ PUSHCONT {
 		}
 	}
 	IFJMP
-}
-IFJMP
-DUP
-PUSHINT 2144984146
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1824563769
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
-	}
 	DUP
 	PUSHINT 2052637514
-	EQUAL
-	IFJMPREF {
-		CALL $token_factory$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1824563769
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
+		DUP
+		PUSHINT 2052637514
+		EQUAL
+		IFJMPREF {
+			CALL $token_factory$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 2144984146
 	EQUAL

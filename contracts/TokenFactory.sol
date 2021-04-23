@@ -9,11 +9,12 @@ import "./libraries/MsgFlag.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/ITokenFactory.sol";
 import "./interfaces/ITokenRootDeployedCallback.sol";
+import "./interfaces/IResetGas.sol";
 
 import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/RootTokenContract.sol";
 import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
 
-contract TokenFactory is ITokenFactory, IUpgradable {
+contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
 
     uint32 static _nonce;
 
@@ -80,9 +81,9 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         bytes symbol,
         uint8 decimals
     ) public override {
-        uint128 expecedValue = Gas.TOKEN_FACTORY_FEE + Gas.DEPLOY_TOKEN_ROOT_MIN_VALUE;
-        require(msg.value >= expecedValue, TokenFactoryErrors.VALUE_TOO_LOW);
-        tvm.rawReserve(address(this).balance - msg.value, 2);
+        uint128 expectedValue = Gas.TOKEN_FACTORY_FEE + Gas.DEPLOY_TOKEN_ROOT_MIN_VALUE;
+        require(msg.value >= expectedValue, TokenFactoryErrors.VALUE_TOO_LOW);
+        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 2);
 
         address tokenRoot = new RootTokenContract{
             stateInit: _buildInitData(name, symbol, decimals),
@@ -214,4 +215,14 @@ contract TokenFactory is ITokenFactory, IUpgradable {
     }
 
     function onCodeUpgrade(TvmCell upgrade_data) private {}
+
+    function resetGas(address receiver) override external view onlyOwner {
+        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 2);
+        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+    }
+
+    function resetTargetGas(address target, address receiver) external view onlyOwner {
+        tvm.rawReserve(math.max(Gas.TOKEN_FACTORY_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        IResetGas(target).resetGas{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(receiver);
+    }
 }

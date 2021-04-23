@@ -24,7 +24,7 @@ async function main() {
       _nonce: getRandomNonce(),
     },
     keyPair,
-  });
+  }, locklift.utils.convertCrystal(2, 'nano'));
   console.log(`DexRoot address: ${dexRoot.address}`);
 
   const DexVault = await locklift.factory.getContract('DexVault');
@@ -40,7 +40,7 @@ async function main() {
       _nonce: getRandomNonce(),
     },
     keyPair,
-  });
+  }, locklift.utils.convertCrystal(2, 'nano'));
   console.log(`DexVault address: ${dexVault.address}`);
 
   console.log(`DexVault: installing Platform code...`);

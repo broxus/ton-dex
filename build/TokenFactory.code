@@ -165,6 +165,190 @@ SENDRAWMSG
 ; end function returnChange
 ; end function acceptOwner
 
+.macro getOwner
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getOwner
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier owner
+GETGLOB 14
+; end function getOwner
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe2c3961c
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STSLICER
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro getPendingOwner
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getPendingOwner
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier pending_owner
+GETGLOB 15
+; end function getPendingOwner
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xa9697b62
+	PUSH S1
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STSLICER
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro setRootCode
 DROP
 GETGLOB 1
@@ -379,26 +563,17 @@ PUSHINT 1000000000
 PUSHINT 1000000000
 ADD
 UFITS 128
-;; decl: expecedValue
+;; decl: expectedValue
 ;; get member value
 CALLREF {
 	CALL $message_balance_macro$
 }
 ;; >=
-;; push identifier expecedValue
+;; push identifier expectedValue
 PUSH S1
 GEQ
 THROWIFNOT 105
-;; get member balance
-GETPARAM 7
-INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-SUB
-UFITS 128
+PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
 ;; push identifier name
@@ -1398,6 +1573,123 @@ CALLREF {
 COMMIT
 THROW 0
 
+.macro resetGas
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode receiver
+LDMSGADDR
+ENDS
+;; param: receiver
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
+; function resetGas
+PUSHINT 1000000000
+PUSHINT 2
+RAWRESERVE
+;; transfer()
+;; push identifier receiver
+DUP
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function resetGas
+; end modifier onlyOwner
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
+.macro resetTargetGas
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+; Decode input parameters
+; Decode target
+LDMSGADDR
+; Decode receiver
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+ENDS
+;; param: target
+;; param: receiver
+; modifier onlyOwner
+;; get member sender
+GETGLOB 9
+;; push identifier owner
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
+; function resetTargetGas
+PUSHINT 1000000000
+;; get member balance
+GETPARAM 7
+INDEX 0
+;; -
+;; get member value
+CALLREF {
+	CALL $message_balance_macro$
+}
+SUB
+UFITS 128
+MAX
+PUSHINT 2
+RAWRESERVE
+;; Remote call IResetGas.resetGas
+;; push identifier target
+PUSH S1
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 109
+STZEROES
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x06e29f2e
+;; receiver
+;; push identifier receiver
+PUSH S1
+STSLICER
+ENDC
+PUSHINT 128
+SENDRAWMSG
+; end function resetTargetGas
+; end modifier onlyOwner
+DROP2
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro c7_to_c4
 GETGLOB 2
 NEWC
@@ -1538,6 +1830,22 @@ LDMSGADDR   ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
+; beg set default params for responsible func
+GETGLOB 4
+; bounce
+TRUE
+SETINDEXQ 1
+; tons
+PUSHINT 10000000
+SETINDEXQ 2
+; currency
+NULL
+SETINDEXQ 3
+; flag
+PUSHINT 0
+SETINDEXQ 4
+SETGLOB 4
+; end set default params for responsible func
 IFRET
 PUSH S1    ; body
 SEMPTY     ; isEmpty
@@ -1690,22 +1998,40 @@ LEQ
 PUSHCONT {
 	DUP
 	PUSHINT 209702378
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 115515182
+		EQUAL
+		IFJMPREF {
+			CALL $resetGas$
+		}
+		DUP
+		PUSHINT 209702378
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
 	}
-	DUP
-	PUSHINT 388172858
-	EQUAL
-	IFJMPREF {
-		CALL $upgrade$
-	}
+	IFJMP
 	DUP
 	PUSHINT 453826860
-	EQUAL
-	IFJMPREF {
-		CALL $transferOwner$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 388172858
+		EQUAL
+		IFJMPREF {
+			CALL $upgrade$
+		}
+		DUP
+		PUSHINT 453826860
+		EQUAL
+		IFJMPREF {
+			CALL $transferOwner$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 485612132
 	EQUAL
@@ -1719,23 +2045,41 @@ PUSHINT 1303150947
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 536367632
-	EQUAL
-	IFJMPREF {
-		CALL $onStoragePruneNotify$
-	}
-	DUP
 	PUSHINT 580327927
-	EQUAL
-	IFJMPREF {
-		CALL $wallet_code$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 536367632
+		EQUAL
+		IFJMPREF {
+			CALL $onStoragePruneNotify$
+		}
+		DUP
+		PUSHINT 580327927
+		EQUAL
+		IFJMPREF {
+			CALL $wallet_code$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 1049055520
-	EQUAL
-	IFJMPREF {
-		CALL $pending_owner$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 694778722
+		EQUAL
+		IFJMPREF {
+			CALL $getPendingOwner$
+		}
+		DUP
+		PUSHINT 1049055520
+		EQUAL
+		IFJMPREF {
+			CALL $pending_owner$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 1303150947
 	EQUAL
@@ -1749,23 +2093,41 @@ PUSHINT 1690205927
 LEQ
 PUSHCONT {
 	DUP
-	PUSHINT 1541143449
-	EQUAL
-	IFJMPREF {
-		CALL $root_code$
-	}
-	DUP
 	PUSHINT 1590035614
-	EQUAL
-	IFJMPREF {
-		CALL $setRootCode$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1541143449
+		EQUAL
+		IFJMPREF {
+			CALL $root_code$
+		}
+		DUP
+		PUSHINT 1590035614
+		EQUAL
+		IFJMPREF {
+			CALL $setRootCode$
+		}
 	}
+	IFJMP
 	DUP
-	PUSHINT 1594609630
-	EQUAL
-	IFJMPREF {
-		CALL $owner$
+	PUSHINT 1656985116
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1594609630
+		EQUAL
+		IFJMPREF {
+			CALL $owner$
+		}
+		DUP
+		PUSHINT 1656985116
+		EQUAL
+		IFJMPREF {
+			CALL $getOwner$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 1690205927
 	EQUAL
@@ -1780,22 +2142,40 @@ LEQ
 PUSHCONT {
 	DUP
 	PUSHINT 1809145905
-	EQUAL
-	IFJMPREF {
-		CALL $acceptOwner$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1707282005
+		EQUAL
+		IFJMPREF {
+			CALL $resetTargetGas$
+		}
+		DUP
+		PUSHINT 1809145905
+		EQUAL
+		IFJMPREF {
+			CALL $acceptOwner$
+		}
 	}
-	DUP
-	PUSHINT 1911415692
-	EQUAL
-	IFJMPREF {
-		CALL $setWalletCode$
-	}
+	IFJMP
 	DUP
 	PUSHINT 1998643883
-	EQUAL
-	IFJMPREF {
-		CALL $onStoragePruneReturn$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1911415692
+		EQUAL
+		IFJMPREF {
+			CALL $setWalletCode$
+		}
+		DUP
+		PUSHINT 1998643883
+		EQUAL
+		IFJMPREF {
+			CALL $onStoragePruneReturn$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 2122661471
 	EQUAL

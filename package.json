@@ -4,6 +4,7 @@
   "description": "DEX",
   "main": "index.js",
   "scripts": {
+    "migration-prod": "locklift run --config locklift.config.js --network main --script scripts/migration-prod.js && locklift test --config locklift.config.js --network main --test test/prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "aleksandr-hramcov <aleksandr.hramcov@gmail.com>",
