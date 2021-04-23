@@ -424,4 +424,48 @@ describe('Check DEX accounts interaction', async function () {
         });
 
     });
+
+    describe('Dex Account withdraw', async function () {
+        it('DexAccount#3 withdraw BAR', async function () {
+            logger.log('#################################################');
+            const dexAccount3 = await DexRoot.call({
+                method: 'getExpectedAccountAddress',
+                params: {
+                    account_owner: Account3.address,
+                    _answer_id: 0
+                }
+            });
+            DexAccount3.setAddress(dexAccount3);
+            const dexAccount3Start = await dexAccountBalances(DexAccount3);
+            const TOKENS_TO_WITHDRAW = 10;
+            logger.log(`DexAccount#3 balance start: ` +
+                `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
+            const account3WalletsStart = await account3balances();
+            logger.log(`Account3 wallets balance start: ${account3WalletsStart.foo} FOO, ${account3WalletsStart.bar} BAR, ` +
+                `${account3WalletsStart.lp} LP, ${account3WalletsStart.ton} TON`);
+            await Account3.runTarget({
+                contract: DexAccount3,
+                method: 'withdraw',
+                params: {
+                    amount: new BigNumber(TOKENS_TO_WITHDRAW).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    token_root: BarRoot.address,
+                    recipient_public_key: 0,
+                    recipient_address: Account3.address,
+                    deploy_wallet_grams: locklift.utils.convertCrystal('0.2', 'nano'),
+                    send_gas_to: Account3.address
+                },
+                keyPair: keyPairs[2]
+            });
+            const dexAccount3end = await dexAccountBalances(DexAccount3);
+            logger.log(`DexAccount#3 balance end: ` +
+                `${dexAccount3end.foo} FOO, ${dexAccount3end.bar} BAR, ${dexAccount3end.lp} LP`);
+            const account3WalletsEnd = await account3balances();
+            logger.log(`Account3 wallets balance end: ${account3WalletsEnd.foo} FOO, ${account3WalletsEnd.bar} BAR, ` +
+                `${account3WalletsEnd.lp} LP, ${account3WalletsEnd.ton} TON`);
+            expect(new BigNumber(dexAccount3Start.bar).minus(TOKENS_TO_WITHDRAW).toString())
+                .to.equal(dexAccount3end.bar, 'Wrong DexAccount#3 BAR balance');
+            expect(new BigNumber(account3WalletsStart.bar).plus(TOKENS_TO_WITHDRAW).toString())
+                .to.equal(account3WalletsEnd.bar, 'Wrong Account#3 BAR Wallet balance');
+        });
+    });
 });
