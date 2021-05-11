@@ -810,9 +810,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     }
 
     function _expectedSpendAmount(uint128 b_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
+        uint256 fee_d_minus_n = uint256(fee_denominator - fee_numerator);
+
         uint128 new_b_pool = b_pool - b_amount;
         uint128 new_a_pool = math.muldiv(a_pool, b_pool, new_b_pool);
-        uint128 expected_a_amount = new_a_pool - a_pool;
+        uint128 expected_a_amount = math.muldiv(new_a_pool - a_pool, fee_d_minus_n, fee_denominator);
         uint128 a_fee = math.muldiv(expected_a_amount, fee_numerator, fee_denominator);
 
         return (expected_a_amount, a_fee);
