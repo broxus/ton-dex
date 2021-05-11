@@ -12,7 +12,7 @@ import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interf
 
 contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
 
-    string LP_TOKEN_SYMBOL_PREFIX = "BROXUS-LP-";
+    string LP_TOKEN_SYMBOL_PREFIX = "TONSWAP-LP-";
     string LP_TOKEN_SYMBOL_SEPARATOR = "-";
     uint8 LP_TOKEN_DECIMALS = 9;
 

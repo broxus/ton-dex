@@ -221,6 +221,18 @@
 			]
 		},
 		{
+			"name": "expectedSpendAmount",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"receive_amount","type":"uint128"},
+				{"name":"receive_token_root","type":"address"}
+			],
+			"outputs": [
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"expected_fee","type":"uint128"}
+			]
+		},
+		{
 			"name": "exchange",
 			"inputs": [
 				{"name":"call_id","type":"uint64"},

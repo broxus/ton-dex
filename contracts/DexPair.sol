@@ -719,6 +719,19 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         }
     }
 
+    function expectedSpendAmount(
+        uint128 receive_amount,
+        address receive_token_root
+    ) override external view responsible returns (uint128 expected_amount, uint128 expected_fee) {
+        if (receive_token_root == right_root) {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedSpendAmount(receive_amount, left_balance, right_balance);
+        } else if (receive_token_root == left_root) {
+            return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedSpendAmount(receive_amount, right_balance, left_balance);
+        } else {
+            revert(DexErrors.NOT_TOKEN_ROOT);
+        }
+    }
+
     function exchange(
         uint64 call_id,
         uint128 spent_amount,
@@ -794,6 +807,15 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint128 expected_b_amount = b_pool - new_b_pool;
 
         return (expected_b_amount, a_fee);
+    }
+
+    function _expectedSpendAmount(uint128 b_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
+        uint128 new_b_pool = b_pool - b_amount;
+        uint128 new_a_pool = math.muldiv(a_pool, b_pool, new_b_pool);
+        uint128 expected_a_amount = new_a_pool - a_pool;
+        uint128 a_fee = math.muldiv(expected_a_amount, fee_numerator, fee_denominator);
+
+        return (expected_a_amount, a_fee);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -57,6 +57,11 @@ interface IDexPair {
         address spent_token_root
     ) external view responsible returns (uint128 expected_amount, uint128 expected_fee);
 
+    function expectedSpendAmount(
+        uint128 receive_amount,
+        address receive_token_root
+    ) external view responsible returns (uint128 expected_amount, uint128 expected_fee);
+
     function expectedDepositLiquidity(
         uint128 left_amount,
         uint128 right_amount,
