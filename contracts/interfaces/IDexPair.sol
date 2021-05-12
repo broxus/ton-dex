@@ -1,6 +1,8 @@
 pragma ton-solidity ^0.39.0;
 
-interface IDexPair {
+import "../structures/IDepositLiquidityResult.sol";
+
+interface IDexPair is IDepositLiquidityResult {
 
     event PairCodeUpgraded(uint32 version);
     event FeesParamsUpdated(uint16 numerator, uint16 denominator);
@@ -14,22 +16,6 @@ interface IDexPair {
         uint128 lp_supply;
         uint128 left_balance;
         uint128 right_balance;
-    }
-
-    struct DepositLiquidityResult {
-        uint128 step_1_left_deposit;
-        uint128 step_1_right_deposit;
-        uint128 step_1_lp_reward;
-
-        bool step_2_left_to_right;
-        bool step_2_right_to_left;
-        uint128 step_2_spent;
-        uint128 step_2_fee;
-        uint128 step_2_received;
-
-        uint128 step_3_left_deposit;
-        uint128 step_3_right_deposit;
-        uint128 step_3_lp_reward;
     }
 
     function getRoot() external view responsible returns (address dex_root);

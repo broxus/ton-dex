@@ -22,6 +22,7 @@ import "./interfaces/IDexAccount.sol";
 import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
+import "./interfaces/IDexAccountOwner.sol";
 
 import "./DexPlatform.sol";
 
@@ -122,6 +123,10 @@ contract DexAccount is
 
     function getBalances() external view returns (mapping(address => uint128)) {
         return _balances;
+    }
+
+    function getNonce() override external view responsible returns (uint64) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _nonce;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -735,7 +740,12 @@ contract DexAccount is
         address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to.at(call_id) : owner;
         delete _tmp_send_gas_to[call_id];
 
-        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+        IDexAccountOwner(owner).dexAccountOnSuccess{
+            value: 2,
+            flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+        }(call_id);
+
+        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
     }
 
     function gc() onlyOwner external {
@@ -774,7 +784,12 @@ contract DexAccount is
             address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to[call_id] : owner;
             delete _tmp_send_gas_to[call_id];
 
-            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+            IDexAccountOwner(owner).dexAccountOnBounce{
+                value: 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, functionId);
+
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
         } else if(functionId == tvm.functionId(IDexPair.checkPair)) {
             emit ExpectedPairNotExist(msg.sender);
             uint64 call_id = body.decode(uint64);
@@ -782,7 +797,12 @@ contract DexAccount is
             address send_gas_to = _tmp_send_gas_to.exists(call_id) ? _tmp_send_gas_to[call_id] : owner;
             delete _tmp_send_gas_to[call_id];
 
-            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+            IDexAccountOwner(owner).dexAccountOnBounce{
+                value: 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, functionId);
+
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
         }
     }
 }

@@ -116,6 +116,7 @@
 		{
 			"name": "buildExchangePayload",
 			"inputs": [
+				{"name":"id","type":"uint64"},
 				{"name":"deploy_wallet_grams","type":"uint128"},
 				{"name":"expected_amount","type":"uint128"}
 			],
@@ -126,6 +127,7 @@
 		{
 			"name": "buildDepositLiquidityPayload",
 			"inputs": [
+				{"name":"id","type":"uint64"},
 				{"name":"deploy_wallet_grams","type":"uint128"}
 			],
 			"outputs": [
@@ -135,6 +137,7 @@
 		{
 			"name": "buildWithdrawLiquidityPayload",
 			"inputs": [
+				{"name":"id","type":"uint64"},
 				{"name":"deploy_wallet_grams","type":"uint128"}
 			],
 			"outputs": [

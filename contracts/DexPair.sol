@@ -24,6 +24,9 @@ import "./interfaces/IDexAccount.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
 import "./interfaces/IAfterInitialize.sol";
+import "./structures/IExchangeResult.sol";
+import "./structures/IWithdrawResult.sol";
+import "./interfaces/IDexPairOperationCallback.sol";
 
 import "./DexPlatform.sol";
 
@@ -131,24 +134,27 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Direct operations
 
-    function buildExchangePayload(uint128 deploy_wallet_grams, uint128 expected_amount) external pure returns (TvmCell) {
+    function buildExchangePayload(uint64 id, uint128 deploy_wallet_grams, uint128 expected_amount) external pure returns (TvmCell) {
         TvmBuilder builder;
         builder.store(OperationTypes.EXCHANGE);
+        builder.store(id);
         builder.store(deploy_wallet_grams);
         builder.store(expected_amount);
         return builder.toCell();
     }
 
-    function buildDepositLiquidityPayload(uint128 deploy_wallet_grams) external pure returns (TvmCell) {
+    function buildDepositLiquidityPayload(uint64 id, uint128 deploy_wallet_grams) external pure returns (TvmCell) {
         TvmBuilder builder;
         builder.store(OperationTypes.DEPOSIT_LIQUIDITY);
+        builder.store(id);
         builder.store(deploy_wallet_grams);
         return builder.toCell();
     }
 
-    function buildWithdrawLiquidityPayload(uint128 deploy_wallet_grams) external pure returns (TvmCell) {
+    function buildWithdrawLiquidityPayload(uint64 id, uint128 deploy_wallet_grams) external pure returns (TvmCell) {
         TvmBuilder builder;
         builder.store(OperationTypes.WITHDRAW_LIQUIDITY);
+        builder.store(id);
         builder.store(deploy_wallet_grams);
         return builder.toCell();
     }
@@ -168,7 +174,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         TvmSlice payloadSlice = payload.toSlice();
 
         bool need_cancel = !active ||
-            payloadSlice.bits() < 136 ||
+            payloadSlice.bits() < 200 ||
             lp_supply == 0 ||
             (tokens_amount < fee_denominator && token_root != lp_root);
 
@@ -186,26 +192,33 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
         if (!need_cancel) {
 
-            (uint8 op, uint128 deploy_wallet_grams) = payloadSlice.decode(uint8, uint128);
+            (uint8 op, uint64 id, uint128 deploy_wallet_grams) = payloadSlice.decode(uint8, uint64, uint128);
 
             if (token_root == left_root && token_wallet == left_wallet && msg.sender == left_wallet &&
                 msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + deploy_wallet_grams) {
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange left to right
                     uint128 expected_amount = payloadSlice.decode(uint128);
-                    (uint128 expected_right_amount, uint128 expected_left_fee) =
+                    (uint128 right_amount, uint128 left_fee) =
                     _expectedExchange(tokens_amount, left_balance, right_balance);
-                    if (expected_right_amount <= right_balance && expected_right_amount >= expected_amount) {
+                    if (right_amount <= right_balance && right_amount >= expected_amount) {
                         left_balance += tokens_amount;
-                        right_balance -= expected_right_amount;
+                        right_balance -= right_amount;
 
-                        emit ExchangeLeftToRight(tokens_amount, expected_left_fee, expected_right_amount);
+                        emit ExchangeLeftToRight(tokens_amount, left_fee, right_amount);
+
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                                value: 10,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                            }(id, false, IExchangeResult.ExchangeResult(true, tokens_amount, left_fee, right_amount));
+                        }
 
                         IDexVault(vault).transfer{
                             value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
-                            expected_right_amount,
+                            right_amount,
                             right_root,
                             vault_right_wallet,
                             sender_public_key,
@@ -242,6 +255,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                         emit ExchangeLeftToRight(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
 
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairDepositLiquiditySuccess{
+                                value: 20,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                            }(id, false, r);
+                        }
+
                         IRootTokenContract(lp_root).deployWallet{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
@@ -274,19 +294,26 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange right to left
                     uint128 expected_amount = payloadSlice.decode(uint128);
-                    (uint128 expected_left_amount, uint128 expected_right_fee) =
+                    (uint128 left_amount, uint128 right_fee) =
                     _expectedExchange(tokens_amount, right_balance, left_balance);
-                    if (expected_left_amount <= left_balance && expected_left_amount >= expected_amount) {
+                    if (left_amount <= left_balance && left_amount >= expected_amount) {
                         right_balance += tokens_amount;
-                        left_balance -= expected_left_amount;
+                        left_balance -= left_amount;
 
-                        emit ExchangeRightToLeft(tokens_amount, expected_right_fee, expected_left_amount);
+                        emit ExchangeRightToLeft(tokens_amount, right_fee, left_amount);
+
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                                value: 10,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                            }(id, false, IExchangeResult.ExchangeResult(false, tokens_amount, right_fee, left_amount));
+                        }
 
                         IDexVault(vault).transfer{
                             value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
-                            expected_left_amount,
+                            left_amount,
                             left_root,
                             vault_left_wallet,
                             sender_public_key,
@@ -322,6 +349,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         emit ExchangeRightToLeft(r.step_2_spent, r.step_2_fee, r.step_2_received);
                         emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
+
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairDepositLiquiditySuccess{
+                                value: 20,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                            }(id, false, r);
+                        }
 
                         IRootTokenContract(lp_root).deployWallet{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
@@ -362,6 +396,13 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 lp_supply -= tokens_amount;
 
                 emit WithdrawLiquidity(tokens_amount, left_back_amount, right_back_amount);
+
+                if (sender_address.value != 0) {
+                    IDexPairOperationCallback(sender_address).dexPairWithdrawSuccess{
+                        value: 30,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                    }(id, false, IWithdrawResult.WithdrawResult(tokens_amount, left_back_amount, right_back_amount));
+                }
 
                 IDexVault(vault).transfer{
                     value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
@@ -412,6 +453,20 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         }
 
         if (need_cancel) {
+
+            if (sender_address.value != 0) {
+                uint64 id = 0;
+
+                if (payload.toSlice().bits() >= 72) {
+                    (,id) = payload.toSlice().decode(uint8, uint64);
+                }
+
+                IDexPairOperationCallback(sender_address).dexPairOperationCancelled{
+                    value: 40,
+                    flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                }(id);
+            }
+
             ITONTokenWallet(token_wallet).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 sender_wallet,
                 tokens_amount,
@@ -467,6 +522,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             right_balance = right_amount;
 
             emit DepositLiquidity(left_amount, right_amount, lp_tokens_amount);
+
+            IDexPairOperationCallback(account_owner).dexPairDepositLiquiditySuccess{
+                value: 2,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, true, DepositLiquidityResult(left_amount, right_amount, lp_tokens_amount, false, false, 0, 0, 0, 0, 0, 0));
         } else {
             DepositLiquidityResult r = _expectedDepositLiquidity(left_amount, right_amount, auto_change);
             lp_tokens_amount = r.step_1_lp_reward + r.step_3_lp_reward;
@@ -523,6 +583,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             if (r.step_3_lp_reward > 0) {
                 emit DepositLiquidity(r.step_3_left_deposit, r.step_3_right_deposit, r.step_3_lp_reward);
             }
+
+            IDexPairOperationCallback(account_owner).dexPairDepositLiquiditySuccess{
+                value: 2,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, true, r);
 
         }
 
@@ -671,6 +736,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
         emit WithdrawLiquidity(lp_amount, left_back_amount, right_back_amount);
 
+        IDexPairOperationCallback(account_owner).dexPairWithdrawSuccess{
+            value: 3,
+            flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+        }(call_id, true, IWithdrawResult.WithdrawResult(lp_amount, left_back_amount, right_back_amount));
+
         IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
             left_back_amount,
             left_root,
@@ -743,23 +813,28 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
         if (spent_token_root == left_root && receive_token_root == right_root) {
-            (uint128 expected_right_amount, uint128 expected_left_fee) =
+            (uint128 right_amount, uint128 left_fee) =
                 _expectedExchange(spent_amount, left_balance, right_balance);
-            require(expected_right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
-            require(expected_right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+            require(right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
+            require(right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
 
             left_balance += spent_amount;
-            right_balance -= expected_right_amount;
+            right_balance -= right_amount;
 
-            emit ExchangeLeftToRight(spent_amount, expected_left_fee, expected_right_amount);
+            emit ExchangeLeftToRight(spent_amount, left_fee, right_amount);
+
+            IDexPairOperationCallback(account_owner).dexPairExchangeSuccess{
+                value: 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, true, IExchangeResult.ExchangeResult(true, spent_amount, left_fee, right_amount));
 
             IDexAccount(msg.sender).internalPairTransfer{
                 value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
-                expected_right_amount,
+                right_amount,
                 right_root,
                 left_root,
                 right_root,
@@ -769,23 +844,28 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
 
         } else if (spent_token_root == right_root && receive_token_root == left_root){
-            (uint128 expected_left_amount, uint128 expected_right_fee) =
+            (uint128 left_amount, uint128 right_fee) =
                 _expectedExchange(spent_amount, right_balance, left_balance);
-            require(expected_left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
-            require(expected_left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+            require(left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
+            require(left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
 
             right_balance += spent_amount;
-            left_balance -= expected_left_amount;
+            left_balance -= left_amount;
 
-            emit ExchangeRightToLeft(spent_amount, expected_right_fee, expected_left_amount);
+            emit ExchangeRightToLeft(spent_amount, right_fee, left_amount);
+
+            IDexPairOperationCallback(account_owner).dexPairExchangeSuccess{
+                value: 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            }(call_id, true, IExchangeResult.ExchangeResult(false, spent_amount, right_fee, left_amount));
 
             IDexAccount(msg.sender).internalPairTransfer{
                 value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
-                expected_left_amount,
+                left_amount,
                 left_root,
                 left_root,
                 right_root,
@@ -810,11 +890,11 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     }
 
     function _expectedSpendAmount(uint128 b_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
-        uint256 fee_d_minus_n = uint256(fee_denominator - fee_numerator);
+        uint128 fee_d_minus_n = uint128(fee_denominator - fee_numerator);
 
         uint128 new_b_pool = b_pool - b_amount;
         uint128 new_a_pool = math.muldiv(a_pool, b_pool, new_b_pool);
-        uint128 expected_a_amount = math.muldiv(new_a_pool - a_pool, fee_d_minus_n, fee_denominator);
+        uint128 expected_a_amount = math.muldiv(new_a_pool - a_pool, fee_denominator, fee_d_minus_n);
         uint128 a_fee = math.muldiv(expected_a_amount, fee_numerator, fee_denominator);
 
         return (expected_a_amount, a_fee);

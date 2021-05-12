@@ -718,6 +718,98 @@ IFREF {
 TRUE
 SETGLOB 7
 
+.macro getNonce
+DROP
+GETGLOB 1
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
+; Decode input parameters
+ENDS
+; function getNonce
+;; return
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
+;; push identifier _nonce
+GETGLOB 15
+; end function getNonce
+;; emitting 1 value(s)
+PUSH S1
+EQINT -1
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST xe8606166
+	PUSH S1
+	STUR 64
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 0
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S1
+	STUR 64
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+DROP
+IFREF {
+	CALL $c7_to_c4$
+}
+TRUE
+SETGLOB 7
+
 .macro tokensReceivedCallback
 DROP
 GETGLOB 1
@@ -6158,6 +6250,28 @@ DROP
 NIP
 SETGLOB 20
 ; end colValue
+;; Remote call IDexAccountOwner.dexAccountOnSuccess
+;; push identifier owner
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x102000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+STSLICECONST x08718808
+;; nonce
+;; push identifier call_id
+PUSH S2
+STUR 64
+ENDC
+PUSHINT 1
+;; +
+PUSHINT 2
+ADD
+UFITS 8
+SENDRAWMSG
 ;; transfer()
 ;; push identifier send_gas_to
 DUP
@@ -6170,6 +6284,10 @@ STSLICECONST 0
 STSLICECONST 0
 ENDC
 PUSHINT 128
+;; +
+PUSHINT 2
+ADD
+UFITS 8
 SENDRAWMSG
 DROP
 ; end function successCallback
@@ -6572,6 +6690,32 @@ PUSHCONT {
 	NIP
 	SETGLOB 20
 	; end colValue
+	;; Remote call IDexAccountOwner.dexAccountOnBounce
+	;; push identifier owner
+	GETGLOB 14
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHSLICE x101000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	STSLICECONST x2ef93e15
+	;; nonce
+	;; push identifier call_id
+	PUSH S2
+	STUR 64
+	;; functionId
+	;; push identifier functionId
+	PUSH S3
+	STUR 32
+	ENDC
+	PUSHINT 1
+	;; +
+	PUSHINT 2
+	ADD
+	UFITS 8
+	SENDRAWMSG
 	;; transfer()
 	;; push identifier send_gas_to
 	DUP
@@ -6584,6 +6728,10 @@ PUSHCONT {
 	STSLICECONST 0
 	ENDC
 	PUSHINT 128
+	;; +
+	PUSHINT 2
+	ADD
+	UFITS 8
 	SENDRAWMSG
 	DROP2
 }
@@ -6665,6 +6813,32 @@ PUSHCONT {
 		NIP
 		SETGLOB 20
 		; end colValue
+		;; Remote call IDexAccountOwner.dexAccountOnBounce
+		;; push identifier owner
+		GETGLOB 14
+		NEWC
+		STSLICECONST x62_
+		STSLICE
+		PUSHSLICE x101000000000000000000000000004_
+		STSLICER
+		STSLICECONST 0
+		STSLICECONST 0
+		STSLICECONST x2ef93e15
+		;; nonce
+		;; push identifier call_id
+		PUSH S2
+		STUR 64
+		;; functionId
+		;; push identifier functionId
+		PUSH S3
+		STUR 32
+		ENDC
+		PUSHINT 1
+		;; +
+		PUSHINT 2
+		ADD
+		UFITS 8
+		SENDRAWMSG
 		;; transfer()
 		;; push identifier send_gas_to
 		DUP
@@ -6677,6 +6851,10 @@ PUSHCONT {
 		STSLICECONST 0
 		ENDC
 		PUSHINT 128
+		;; +
+		PUSHINT 2
+		ADD
+		UFITS 8
 		SENDRAWMSG
 		DROP2
 	}
@@ -7239,22 +7417,40 @@ LEQ
 PUSHCONT {
 	DUP
 	PUSHINT 1756716863
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1751146854
+		EQUAL
+		IFJMPREF {
+			CALL $getNonce$
+		}
+		DUP
+		PUSHINT 1756716863
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
 	}
-	DUP
-	PUSHINT 1950458398
-	EQUAL
-	IFJMPREF {
-		CALL $getRoot$
-	}
+	IFJMP
 	DUP
 	PUSHINT 2067098323
-	EQUAL
-	IFJMPREF {
-		CALL $requestUpgrade$
+	LEQ
+	PUSHCONT {
+		DUP
+		PUSHINT 1950458398
+		EQUAL
+		IFJMPREF {
+			CALL $getRoot$
+		}
+		DUP
+		PUSHINT 2067098323
+		EQUAL
+		IFJMPREF {
+			CALL $requestUpgrade$
+		}
 	}
+	IFJMP
 	DUP
 	PUSHINT 2093007669
 	EQUAL

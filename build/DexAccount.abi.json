@@ -81,6 +81,15 @@
 			]
 		},
 		{
+			"name": "getNonce",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint64"}
+			]
+		},
+		{
 			"name": "tokensReceivedCallback",
 			"inputs": [
 				{"name":"token_wallet","type":"address"},

@@ -41,6 +41,7 @@ interface IDexAccount {
     event CodeUpgradeRequested();
     event GarbageCollected();
 
+    function getNonce() external view responsible returns (uint64);
 
     function getRoot() external view responsible returns (address);
 
