@@ -63,7 +63,7 @@ async function account3balances() {
 
 async function dexPairInfo() {
     const balances = await DexPairFooBar.call({method: 'getBalances', params: {_answer_id: 0}});
-    const total_supply = await FooBarLpRoot.call({method: 'total_supply', params: {}});
+    const total_supply = await FooBarLpRoot.call({method: 'getTotalSupply', params: {'_answer_id': 0}});
     let foo, bar;
     if (IS_FOO_LEFT) {
         foo = new BigNumber(balances.left_balance).div(Constants.FOO_DECIMALS_MODIFIER).toString();

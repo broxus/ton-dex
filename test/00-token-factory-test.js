@@ -128,7 +128,11 @@ describe('TokeFactory contract', async function () {
         const deployedTokenRootDetails = await deployedTokenRootContract.call({
           method: 'getDetails',
           params: {'_answer_id': 0}
-        })
+        });
+        const deployedTokenWalletCode = await deployedTokenRootContract.call({
+          method: 'getWalletCode',
+          params: {'_answer_id': 0}
+        });
         expect(deployedTokenRootDetails.name.toString())
           .to
           .equal(tokenData.name, 'Wrong Token name in deployed Token');
@@ -138,7 +142,7 @@ describe('TokeFactory contract', async function () {
         expect(deployedTokenRootDetails.decimals.toNumber())
           .to
           .equal(tokenData.decimals, 'Wrong Token decimals in deployed Token');
-        expect(deployedTokenRootDetails.wallet_code)
+        expect(deployedTokenWalletCode)
           .to
           .equal(TONTokenWallet.code, 'Wrong Token Wallet code in deployed Token');
         expect(deployedTokenRootDetails.root_owner_address)

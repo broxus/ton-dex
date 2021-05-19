@@ -16,7 +16,7 @@
     "ton-client-js": "^0.28.1",
     "locklift": "^1.1.1",
     "mocha-logger": "^1.0.7",
-    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#fb19981b07cfb23c5a72bee041bd2310d9812299"
+    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#74905260499d79cf7cb0d89a6eb572176fc1fcd5"
   },
   "devDependencies": {}
 }
