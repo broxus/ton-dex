@@ -15,7 +15,7 @@ async function main() {
   console.log(`Deployer public key: ${keyPair.public}`)
 
   // ============ DEPLOYER ACCOUNT ============
-  const Account = await locklift.factory.getAccount();
+  const Account = await locklift.factory.getAccount('Wallet');
   let account = await locklift.giver.deployContract({
     contract: Account,
     constructorParams: {},
@@ -94,7 +94,7 @@ async function main() {
     contract: DexVault,
     constructorParams: {
       owner_: account.address,
-      token_factory_: migration.load(await locklift.factory.getAccount(), 'TokenFactory').address,
+      token_factory_: migration.load(await locklift.factory.getAccount('Wallet'), 'TokenFactory').address,
       root_: dexRoot.address
     },
     initParams: {

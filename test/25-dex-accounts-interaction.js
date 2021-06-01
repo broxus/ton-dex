@@ -1,10 +1,22 @@
 const {expect} = require('chai');
 const {Migration, Constants, afterRun} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
+const { Command } = require('commander');
+const program = new Command();
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
 
 const migration = new Migration();
+
+program
+    .allowUnknownOption()
+    .option('-cn, --contract_name <contract_name>', 'DexPair contract name');
+
+program.parse(process.argv);
+
+const options = program.opts();
+
+options.contract_name = options.contract_name || 'DexPair';
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
@@ -32,13 +44,13 @@ let keyPairs;
 
 async function dexBalances() {
     const foo = await FooVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        return new BigNumber(n).div(Constants.FOO_DECIMALS_MODIFIER).toString();
+        return new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     });
     const bar = await BarVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        return new BigNumber(n).div(Constants.BAR_DECIMALS_MODIFIER).toString();
+        return new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     });
     const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        return new BigNumber(n).div(Constants.LP_DECIMALS_MODIFIER).toString();
+        return new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     });
     return {foo, bar, lp};
 }
@@ -46,15 +58,15 @@ async function dexBalances() {
 async function account3balances() {
     let foo;
     await FooWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        foo = new BigNumber(n).div(Constants.FOO_DECIMALS_MODIFIER).toString();
+        foo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let bar;
     await BarWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        bar = new BigNumber(n).div(Constants.BAR_DECIMALS_MODIFIER).toString();
+        bar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let lp;
     await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
-        lp = new BigNumber(n).div(Constants.LP_DECIMALS_MODIFIER).toString();
+        lp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
     return {foo, bar, lp, ton};
@@ -64,15 +76,15 @@ async function dexAccountBalances(account) {
     const foo = new BigNumber((await account.call({method: 'getWalletData', params: {
         _answer_id: 0,
         token_root: FooRoot.address
-    }})).balance).div(Constants.FOO_DECIMALS_MODIFIER).toString();
+    }})).balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
     const bar = new BigNumber((await account.call({method: 'getWalletData', params: {
         _answer_id: 0,
         token_root: BarRoot.address
-    }})).balance).div(Constants.BAR_DECIMALS_MODIFIER).toString();
+    }})).balance).shiftedBy(-Constants.tokens.bar.decimals).toString();
     const lp = new BigNumber((await account.call({method: 'getWalletData', params: {
         _answer_id: 0,
         token_root: FooBarLpRoot.address
-    }})).balance).div(Constants.LP_DECIMALS_MODIFIER).toString();
+    }})).balance).shiftedBy(-Constants.LP_DECIMALS).toString();
 
     return {foo, bar, lp};
 }
@@ -94,16 +106,16 @@ describe('Check DEX accounts interaction', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPairFooBar = await locklift.factory.getContract('DexPair');
+        DexPairFooBar = await locklift.factory.getContract(options.contract_name);
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        Account2 = await locklift.factory.getAccount();
+        Account2 = await locklift.factory.getAccount('Wallet');
         Account2.afterRun = afterRun;
-        Account3 = await locklift.factory.getAccount();
+        Account3 = await locklift.factory.getAccount('Wallet');
         Account3.afterRun = afterRun;
         DexAccount2 = await locklift.factory.getContract('DexAccount');
         DexAccount3 = await locklift.factory.getContract('DexAccount');
@@ -253,7 +265,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
-                    amount: new BigNumber(AMOUNT_TO_TRANSFER).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
+                    amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.foo.decimals).toString(),
                     token_root: FooRoot.address,
                     to_dex_account: DexAccount3.address,
                     willing_to_deploy: false,
@@ -293,7 +305,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
-                    amount: new BigNumber(AMOUNT_TO_TRANSFER).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
                     to_dex_account: DexAccount3.address,
                     willing_to_deploy: true,
@@ -338,7 +350,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
-                    amount: new BigNumber(AMOUNT_TO_TRANSFER).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
                     to_dex_account: DexAccount3.address,
                     willing_to_deploy: false,
@@ -390,7 +402,7 @@ describe('Check DEX accounts interaction', async function () {
                 params: {
                     recipient_public_key: 0,
                     recipient_address: DexAccount3.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     deploy_grams: 0,
                     transfer_grams: 0,
                     send_gas_to: Account3.address,
@@ -447,7 +459,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount3,
                 method: 'withdraw',
                 params: {
-                    amount: new BigNumber(TOKENS_TO_WITHDRAW).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
+                    amount: new BigNumber(TOKENS_TO_WITHDRAW).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
                     recipient_public_key: 0,
                     recipient_address: Account3.address,

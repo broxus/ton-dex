@@ -2,11 +2,11 @@ const {Migration, TOKEN_CONTRACTS_PATH, afterRun} = require(process.cwd() + '/sc
 const migration = new Migration();
 
 async function main() {
-  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
   account.afterRun = afterRun;
   const [keyPair] = await locklift.keys.getKeyPairs();
   const dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
-  const NewDexPair = await locklift.factory.getContract('NewDexPair');
+  const NewDexPair = await locklift.factory.getContract('TestNewDexPair');
 
   console.log(`Installing new DexPair contract in DexRoot: ${dexRoot.address}`);
   await account.runTarget({

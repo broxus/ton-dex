@@ -1,6 +1,8 @@
 pragma ton-solidity ^0.39.0;
 
-interface IDexAccount {
+import "./ISuccessCallback.sol";
+
+interface IDexAccount is ISuccessCallback {
 
     event AddPair(address left_root, address right_root, address pair);
 
@@ -128,9 +130,5 @@ interface IDexAccount {
         address sender_left_root,
         address sender_right_root,
         address send_gas_to
-    ) external;
-
-    function successCallback(
-        uint64 call_id
     ) external;
 }

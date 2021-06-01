@@ -31,7 +31,7 @@ const submitTransactionAcceptOwner = async (account, target, keyPair) => {
 async function main() {
   const migration = new Migration();
   const keyPairs = await locklift.keys.getKeyPairs();
-  const oldOwner = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const oldOwner = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
   oldOwner.afterRun = afterRun;
   const Msig = await locklift.factory.getContract('SafeMultisigWallet', 'safemultisig');
   const newOwner = migration.load(Msig, 'NewOwnerMsig');

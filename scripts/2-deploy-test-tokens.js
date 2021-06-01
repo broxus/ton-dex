@@ -1,10 +1,12 @@
-const {getRandomNonce, Migration, stringToBytesArray, afterRun, Constants} = require(process.cwd()+'/scripts/utils')
+const {getRandomNonce, Migration, stringToBytesArray, afterRun, Constants} = require(process.cwd()+'/scripts/utils');
+const { Command } = require('commander');
+const program = new Command();
 
 async function main() {
   const migration = new Migration();
   const [keyPair] = await locklift.keys.getKeyPairs();
 
-  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const tokenFactory = migration.load(TokenFactory, 'TokenFactory');
@@ -15,35 +17,29 @@ async function main() {
     constructorParams: {factory: tokenFactory.address},
     initParams: {_randomNonce: getRandomNonce()},
     keyPair,
-  }, locklift.utils.convertCrystal(10, 'nano'));
+  }, locklift.utils.convertCrystal(20, 'nano'));
 
-  TokenFactoryCreateNewTokenFor.afterRun = afterRun;
+  tokenFactoryCreateNewTokenFor.afterRun = afterRun;
 
-  const tokensToCreate = [
-    {
-      name: 'Foo',
-      symbol: 'Foo',
-      decimals: Constants.FOO_DECIMALS,
-      owner: account.address,
-      amount: 3
-    },
-    {
-      name: 'Bar',
-      symbol: 'Bar',
-      decimals: Constants.BAR_DECIMALS,
-      owner: account.address,
-      amount: 3
-    }
-  ]
+  program
+      .allowUnknownOption()
+      .option('-t, --tokens <tokens>', 'tokens to deploy');
 
-  for (const tokenData of tokensToCreate) {
-    let index = getRandomNonce()+tokensToCreate.indexOf(tokenData);
+  program.parse(process.argv);
+
+  const options = program.opts();
+
+  let tokens = options.tokens ? JSON.parse(options.tokens) : ['foo', 'bar', 'tst'];
+
+  for (const tokenId of tokens) {
+    const tokenData = Constants.tokens[tokenId];
+    let index = getRandomNonce()+tokens.indexOf(tokenId);
     await tokenFactoryCreateNewTokenFor.run({
       method: 'newToken',
       params: {
         answer_id: index,
-        value: locklift.utils.convertCrystal(tokenData.amount, 'nano'),
-        owner: tokenData.owner,
+        value: locklift.utils.convertCrystal(3, 'nano'),
+        owner: account.address,
         name: stringToBytesArray(tokenData.name),
         symbol: stringToBytesArray(tokenData.symbol),
         decimals: tokenData.decimals
@@ -55,7 +51,7 @@ async function main() {
     });
     console.log(`Token ${tokenData.name}: ${deployedTokenRoot}`)
     migration.store({
-      name: 'TokenRoot',
+      name: tokenData.symbol + 'Root',
       address: deployedTokenRoot,
     }, `${tokenData.symbol}Root`);
   }

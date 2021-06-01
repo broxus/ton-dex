@@ -2,7 +2,7 @@ const {getRandomNonce, Migration, afterRun} = require(process.cwd()+'/scripts/ut
 
 async function main() {
   const migration = new Migration();
-  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
   account.afterRun = afterRun;
 
   const DexPlatform = await locklift.factory.getContract('DexPlatform');
@@ -33,7 +33,7 @@ async function main() {
     contract: DexVault,
     constructorParams: {
       owner_: account.address,
-      token_factory_: migration.load(await locklift.factory.getAccount(), 'TokenFactory').address,
+      token_factory_: migration.load(await locklift.factory.getAccount('Wallet'), 'TokenFactory').address,
       root_: dexRoot.address
     },
     initParams: {

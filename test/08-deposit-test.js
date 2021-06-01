@@ -15,7 +15,7 @@ describe('Check Dex Deposits', async function () {
   this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
     DexAccount = await locklift.factory.getContract('DexAccount');
-    account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+    account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2');
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
     tokenFoo = migration.load(
       await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'

@@ -1,16 +1,41 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {Migration, TOKEN_CONTRACTS_PATH, afterRun, Constants} = require(process.cwd() + '/scripts/utils')
+const BigNumber = require('bignumber.js');
+BigNumber.config({EXPONENTIAL_AT: 257});
+const {Migration, TOKEN_CONTRACTS_PATH, afterRun, Constants} = require(process.cwd() + '/scripts/utils');
+const { Command } = require('commander');
+const program = new Command();
 
 const migration = new Migration();
 
-let NewDexPair;
+program
+    .allowUnknownOption()
+    .option('-l, --left <left>', 'left root')
+    .option('-r, --right <right>', 'right root')
+    .option('-ocn, --old_contract_name <old_contract_name>', 'Old DexPair contract name')
+    .option('-ncn, --new_contract_name <new_contract_name>', 'New DexPair contract name');
+
+program.parse(process.argv);
+
+const options = program.opts();
+
+options.left = options.left || 'foo';
+options.right = options.right || 'bar';
+options.old_contract_name = options.old_contract_name || 'DexPair';
+options.new_contract_name = options.new_contract_name || 'DexPairV2';
+
+const tokenLeft = Constants.tokens[options.left];
+const tokenRight = Constants.tokens[options.right];
+
+let NewVersionContract;
 
 let account;
 let tokenFoo;
 let tokenBar;
 let dexRoot;
 let dexPairFooBar;
+
+let targetVersion;
 
 let oldPairData = {};
 let newPairData = {};
@@ -59,28 +84,24 @@ describe('Test Dex Pair contract upgrade', async function () {
     account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
     account.afterRun = afterRun;
     dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
-    dexPairFooBar = migration.load(await locklift.factory.getContract('DexPair'), 'DexPairFooBar');
-    NewDexPair = await locklift.factory.getContract('TestNewDexPair');
+    dexPairFooBar = migration.load(await locklift.factory.getContract(options.old_contract_name), 'DexPairFooBar');
+    NewVersionContract = await locklift.factory.getContract(options.new_contract_name);
+
+    targetVersion = new BigNumber(await dexRoot.call({method: 'getPairVersion'})).toNumber();
 
 
-    tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot');
-    tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot');
+    tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), tokenLeft.symbol + 'Root');
+    tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), tokenRight.symbol + 'Root');
 
     const [keyPair] = await locklift.keys.getKeyPairs();
 
     oldPairData = await loadPairData(dexPairFooBar);
     logger.log(`Old Pair(${dexPairFooBar.address}) data:\n${JSON.stringify(oldPairData, null, 4)}`);
-    logger.log(`Installing new DexPair contract in DexRoot: ${dexRoot.address}`);
-    await account.runTarget({
-      contract: dexRoot,
-      method: 'installOrUpdatePairCode',
-      params: {code: NewDexPair.code},
-      value: locklift.utils.convertCrystal(1, 'nano'),
-      keyPair
-    });
     logger.log(`Upgrading DexPair contract: 
         - left=${tokenFoo.address}
-        - right=${tokenBar.address}`);
+        - right=${tokenBar.address}
+        - current version = ${oldPairData.current_version}
+        - target version = ${targetVersion}`);
 
     await account.runTarget({
       contract: dexRoot,
@@ -93,16 +114,18 @@ describe('Test Dex Pair contract upgrade', async function () {
       value: locklift.utils.convertCrystal(6, 'nano'),
       keyPair
     });
-    NewDexPair.setAddress(dexPairFooBar.address);
-    newPairData = await loadPairData(NewDexPair);
-    logger.log(`New Pair(${NewDexPair.address}) data:\n${JSON.stringify(newPairData, null, 4)}`);
+    NewVersionContract.setAddress(dexPairFooBar.address);
+    newPairData = await loadPairData(NewVersionContract);
+    logger.log(`New Pair(${NewVersionContract.address}) data:\n${JSON.stringify(newPairData, null, 4)}`);
   })
   describe('Check DexPair after upgrade', async function () {
-    it('Check New Function', async function () {
-      expect((await NewDexPair.call({method: 'newFunc', params: {}})).toString())
-        .to
-        .equal("New Pair", 'DexPair new function incorrect');
-    });
+    if (options.new_contract_name === 'TestNewDexPair') {
+      it('Check New Function', async function () {
+        expect((await NewVersionContract.call({method: 'newFunc', params: {}})).toString())
+            .to
+            .equal("New Pair", 'DexPair new function incorrect');
+      });
+      }
     it('Check All data correct installed in new contract', async function () {
       expect(newPairData.root)
         .to
@@ -113,9 +136,9 @@ describe('Test Dex Pair contract upgrade', async function () {
       expect(newPairData.platform_code)
         .to
         .equal(oldPairData.platform_code, 'New platform_code value incorrect');
-      expect(newPairData.current_version)
+      expect(newPairData.current_version.toString())
         .to
-        .equal((parseInt(oldPairData.current_version) + 1).toString(), 'New current_version value incorrect');
+        .equal(targetVersion.toString(), 'New current_version value incorrect');
       expect(newPairData.lp_root)
         .to
         .equal(oldPairData.lp_root, 'New lp_root value incorrect');
@@ -127,7 +150,7 @@ describe('Test Dex Pair contract upgrade', async function () {
         .equal(oldPairData.right_root, 'New right_root value incorrect');
       expect(newPairData.active)
         .to
-        .equal(false, 'New active value incorrect');
+        .equal(oldPairData.active, 'New active value incorrect');
       expect(newPairData.lp_wallet)
         .to
         .equal(oldPairData.lp_wallet, 'New lp_wallet value incorrect');
