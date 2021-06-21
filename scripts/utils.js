@@ -28,20 +28,36 @@ async function sleep(ms) {
 }
 
 const afterRun = async (tx) => {
-  await new Promise(resolve => setTimeout(resolve, 30000));
+  await new Promise(resolve => setTimeout(resolve, 5000));
 };
 
 const Constants = {
-  FOO_DECIMALS: 3,
-  BAR_DECIMALS: 9,
+  tokens: {
+    foo: {
+      name: 'Foo',
+      symbol: 'Foo',
+      decimals: 3
+    },
+    bar: {
+      name: 'Bar',
+      symbol: 'Bar',
+      decimals: 9
+    },
+    tst: {
+      name: 'Test',
+      symbol: 'Tst',
+      decimals: 9
+    },
+    qwe: {
+      name: 'Qwerty',
+      symbol: 'Qwe',
+      decimals: 6
+    }
+  },
   LP_DECIMALS: 9,
 
   TESTS_TIMEOUT: 1200000
 }
-Constants.FOO_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.FOO_DECIMALS).toNumber();
-Constants.BAR_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.BAR_DECIMALS).toNumber();
-Constants.LP_DECIMALS_MODIFIER = new BigNumber(10).pow(Constants.LP_DECIMALS).toNumber();
-Constants.TON_DECIMALS_MODIFIER = new BigNumber(10).pow(9).toNumber();
 
 class Migration {
   constructor(log_path = 'migration-log.json') {
@@ -108,7 +124,7 @@ class Migration {
       const start = this.balance_history[this.balance_history.length - 2][alias];
       const end = this.balance_history[this.balance_history.length - 1][alias];
       if (end !== start) {
-        const change = new BigNumber(end).minus(start || 0).div(Constants.TON_DECIMALS_MODIFIER);
+        const change = new BigNumber(end).minus(start || 0).shiftedBy(-9);
         d[alias] = change;
       }
     }

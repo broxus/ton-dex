@@ -1,5 +1,6 @@
-const {Migration, TOKEN_CONTRACTS_PATH, Constants} = require(process.cwd()+'/scripts/utils')
-
+const {Migration, TOKEN_CONTRACTS_PATH, Constants} = require(process.cwd()+'/scripts/utils');
+const { Command } = require('commander');
+const program = new Command();
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 
@@ -11,62 +12,76 @@ async function main() {
   const migration = new Migration();
   const [keyPair] = await locklift.keys.getKeyPairs();
 
-  const account1 = migration.load(await locklift.factory.getAccount(), 'Account1');
-  const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
-  const account3 = migration.load(await locklift.factory.getAccount(), 'Account3');
+  const rootOwner = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
 
-  account1.afterRun = afterRun;
+  rootOwner.afterRun = afterRun;
 
-  const tokenFoo = migration.load(
-    await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'
-  );
-  const tokenBar = migration.load(
-    await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot'
-  );
-  const tokensToMint = [
+  program
+      .allowUnknownOption()
+      .option('-m, --mints <mints>', 'mint params');
+
+  program.parse(process.argv);
+
+  const options = program.opts();
+
+  const mints = options.mints ? JSON.parse(options.mints) : [
     {
-      contract: tokenFoo,
-      owner: account2.address,
-      tokens: new BigNumber(20000).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
-      alias: 'FooWallet2'
+      account: 2,
+      amount: 20000,
+      token: 'foo'
     },
     {
-      contract: tokenBar,
-      owner: account2.address,
-      tokens: new BigNumber(20000).times(Constants.BAR_DECIMALS_MODIFIER).toString(),
-      alias: 'BarWallet2'
+      account: 2,
+      amount: 20000,
+      token: 'bar'
     },
     {
-      contract: tokenFoo,
-      owner: account3.address,
-      tokens: new BigNumber(110000).times(Constants.FOO_DECIMALS_MODIFIER).toString(),
-      alias: 'FooWallet3'
-    }
-  ]
-  for (const tokenData of tokensToMint) {
-    await account1.runTarget({
-      contract: tokenData.contract,
+      account: 2,
+      amount: 20000,
+      token: 'tst'
+    },
+    {
+      account: 3,
+      amount: 110000,
+      token: 'foo'
+    },
+
+  ];
+
+  for (const mint of mints) {
+
+    const token = Constants.tokens[mint.token];
+    const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account' + mint.account);
+    const amount = new BigNumber(mint.amount).shiftedBy(token.decimals);
+
+    const tokenRoot = migration.load(
+        await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), token.symbol + 'Root'
+    );
+
+    await rootOwner.runTarget({
+      contract: tokenRoot,
       method: 'deployWallet',
       params: {
-        tokens: tokenData.tokens,
+        tokens: amount,
         deploy_grams: locklift.utils.convertCrystal(1, 'nano'),
         wallet_public_key_: 0,
-        owner_address_: tokenData.owner,
-        gas_back_address: account1.address
+        owner_address_: account.address,
+        gas_back_address: rootOwner.address
       },
       value: locklift.utils.convertCrystal(2, 'nano'),
       keyPair
     });
-    const tokenWalletAddress = await tokenData.contract.call({
+    const tokenWalletAddress = await tokenRoot.call({
       method: 'getWalletAddress', params: {
         wallet_public_key_: 0,
-        owner_address_: tokenData.owner
+        owner_address_: account.address
       }
     });
     const tokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-    tokenWallet.address = tokenWalletAddress
-    migration.store(tokenWallet, tokenData.alias);
-    console.log(`${tokenData.alias}: ${tokenWalletAddress}`);
+    tokenWallet.setAddress(tokenWalletAddress);
+    const alias = token.symbol + 'Wallet' + mint.account;
+    migration.store(tokenWallet, alias);
+    console.log(`${alias}: ${tokenWalletAddress}`);
   }
 
 }

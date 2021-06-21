@@ -2,7 +2,7 @@ const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
 const migration = new Migration();
 
 async function main() {
-  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
   account.afterRun = afterRun;
   const [keyPair] = await locklift.keys.getKeyPairs();
 

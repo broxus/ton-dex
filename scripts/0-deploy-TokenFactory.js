@@ -2,7 +2,7 @@ const {getRandomNonce, Migration, TOKEN_CONTRACTS_PATH} = require(process.cwd()+
 
 async function main() {
   const migration = new Migration();
-  const account = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
 
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');

@@ -36,6 +36,7 @@ library Gas {
     uint128 constant INTERNAL_PAIR_TRANSFER_VALUE   = 0.15 ton;
 
     uint128 constant DIRECT_PAIR_OP_MIN_VALUE       = 1.5 ton;
+    uint128 constant SUCCESS_CALLBACK_VALUE         = 0.1 ton;
 
     uint128 constant VAULT_TRANSFER_BASE_VALUE      = 0.25 ton;
 

@@ -30,9 +30,9 @@ const loadAccountData = async (account) => {
 describe('Test Dex Pair contract upgrade', async function () {
   this.timeout(Constants.TESTS_TIMEOUT);
   before('Load contracts', async function () {
-    rootOwner = migration.load(await locklift.factory.getAccount(), 'Account1');
+    rootOwner = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
     rootOwner.afterRun = afterRun;
-    account2 = migration.load(await locklift.factory.getAccount(), 'Account2')
+    account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2')
     dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
     dexAccount = migration.load(await locklift.factory.getContract('DexAccount'), 'DexAccount2');
     NewDexAccount = await locklift.factory.getContract('TestNewDexAccount');

@@ -3,6 +3,8 @@ const logger = require('mocha-logger');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const {Migration, TOKEN_CONTRACTS_PATH, afterRun, EMPTY_TVM_CELL, Constants} = require(process.cwd() + '/scripts/utils');
+const { Command } = require('commander');
+const program = new Command();
 
 if (!Array.prototype.last) {
   Array.prototype.last = function () {
@@ -11,34 +13,24 @@ if (!Array.prototype.last) {
 }
 const migration = new Migration();
 
+program
+    .allowUnknownOption()
+    .option('-d, --deposits <deposits>', 'deposits data');
+
+program.parse(process.argv);
+
+const options = program.opts();
+
+const deposits = options.deposits ? JSON.parse(options.deposits) : [
+  { tokenId: 'foo', amount: 10000 },
+  { tokenId: 'bar', amount: 10000 },
+  { tokenId: 'tst', amount: 10000 }
+];
+
 let DexAccount;
 let dexAccount2;
 let account2;
 let keyPairs;
-let fooData = {
-  aliases: {
-    tokenRoot: 'FooRoot',
-    vaultWallet: 'FooVaultWallet',
-    accountWallet: 'FooWallet2',
-  },
-  history: [],
-  decimals: Constants.FOO_DECIMALS,
-  decimals_modifier: Constants.FOO_DECIMALS_MODIFIER,
-  deposit_amount: new BigNumber(10000).times(Constants.FOO_DECIMALS_MODIFIER)
-};
-let barData = {
-  aliases: {
-    tokenRoot: 'BarRoot',
-    vaultWallet: 'BarVaultWallet',
-    accountWallet: 'BarWallet2',
-  },
-  history: [],
-  decimals: Constants.BAR_DECIMALS,
-  decimals_modifier: Constants.BAR_DECIMALS_MODIFIER,
-  deposit_amount: new BigNumber(10000).times(Constants.BAR_DECIMALS_MODIFIER)
-
-
-};
 
 async function logGas() {
   await migration.balancesCheckpoint();
@@ -52,28 +44,33 @@ async function logGas() {
 }
 
 const loadWallets = async (data) => {
+  const tokenData = Constants.tokens[data.tokenId];
   data.tokenRoot = migration.load(
     await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
-    data.aliases.tokenRoot
+    tokenData.symbol + 'Root'
   );
   data.vaultWallet = migration.load(
-    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH), data.aliases.vaultWallet
+    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH),
+    tokenData.symbol + 'VaultWallet'
   );
   data.vaultWalletBalance = new BigNumber(await data.vaultWallet.call({method: 'balance'}))
-    .div(data.decimals_modifier).toString();
+      .shiftedBy(-tokenData.decimals).toString();
   data.accountWallet = migration.load(
-    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH), data.aliases.accountWallet
+    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH),
+    tokenData.symbol + 'Wallet2'
   );
   data.accountWalletBalance = new BigNumber(await data.accountWallet.call({method: 'balance'}))
-    .div(data.decimals_modifier).toString();
+      .shiftedBy(-tokenData.decimals).toString();
   data.dexAccountWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
   const account2WalletData = await dexAccount2.call({
     method: 'getWalletData',
     params: {token_root: data.tokenRoot.address}
   });
   data.dexAccountWallet.setAddress(account2WalletData.wallet);
-  data.dexAccountVirtualBalance = new BigNumber(account2WalletData.balance).div(data.decimals_modifier).toString();
-  data.dexAccountWalletBalance = (await data.dexAccountWallet.call({method: 'balance'})).toString();
+  data.dexAccountVirtualBalance = new BigNumber(account2WalletData.balance)
+      .shiftedBy(-tokenData.decimals).toString();
+  data.dexAccountWalletBalance = (await data.dexAccountWallet.call({method: 'balance'}))
+      .shiftedBy(-tokenData.decimals).toString();
 }
 
 
@@ -110,116 +107,70 @@ describe('Check Deposit to Dex Account', async function () {
   before('Load contracts and balances', async function () {
     keyPairs = await locklift.keys.getKeyPairs();
     DexAccount = await locklift.factory.getContract('DexAccount');
-    account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+    account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2');
     account2.afterRun = afterRun;
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
 
-    await loadWallets(fooData);
-    displayBalances('Foo', fooData);
-
-    await loadWallets(barData);
-    displayBalances('Bar', barData);
+    for (const deposit of deposits) {
+      deposit.history = [];
+      await loadWallets(deposit);
+      const tokenData = Constants.tokens[deposit.tokenId];
+      displayBalances(tokenData.symbol, deposit);
+    }
 
     await migration.balancesCheckpoint();
 
   })
 
-  describe('Check Foo make deposit to dex account', async function () {
-    before('Make Foo deposit', async function () {
-      logger.log('#################################################');
-      logger.log('# Make Foo deposit');
-      await account2.runTarget({
-        contract: fooData.accountWallet,
-        method: 'transfer',
-        params: {
-          to: fooData.dexAccountWallet.address,
-          tokens: fooData.deposit_amount.toString(),
-          grams: 0,
-          send_gas_to: account2.address,
-          notify_receiver: true,
-          payload: EMPTY_TVM_CELL
-        },
-        value: locklift.utils.convertCrystal('0.5', 'nano'),
-        keyPair: keyPairs[1]
+  for (const deposit of deposits) {
+    const tokenData = Constants.tokens[deposit.tokenId];
+    describe(`Check ${tokenData.symbol} make deposit to dex account`, async function () {
+      before(`Make ${tokenData.symbol} deposit`, async function () {
+        logger.log('#################################################');
+        logger.log(`# Make ${tokenData.symbol} deposit`);
+        await account2.runTarget({
+          contract: deposit.accountWallet,
+          method: 'transfer',
+          params: {
+            to: deposit.dexAccountWallet.address,
+            tokens: new BigNumber(deposit.amount).shiftedBy(tokenData.decimals).toString(),
+            grams: 0,
+            send_gas_to: account2.address,
+            notify_receiver: true,
+            payload: EMPTY_TVM_CELL
+          },
+          value: locklift.utils.convertCrystal('0.5', 'nano'),
+          keyPair: keyPairs[1]
+        });
+        logger.log('Foo balance changes:')
+        await displayBalancesChanges(deposit);
+        await logGas();
       });
-      logger.log('Foo balance changes:')
-      await displayBalancesChanges(fooData);
-      await logGas();
-    });
-    it('Check Foo Balances after deposit', async function () {
-      expect(fooData.accountWalletBalance)
-        .to
-        .equal(
-          new BigNumber(fooData.history.last().accountWalletBalance)
-            .minus(fooData.deposit_amount.div(fooData.decimals_modifier)).toString(),
-          'FooWallet2 has wrong balance after deposit'
-        );
-      expect(fooData.dexAccountWalletBalance)
-        .to
-        .equal(
-          fooData.history.last().dexAccountWalletBalance,
-          'DexAccount2FooWallet has wrong balance after deposit'
-        );
-      expect(fooData.dexAccountVirtualBalance)
-        .to
-        .equal(
-          new BigNumber(fooData.history.last().dexAccountVirtualBalance)
-            .plus(fooData.deposit_amount.div(fooData.decimals_modifier)).toString(),
-          'DexAccount2 Foo has wrong balance virtual after deposit'
-        );
-      expect(fooData.dexAccountWalletBalance)
-        .to
-        .equal('0', 'DexVault Foo wallet has wrong balance after deposit');
-    });
-  });
-
-  describe('Check Bar make deposit to dex account', async function () {
-    before('Make Bar deposit', async function () {
-      logger.log('#################################################');
-      logger.log('# Make Bar deposit');
-      await account2.runTarget({
-        contract: barData.accountWallet,
-        method: 'transfer',
-        params: {
-          to: barData.dexAccountWallet.address,
-          tokens: barData.deposit_amount.toString(),
-          grams: 0,
-          send_gas_to: account2.address,
-          notify_receiver: true,
-          payload: EMPTY_TVM_CELL
-        },
-        value: locklift.utils.convertCrystal('0.5', 'nano'),
-        keyPair: keyPairs[1]
+      it(`Check ${tokenData.symbol} Balances after deposit`, async function () {
+        expect(deposit.accountWalletBalance)
+            .to
+            .equal(
+                new BigNumber(deposit.history.last().accountWalletBalance)
+                    .minus(deposit.amount).toString(),
+                `${tokenData.symbol}Wallet2 has wrong balance after deposit`
+            );
+        expect(deposit.dexAccountWalletBalance)
+            .to
+            .equal(
+                deposit.history.last().dexAccountWalletBalance,
+                'DexAccount2FooWallet has wrong balance after deposit'
+            );
+        expect(deposit.dexAccountVirtualBalance)
+            .to
+            .equal(
+                new BigNumber(deposit.history.last().dexAccountVirtualBalance)
+                    .plus(deposit.amount).toString(),
+                'DexAccount2 Foo has wrong balance virtual after deposit'
+            );
+        expect(deposit.dexAccountWalletBalance)
+            .to
+            .equal('0', 'DexVault Foo wallet has wrong balance after deposit');
       });
-      logger.log('Bar balance changes:')
-      await displayBalancesChanges(barData);
-      await logGas();
-
     });
-    it('Check Bar Balances after deposit', async function () {
-      expect(barData.accountWalletBalance)
-        .to
-        .equal(
-          new BigNumber(barData.history.last().accountWalletBalance)
-            .minus(barData.deposit_amount.div(barData.decimals_modifier)).toString(),
-          'BarWallet2 has wrong balance after deposit'
-        );
-      expect(barData.dexAccountWalletBalance)
-        .to
-        .equal(
-          barData.history.last().dexAccountWalletBalance,
-          'DexAccount2BarWallet has wrong balance after deposit'
-        );
-      expect(barData.dexAccountVirtualBalance)
-        .to
-        .equal(
-          new BigNumber(barData.history.last().dexAccountVirtualBalance)
-            .plus(barData.deposit_amount.div(barData.decimals_modifier)).toString(),
-          'DexAccount2 Bar has wrong balance virtual after deposit'
-        );
-      expect(barData.dexAccountWalletBalance)
-        .to
-        .equal('0', 'DexVault Bar wallet has wrong balance after deposit');
-    });
-  });
+  }
 });

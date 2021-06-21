@@ -5,7 +5,7 @@ async function main() {
   const migration = new Migration();
   const keyPairs = await locklift.keys.getKeyPairs();
 
-  const account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+  const account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2');
   const dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
   await account2.runTarget({
     contract: dexRoot,

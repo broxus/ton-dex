@@ -13,9 +13,9 @@ SETGLOB 6
 ;; end constructor protection
 ; Decode input parameters
 ENDS
-; constructor NewDexPair
+; constructor TestNewDexPair
 THROW 100
-; end constructor NewDexPair
+; end constructor TestNewDexPair
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -997,9 +997,24 @@ PUSHINT 0
 SETGLOB 26
 PUSHINT 0
 SETGLOB 27
+PUSHINT 0
+SETGLOB 28
+NEWDICT
+SETGLOB 29
+NEWDICT
+SETGLOB 30
+NEWDICT
+SETGLOB 31
+NEWDICT
+PUSHINT 32
+SETGLOBVAR
+NEWDICT
+PUSHINT 33
+SETGLOBVAR
 NEWC
 ENDC
-SETGLOB 28
+PUSHINT 34
+SETGLOBVAR
 ;; end set default state vars
 ;; push identifier data
 DUP
@@ -1009,6 +1024,12 @@ PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 ;; decl: send_gas_to
 PUSHINT 0
 ;; decl: old_version
+; expValue
+; end expValue
+TRUE
+; colValue
+SETGLOB 16
+; end colValue
 ; expValue
 PUSH S2
 ; end expValue
@@ -1064,14 +1085,11 @@ SETGLOB 13
 ; expValue
 PUSH S2
 ; end expValue
-LDREF
+LDREFRTOS
+SWAP
 ; colValue
 POP S4
 ; end colValue
-;; decl: tokens_data
-;; push identifier tokens_data
-DUP
-CTOS
 ;; decl: tokens_data_slice
 ; expValue
 DUP
@@ -1104,14 +1122,11 @@ SETGLOB 22
 ; expValue
 DUP
 ; end expValue
-LDREF
+LDREFRTOS
+SWAP
 ; colValue
 POP S2
 ; end colValue
-;; decl: token_balances_data
-;; push identifier token_balances_data
-DUP
-CTOS
 ;; decl: token_balances_data_slice
 ; expValue
 DUP
@@ -1151,13 +1166,13 @@ SETGLOB 26
 SETGLOB 27
 ; end colValue
 ; expValue
-PUSH S6
+PUSH S4
 ; end expValue
-LDREF
+LDREFRTOS
+SWAP
 ; colValue
-POP S8
+POP S6
 ; end colValue
-CTOS
 ;; decl: pair_wallets_data_slice
 ; expValue
 DUP
@@ -1188,13 +1203,13 @@ SETGLOB 18
 SETGLOB 19
 ; end colValue
 ; expValue
-PUSH S7
+PUSH S5
 ; end expValue
-LDREF
+LDREFRTOS
+SWAP
 ; colValue
-POP S9
+POP S7
 ; end colValue
-CTOS
 ;; decl: vault_wallets_data
 ; expValue
 DUP
@@ -1224,11 +1239,12 @@ NEWC
 STSLICE
 ENDC
 ; colValue
-SETGLOB 28
+PUSHINT 34
+SETGLOBVAR
 ; end colValue
 ;; transfer()
 ;; push identifier send_gas_to
-PUSH S7
+PUSH S5
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -1239,7 +1255,7 @@ STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-BLKDROP 9
+BLKDROP 7
 ; end function onCodeUpgrade
 DROP
 CALLREF {
@@ -1300,7 +1316,8 @@ CALL $newFunc_internal_macro$
 ; function newFunc
 ;; return
 ;; push identifier newTestField
-GETGLOB 28
+PUSHINT 34
+GETGLOBVAR
 ; end function newFunc
 
 .macro c7_to_c4
@@ -1316,19 +1333,34 @@ GETGLOB 14
 GETGLOB 15
 GETGLOB 17
 GETGLOB 28
-REVERSE 5, 0
+GETGLOB 29
+PUSHINT 34
+GETGLOBVAR
+GETGLOB 30
+GETGLOB 31
+REVERSE 9, 0
 STSLICE
 STSLICE
 STSLICE
+STU 64
+STDICT
 STREF
+STDICT
+STDICT
 NEWC
 GETGLOB 18
 GETGLOB 19
 GETGLOB 20
-REVERSE 4, 0
+PUSHINT 32
+GETGLOBVAR
+PUSHINT 33
+GETGLOBVAR
+REVERSE 6, 0
 STSLICE
 STSLICE
 STSLICE
+STDICT
+STDICT
 NEWC
 GETGLOB 21
 GETGLOB 22
@@ -1372,7 +1404,16 @@ LDREFRTOS
 LDMSGADDR
 LDMSGADDR
 LDMSGADDR
-PLDREF
+LDU 64
+LDDICT
+LDREF
+LDDICT
+PLDDICT
+SETGLOB 31
+SETGLOB 30
+PUSHINT 34
+SETGLOBVAR
+SETGLOB 29
 SETGLOB 28
 SETGLOB 17
 SETGLOB 15
@@ -1380,6 +1421,13 @@ SETGLOB 14
 LDREFRTOS
 LDMSGADDR
 LDMSGADDR
+LDMSGADDR
+LDDICT
+PLDDICT
+PUSHINT 33
+SETGLOBVAR
+PUSHINT 32
+SETGLOBVAR
 SETGLOB 20
 SETGLOB 19
 SETGLOB 18
@@ -1428,7 +1476,16 @@ PUSHCONT {
 	LDMSGADDR
 	LDMSGADDR
 	LDMSGADDR
-	PLDREF
+	LDU 64
+	LDDICT
+	LDREF
+	LDDICT
+	PLDDICT
+	SETGLOB 31
+	SETGLOB 30
+	PUSHINT 34
+	SETGLOBVAR
+	SETGLOB 29
 	SETGLOB 28
 	SETGLOB 17
 	SETGLOB 15
@@ -1436,6 +1493,13 @@ PUSHCONT {
 	LDREFRTOS
 	LDMSGADDR
 	LDMSGADDR
+	LDMSGADDR
+	LDDICT
+	PLDDICT
+	PUSHINT 33
+	SETGLOBVAR
+	PUSHINT 32
+	SETGLOBVAR
 	SETGLOB 20
 	SETGLOB 19
 	SETGLOB 18
@@ -1527,10 +1591,31 @@ PUSHCONT {
 	; init fee_denominator
 	PUSHINT 0
 	SETGLOB 27
+	; init _nonce
+	PUSHINT 0
+	SETGLOB 28
+	; init _tmp_operations
+	NEWDICT
+	SETGLOB 29
+	; init _tmp_send_gas_to
+	NEWDICT
+	SETGLOB 30
+	; init _tmp_expected_callback_sender
+	NEWDICT
+	SETGLOB 31
+	; init _tmp_sender_public_key
+	NEWDICT
+	PUSHINT 32
+	SETGLOBVAR
+	; init _tmp_sender_address
+	NEWDICT
+	PUSHINT 33
+	SETGLOBVAR
 	; init newTestField
 	NEWC
 	ENDC
-	SETGLOB 28
+	PUSHINT 34
+	SETGLOBVAR
 	; set contract pubkey
 	PUSHINT 0
 	SWAP

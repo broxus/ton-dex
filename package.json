@@ -12,11 +12,14 @@
   "dependencies": {
     "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
+    "folder-hash": "^4.0.1",
+    "locklift": "^1.2.9",
     "mocha": "^8.2.1",
-    "ton-client-js": "^0.28.1",
-    "locklift": "^1.1.1",
     "mocha-logger": "^1.0.7",
+    "ton-client-js": "^0.28.1",
     "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#74905260499d79cf7cb0d89a6eb572176fc1fcd5"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@broxus/contracts": "^1.0.0"
+  }
 }

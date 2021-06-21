@@ -2,7 +2,7 @@ const {Migration, afterRun} = require(process.cwd() + '/scripts/utils')
 const migration = new Migration();
 
 async function main() {
-  const rootOwner = migration.load(await locklift.factory.getAccount(), 'Account1');
+  const rootOwner = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
   rootOwner.afterRun = afterRun;
   const [keyPair] = await locklift.keys.getKeyPairs();
   const dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
@@ -17,7 +17,7 @@ async function main() {
     keyPair
   });
 
-  const accounts_to_force_update = [ migration.load(await locklift.factory.getAccount(), 'Account2') ];
+  const accounts_to_force_update = [ migration.load(await locklift.factory.getAccount('Wallet'), 'Account2') ];
 
   await Promise.all(accounts_to_force_update.map(async (account) => {
     console.log(`Upgrading DexAccount contract: owner=${account.address}`);

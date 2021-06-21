@@ -43,9 +43,9 @@ describe('Check Dex Account transfer to Dex Account which not exist', async func
       'BarRoot'
     );
     DexAccount = await locklift.factory.getContract('DexAccount');
-    account2 = migration.load(await locklift.factory.getAccount(), 'Account2');
+    account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2');
     account2.afterRun = afterRun;
-    account3 = migration.load(await locklift.factory.getAccount(), 'Account3');
+    account3 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account3');
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
     dexAccount3Address = await dexRoot.call({
       method: 'getExpectedAccountAddress',

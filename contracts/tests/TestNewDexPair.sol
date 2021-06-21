@@ -9,10 +9,10 @@ import "../libraries/Gas.sol";
 import "../libraries/MsgFlag.sol";
 
 import "../interfaces/IDexPair.sol";
-
+import "../structures/ITokenOperationStructure.sol";
 
 // This is just for test purposes, this is not a real contract!
-contract NewDexPair {
+contract TestNewDexPair is ITokenOperationStructure {
     address root;
     address vault;
     uint32 current_version;
@@ -40,6 +40,14 @@ contract NewDexPair {
     // Fee
     uint16 fee_numerator;
     uint16 fee_denominator;
+
+    // v2
+    uint64 _nonce;
+    mapping(uint64 => TokenOperation) _tmp_operations;
+    mapping(uint64 => address) _tmp_send_gas_to;
+    mapping(uint64 => address) _tmp_expected_callback_sender;
+    mapping(uint64 => uint256) _tmp_sender_public_key;
+    mapping(uint64 => address) _tmp_sender_address;
 
     string newTestField;
 
@@ -93,21 +101,23 @@ contract NewDexPair {
         address send_gas_to;
         uint32 old_version;
 
+        active = true;
+
         (root, vault, old_version, current_version, send_gas_to) = s.decode(address, address, uint32, uint32, address);
 
-        platform_code = s.loadRef();
+        platform_code = s.loadRef(); // ref 1
 
-        TvmCell tokens_data = s.loadRef();
-        TvmSlice tokens_data_slice = tokens_data.toSlice();
+        TvmSlice tokens_data_slice =  s.loadRefAsSlice(); // ref 2
         (left_root, right_root, lp_root) = tokens_data_slice.decode(address, address, address);
-        TvmCell token_balances_data = tokens_data_slice.loadRef();
-        TvmSlice token_balances_data_slice = token_balances_data.toSlice();
-        (lp_supply, left_balance, right_balance, fee_numerator, fee_denominator) =
-            token_balances_data_slice.decode(uint128, uint128, uint128, uint16, uint16);
 
-        TvmSlice pair_wallets_data_slice = s.loadRef().toSlice();
+        TvmSlice token_balances_data_slice = tokens_data_slice.loadRefAsSlice(); // ref 2_1
+        (lp_supply, left_balance, right_balance, fee_numerator, fee_denominator) =
+        token_balances_data_slice.decode(uint128, uint128, uint128, uint16, uint16);
+
+        TvmSlice pair_wallets_data_slice = s.loadRefAsSlice(); // ref 3
         (lp_wallet, left_wallet, right_wallet) = pair_wallets_data_slice.decode(address, address, address);
-        TvmSlice vault_wallets_data = s.loadRef().toSlice();
+
+        TvmSlice vault_wallets_data = s.loadRefAsSlice(); // ref 4
         (vault_left_wallet, vault_right_wallet) = vault_wallets_data.decode(address, address);
 
         newTestField = "New Pair";

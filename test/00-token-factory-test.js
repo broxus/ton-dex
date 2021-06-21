@@ -53,7 +53,7 @@ describe('TokeFactory contract', async function () {
         .not.to.equal(undefined, 'TONTokenWallet Code should be available');
 
       tokenFactory = migration.load(TokenFactory, 'TokenFactory');
-      account = migration.load(await locklift.factory.getAccount(), 'Account1');
+      account = migration.load(await locklift.factory.getAccount('Wallet'), 'Account1');
 
       logger.log(`TokenFactory address: ${tokenFactory.address}`)
     });
