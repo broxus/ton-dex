@@ -7659,6 +7659,12 @@ THROWIFNOT 106
 GETGLOB 16
 THROWIFNOT 114
 ; function crossPairExchange
+;; get member sender
+GETGLOB 9
+MYADDR
+SDEQ
+NOT
+THROWIFNOT 100
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
@@ -9449,7 +9455,9 @@ IFELSE
 ;; if
 ;; push identifier old_version
 PUSH S1
-EQINT 1
+;; >=
+PUSHINT 1
+GEQ
 PUSHCONT {
 	; expValue
 	DUP

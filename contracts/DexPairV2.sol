@@ -1069,6 +1069,8 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
         TvmCell payload
     ) override external onlyPair(prev_pair_left_root, prev_pair_right_root) onlyActive {
 
+        require(msg.sender != address(this));
+
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
 
         TvmSlice payloadSlice = payload.toSlice();
@@ -1478,7 +1480,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             active = true;
         }
 
-        if (old_version == 1) {
+        if (old_version >= 1) {
             lp_root = tokens_data_slice.decode(address);
             TvmSlice token_balances_data_slice = tokens_data_slice.loadRefAsSlice(); // ref 2_1
             (lp_supply, left_balance, right_balance, fee_numerator, fee_denominator) =
