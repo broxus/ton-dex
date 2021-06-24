@@ -55,6 +55,9 @@ async function main() {
         'right_root': tokenBar.address,
       }
     })
+
+    afterRun();
+
     console.log(`DexPair${pair.left}${pair.right}: ${dexPairFooBarAddress}`);
     const dexPairFooBar = await locklift.factory.getContract(options.contract_name);
     dexPairFooBar.address = dexPairFooBarAddress;

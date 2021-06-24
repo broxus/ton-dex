@@ -227,7 +227,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             (uint8 op, uint64 id, uint128 deploy_wallet_grams) = payloadSlice.decode(uint8, uint64, uint128);
 
             if (token_root == left_root && token_wallet == left_wallet && msg.sender == left_wallet &&
-                msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + deploy_wallet_grams) {
+                msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + deploy_wallet_grams) {
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange left to right
                     uint128 expected_amount = payloadSlice.decode(uint128);
@@ -247,7 +247,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                         }
 
                         IDexVault(vault).transfer{
-                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             right_amount,
@@ -295,7 +295,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                         }
 
                         IRootTokenContract(lp_root).deployWallet{
-                            value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
+                            value: Gas.DEPLOY_MINT_VALUE_BASE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             r.step_3_lp_reward,
@@ -384,7 +384,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     need_cancel = true;
                 }
             } else if (token_root == right_root && token_wallet == right_wallet && msg.sender == right_wallet &&
-                        msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + deploy_wallet_grams) {
+                        msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + deploy_wallet_grams) {
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange right to left
                     uint128 expected_amount = payloadSlice.decode(uint128);
@@ -404,7 +404,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                         }
 
                         IDexVault(vault).transfer{
-                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             left_amount,
@@ -452,7 +452,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                         }
 
                         IRootTokenContract(lp_root).deployWallet{
-                            value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
+                            value: Gas.DEPLOY_MINT_VALUE_BASE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             r.step_3_lp_reward,
@@ -542,7 +542,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                 }
             } else if (op == OperationTypes.WITHDRAW_LIQUIDITY && token_root == lp_root &&
                        token_wallet == lp_wallet && msg.sender == lp_wallet &&
-                       msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + 2 * deploy_wallet_grams) {
+                       msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + 2 * deploy_wallet_grams) {
 
                 (uint128 left_back_amount, uint128 right_back_amount) = _withdrawLiquidityBase(tokens_amount);
 
@@ -554,7 +554,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                 }
 
                 IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                    value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                     flag: MsgFlag.SENDER_PAYS_FEES
                 }(
                     left_back_amount,
@@ -572,7 +572,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                 );
 
                 IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                    value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                     flag: MsgFlag.SENDER_PAYS_FEES
                 }(
                     right_back_amount,
@@ -743,7 +743,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
         lp_supply = lp_supply + lp_tokens_amount;
 
         IRootTokenContract(lp_root).deployWallet{
-            value: Gas.DEPLOY_MINT_VALUE_BASE + Gas.DEPLOY_EMPTY_WALLET_GRAMS,
+            value: Gas.DEPLOY_MINT_VALUE_BASE_V2 + Gas.DEPLOY_EMPTY_WALLET_GRAMS,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             lp_tokens_amount,
@@ -1105,7 +1105,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
 
                 if (next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root &&
                     has_next_payload && next_payload.toSlice().bits() >= 128 &&
-                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE) {
+                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2) {
 
                     address next_pair = _expectedPairAddress(right_root, next_token_root);
 
@@ -1197,7 +1197,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
 
                 if (next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root &&
                     has_next_payload && next_payload.toSlice().bits() >= 128 &&
-                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE) {
+                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2) {
 
                     address next_pair = _expectedPairAddress(left_root, next_token_root);
 
@@ -1512,7 +1512,7 @@ contract DexPairV2 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
     function _configureTokenRootWallets(address token_root, address send_gas_to) private view {
        IRootTokenContract(token_root)
             .deployEmptyWallet {
-                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE_V2,
                 flag: MsgFlag.SENDER_PAYS_FEES
             }(
                 Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams

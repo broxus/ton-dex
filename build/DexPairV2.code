@@ -1937,7 +1937,7 @@ PUSHCONT {
 					CALL $message_balance_macro$
 				}
 				;; >=
-				PUSHINT 1500000000
+				PUSHINT 2000000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S2
@@ -2112,7 +2112,7 @@ PUSHCONT {
 				IF
 				;; end if
 				;; Remote call IDexVault.transfer
-				PUSHINT 250000000
+				PUSHINT 500000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S4
@@ -2432,7 +2432,7 @@ PUSHCONT {
 					IF
 					;; end if
 					;; Remote call IRootTokenContract.deployWallet
-					PUSHINT 100000000
+					PUSHINT 500000000
 					;; +
 					;; push identifier deploy_wallet_grams
 					PUSH S2
@@ -2940,7 +2940,7 @@ PUSHCONT {
 						CALL $message_balance_macro$
 					}
 					;; >=
-					PUSHINT 1500000000
+					PUSHINT 2000000000
 					;; +
 					;; push identifier deploy_wallet_grams
 					PUSH S2
@@ -3115,7 +3115,7 @@ PUSHCONT {
 					IF
 					;; end if
 					;; Remote call IDexVault.transfer
-					PUSHINT 250000000
+					PUSHINT 500000000
 					;; +
 					;; push identifier deploy_wallet_grams
 					PUSH S4
@@ -3435,7 +3435,7 @@ PUSHCONT {
 						IF
 						;; end if
 						;; Remote call IRootTokenContract.deployWallet
-						PUSHINT 100000000
+						PUSHINT 500000000
 						;; +
 						;; push identifier deploy_wallet_grams
 						PUSH S2
@@ -3950,7 +3950,7 @@ PUSHCONT {
 								CALL $message_balance_macro$
 							}
 							;; >=
-							PUSHINT 1500000000
+							PUSHINT 2000000000
 							;; +
 							PUSHINT 2
 							;; *
@@ -4033,7 +4033,7 @@ PUSHCONT {
 				IF
 				;; end if
 				;; Remote call IDexVault.transfer
-				PUSHINT 250000000
+				PUSHINT 500000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S3
@@ -4109,7 +4109,7 @@ PUSHCONT {
 				PUSHINT 1
 				SENDRAWMSG
 				;; Remote call IDexVault.transfer
-				PUSHINT 250000000
+				PUSHINT 500000000
 				;; +
 				;; push identifier deploy_wallet_grams
 				PUSH S3
@@ -5405,7 +5405,7 @@ UFITS 128
 SETGLOB 23
 ; end colValue
 ;; Remote call IRootTokenContract.deployWallet
-PUSHINT 100000000
+PUSHINT 500000000
 ;; +
 PUSHINT 100000000
 ADD
@@ -7923,7 +7923,7 @@ PUSHCONT {
 							CALL $message_balance_macro$
 						}
 						;; >=
-						PUSHINT 1500000000
+						PUSHINT 2000000000
 						GEQ
 					}
 					IF
@@ -8394,7 +8394,7 @@ PUSHCONT {
 								CALL $message_balance_macro$
 							}
 							;; >=
-							PUSHINT 1500000000
+							PUSHINT 2000000000
 							GEQ
 						}
 						IF
@@ -9729,7 +9729,7 @@ PUSH S1
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x40bebc200000000000000000000000000004_
+PUSHSLICE x41dcd6500000000000000000000000000004_
 STSLICER
 STSLICECONST 0
 STSLICECONST 1

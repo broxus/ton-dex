@@ -36,16 +36,20 @@ library Gas {
     uint128 constant INTERNAL_PAIR_TRANSFER_VALUE   = 0.15 ton;
 
     uint128 constant DIRECT_PAIR_OP_MIN_VALUE       = 1.5 ton;
+    uint128 constant DIRECT_PAIR_OP_MIN_VALUE_V2    = 2 ton;
     uint128 constant SUCCESS_CALLBACK_VALUE         = 0.1 ton;
 
     uint128 constant VAULT_TRANSFER_BASE_VALUE      = 0.25 ton;
+    uint128 constant VAULT_TRANSFER_BASE_VALUE_V2   = 0.5 ton;
 
     // TOKENS
     uint128 constant TRANSFER_TO_RECIPIENT_VALUE    = 0.2 ton;
     uint128 constant DEPLOY_MINT_VALUE_BASE         = 0.1 ton;
+    uint128 constant DEPLOY_MINT_VALUE_BASE_V2      = 0.5 ton;
     uint128 constant MINT_VALUE                     = 0.03 ton;
     uint128 constant BURN_VALUE                     = 0.1 ton;
     uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.2 ton;
+    uint128 constant DEPLOY_EMPTY_WALLET_VALUE_V2   = 0.5 ton;
     uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.1 ton;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 ton;
 
