@@ -453,9 +453,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             expect(expectedAccountBar).to.equal(accountEnd.bar.toString(), 'Wrong Account#3 BAR balance');
         });
 
-        it('Account#3 exchange BAR to FOO (small amount)', async function () {
+        it('Account#3 exchange FOO to BAR (small amount)', async function () {
             logger.log('#################################################');
-            logger.log('# Account#3 exchange BAR to FOO (small amount)');
+            logger.log('# Account#3 exchange FOO to BAR (small amount)');
             const dexStart = await dexBalances();
             const accountStart = await account3balances();
             const pairStart = await dexPairInfo();
@@ -464,12 +464,12 @@ describe('Check direct DexPairFooBar operations', async function () {
             const expected = await DexPairFooBar.call({
                 method: 'expectedExchange', params: {
                     amount: 1000,
-                    spent_token_root: BarRoot.address
+                    spent_token_root: FooRoot.address
                 }
             });
 
-            logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).shiftedBy(-Constants.tokens.bar.decimals).toString()} BAR`);
-            logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.foo.decimals).toString()} FOO`);
+            logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).shiftedBy(-Constants.tokens.bar.decimals).toString()} FOO`);
+            logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.foo.decimals).toString()} BAR`);
 
             const payload = await DexPairFooBar.call({
                 method: 'buildExchangePayload', params: {
@@ -480,7 +480,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             });
 
             await Account3.runTarget({
-                contract: BarWallet3,
+                contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
                     recipient_public_key: 0,
@@ -492,7 +492,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                     notify_receiver: true,
                     payload: payload
                 },
-                value: locklift.utils.convertCrystal('2.3', 'nano'),
+                value: locklift.utils.convertCrystal('2.6', 'nano'),
                 keyPair: keyPairs[2]
             });
 
@@ -502,12 +502,12 @@ describe('Check direct DexPairFooBar operations', async function () {
             logBalances('end', dexEnd, accountEnd, pairEnd);
             await logGas();
 
-            const expectedDexFoo = new BigNumber(dexStart.foo)
-                .minus(new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.foo.decimals)).toString();
-            const expectedDexBar = new BigNumber(dexStart.bar).plus(new BigNumber(1000).shiftedBy(-Constants.tokens.bar.decimals)).toString();
-            const expectedAccountFoo = new BigNumber(accountStart.foo)
-                .plus(new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.foo.decimals)).toString();
-            const expectedAccountBar = new BigNumber(accountStart.bar).minus(new BigNumber(1000).shiftedBy(-Constants.tokens.bar.decimals)).toString();
+            const expectedDexBar = new BigNumber(dexStart.bar)
+                .minus(new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.bar.decimals)).toString();
+            const expectedDexFoo = new BigNumber(dexStart.foo).plus(new BigNumber(1000).shiftedBy(-Constants.tokens.foo.decimals)).toString();
+            const expectedAccountBar = new BigNumber(accountStart.bar)
+                .plus(new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.bar.decimals)).toString();
+            const expectedAccountFoo = new BigNumber(accountStart.foo).minus(new BigNumber(1000).shiftedBy(-Constants.tokens.foo.decimals)).toString();
 
             expect(expectedDexFoo).to.equal(dexEnd.foo.toString(), 'Wrong DEX FOO balance');
             expect(expectedDexBar).to.equal(dexEnd.bar.toString(), 'Wrong DEX BAR balance');

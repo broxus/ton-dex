@@ -306,7 +306,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
                 if (options.contract_name === 'DexPair') {
                     expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                     expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-                } else if(options.contract_name === 'DexPairV2') {
+                } else {
                     expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                     expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
                 }
@@ -402,7 +402,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             if (options.contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else if(options.contract_name === 'DexPairV2') {
+            } else {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
             }
@@ -494,7 +494,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             if (options.contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else if(options.contract_name === 'DexPairV2') {
+            } else {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
             }
@@ -586,7 +586,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             if (options.contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else if(options.contract_name === 'DexPairV2') {
+            } else {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
             }
@@ -681,7 +681,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             if (options.contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else if(options.contract_name === 'DexPairV2') {
+            } else {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
             }

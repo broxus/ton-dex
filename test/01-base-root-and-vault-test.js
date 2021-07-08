@@ -1,7 +1,18 @@
 const {expect} = require('chai');
-const {Migration, Constants} = require(process.cwd() + '/scripts/utils')
+const {Migration, Constants} = require(process.cwd() + '/scripts/utils');
+const { Command } = require('commander');
+const program = new Command();
 
 const migration = new Migration();
+
+program
+    .allowUnknownOption()
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'New version of contract name');
+
+program.parse(process.argv);
+
+const options = program.opts();
+options.pair_contract_name = options.pair_contract_name || 'DexPair';
 
 let DexRoot;
 let DexVault;
@@ -22,7 +33,7 @@ describe('Check for correct deployment', async function () {
     DexVault = await locklift.factory.getContract('DexVault');
     DexPlatform = await locklift.factory.getContract('DexPlatform');
     DexAccount = await locklift.factory.getContract('DexAccount');
-    DexPair = await locklift.factory.getContract('DexPair');
+    DexPair = await locklift.factory.getContract(options.pair_contract_name);
     TokenFactory = await locklift.factory.getContract('TokenFactory');
     DexVaultLpTokenPending = await locklift.factory.getContract('DexVaultLpTokenPending');
 

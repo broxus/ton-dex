@@ -44,7 +44,7 @@ async function main() {
         right_root: tokenBar.address,
         send_gas_to: account2.address,
       },
-      value: locklift.utils.convertCrystal(6, 'nano'),
+      value: locklift.utils.convertCrystal(10, 'nano'),
       keyPair: keyPairs[1]
     });
 
@@ -56,9 +56,10 @@ async function main() {
       }
     })
 
-    afterRun();
-
     console.log(`DexPair${pair.left}${pair.right}: ${dexPairFooBarAddress}`);
+
+    await new Promise(resolve => setTimeout(resolve, 60000));
+
     const dexPairFooBar = await locklift.factory.getContract(options.contract_name);
     dexPairFooBar.address = dexPairFooBarAddress;
     migration.store(dexPairFooBar, 'DexPair' + pair.left + pair.right);

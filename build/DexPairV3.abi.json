@@ -1,0 +1,483 @@
+{
+	"ABI version": 2,
+	"header": ["pubkey", "time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "resetGas",
+			"inputs": [
+				{"name":"receiver","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getRoot",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"dex_root","type":"address"}
+			]
+		},
+		{
+			"name": "getTokenRoots",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"left","type":"address"},
+				{"name":"right","type":"address"},
+				{"name":"lp","type":"address"}
+			]
+		},
+		{
+			"name": "getTokenWallets",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"left","type":"address"},
+				{"name":"right","type":"address"},
+				{"name":"lp","type":"address"}
+			]
+		},
+		{
+			"name": "getVersion",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"version","type":"uint32"}
+			]
+		},
+		{
+			"name": "getVault",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"dex_vault","type":"address"}
+			]
+		},
+		{
+			"name": "getVaultWallets",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"left","type":"address"},
+				{"name":"right","type":"address"}
+			]
+		},
+		{
+			"name": "setFeeParams",
+			"inputs": [
+				{"name":"numerator","type":"uint16"},
+				{"name":"denominator","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getFeeParams",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"numerator","type":"uint16"},
+				{"name":"denominator","type":"uint16"}
+			]
+		},
+		{
+			"name": "isActive",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
+			]
+		},
+		{
+			"name": "getBalances",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"}
+			],
+			"outputs": [
+				{"components":[{"name":"lp_supply","type":"uint128"},{"name":"left_balance","type":"uint128"},{"name":"right_balance","type":"uint128"}],"name":"value0","type":"tuple"}
+			]
+		},
+		{
+			"name": "buildExchangePayload",
+			"inputs": [
+				{"name":"id","type":"uint64"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"expected_amount","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "buildDepositLiquidityPayload",
+			"inputs": [
+				{"name":"id","type":"uint64"},
+				{"name":"deploy_wallet_grams","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "buildWithdrawLiquidityPayload",
+			"inputs": [
+				{"name":"id","type":"uint64"},
+				{"name":"deploy_wallet_grams","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "buildCrossPairExchangePayload",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"id","type":"uint64"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"expected_amount","type":"uint128"},
+				{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"steps","type":"tuple[]"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "tokensReceivedCallback",
+			"inputs": [
+				{"name":"token_wallet","type":"address"},
+				{"name":"token_root","type":"address"},
+				{"name":"tokens_amount","type":"uint128"},
+				{"name":"sender_public_key","type":"uint256"},
+				{"name":"sender_address","type":"address"},
+				{"name":"sender_wallet","type":"address"},
+				{"name":"original_gas_to","type":"address"},
+				{"name":"value7","type":"uint128"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedDepositLiquidity",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"left_amount","type":"uint128"},
+				{"name":"right_amount","type":"uint128"},
+				{"name":"auto_change","type":"bool"}
+			],
+			"outputs": [
+				{"components":[{"name":"step_1_left_deposit","type":"uint128"},{"name":"step_1_right_deposit","type":"uint128"},{"name":"step_1_lp_reward","type":"uint128"},{"name":"step_2_left_to_right","type":"bool"},{"name":"step_2_right_to_left","type":"bool"},{"name":"step_2_spent","type":"uint128"},{"name":"step_2_fee","type":"uint128"},{"name":"step_2_received","type":"uint128"},{"name":"step_3_left_deposit","type":"uint128"},{"name":"step_3_right_deposit","type":"uint128"},{"name":"step_3_lp_reward","type":"uint128"}],"name":"value0","type":"tuple"}
+			]
+		},
+		{
+			"name": "depositLiquidity",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"left_amount","type":"uint128"},
+				{"name":"right_amount","type":"uint128"},
+				{"name":"expected_lp_root","type":"address"},
+				{"name":"auto_change","type":"bool"},
+				{"name":"account_owner","type":"address"},
+				{"name":"value6","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedWithdrawLiquidity",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"lp_amount","type":"uint128"}
+			],
+			"outputs": [
+				{"name":"expected_left_amount","type":"uint128"},
+				{"name":"expected_right_amount","type":"uint128"}
+			]
+		},
+		{
+			"name": "withdrawLiquidity",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"lp_amount","type":"uint128"},
+				{"name":"expected_lp_root","type":"address"},
+				{"name":"account_owner","type":"address"},
+				{"name":"value4","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedExchange",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"amount","type":"uint128"},
+				{"name":"spent_token_root","type":"address"}
+			],
+			"outputs": [
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"expected_fee","type":"uint128"}
+			]
+		},
+		{
+			"name": "expectedSpendAmount",
+			"inputs": [
+				{"name":"_answer_id","type":"uint32"},
+				{"name":"receive_amount","type":"uint128"},
+				{"name":"receive_token_root","type":"address"}
+			],
+			"outputs": [
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"expected_fee","type":"uint128"}
+			]
+		},
+		{
+			"name": "exchange",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"spent_amount","type":"uint128"},
+				{"name":"spent_token_root","type":"address"},
+				{"name":"receive_token_root","type":"address"},
+				{"name":"expected_amount","type":"uint128"},
+				{"name":"account_owner","type":"address"},
+				{"name":"value6","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "crossPairExchange",
+			"inputs": [
+				{"name":"id","type":"uint64"},
+				{"name":"value1","type":"uint32"},
+				{"name":"prev_pair_left_root","type":"address"},
+				{"name":"prev_pair_right_root","type":"address"},
+				{"name":"spent_token_root","type":"address"},
+				{"name":"spent_amount","type":"uint128"},
+				{"name":"sender_public_key","type":"uint256"},
+				{"name":"sender_address","type":"address"},
+				{"name":"original_gas_to","type":"address"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "checkPair",
+			"inputs": [
+				{"name":"call_id","type":"uint64"},
+				{"name":"account_owner","type":"address"},
+				{"name":"value2","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"code","type":"cell"},
+				{"name":"new_version","type":"uint32"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "afterInitialize",
+			"inputs": [
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "liquidityTokenRootDeployed",
+			"inputs": [
+				{"name":"lp_root_","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "liquidityTokenRootNotDeployed",
+			"inputs": [
+				{"name":"value0","type":"address"},
+				{"name":"send_gas_to","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "expectedWalletAddressCallback",
+			"inputs": [
+				{"name":"wallet","type":"address"},
+				{"name":"wallet_public_key","type":"uint256"},
+				{"name":"owner_address","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "platform_code",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"platform_code","type":"cell"}
+			]
+		},
+		{
+			"name": "lp_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "left_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"left_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "right_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"right_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "vault_left_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"vault_left_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "vault_right_wallet",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"vault_right_wallet","type":"address"}
+			]
+		},
+		{
+			"name": "lp_root",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_root","type":"address"}
+			]
+		},
+		{
+			"name": "lp_supply",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"lp_supply","type":"uint128"}
+			]
+		},
+		{
+			"name": "left_balance",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"left_balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "right_balance",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"right_balance","type":"uint128"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+		{
+			"name": "PairCodeUpgraded",
+			"inputs": [
+				{"name":"version","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FeesParamsUpdated",
+			"inputs": [
+				{"name":"numerator","type":"uint16"},
+				{"name":"denominator","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "DepositLiquidity",
+			"inputs": [
+				{"name":"left","type":"uint128"},
+				{"name":"right","type":"uint128"},
+				{"name":"lp","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "WithdrawLiquidity",
+			"inputs": [
+				{"name":"lp","type":"uint128"},
+				{"name":"left","type":"uint128"},
+				{"name":"right","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExchangeLeftToRight",
+			"inputs": [
+				{"name":"left","type":"uint128"},
+				{"name":"fee","type":"uint128"},
+				{"name":"right","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ExchangeRightToLeft",
+			"inputs": [
+				{"name":"right","type":"uint128"},
+				{"name":"fee","type":"uint128"},
+				{"name":"left","type":"uint128"}
+			],
+			"outputs": [
+			]
+		}
+	]
+}

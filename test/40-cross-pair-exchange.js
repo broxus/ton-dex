@@ -12,7 +12,8 @@ program
     .allowUnknownOption()
     .option('-a, --amount <amount>', 'Amount of first token for exchange')
     .option('-r, --route <route>', 'Array of tokens')
-    .option('-wp, --wrong_pair <wrong_pair>', 'Expected last success step token');
+    .option('-wp, --wrong_pair <wrong_pair>', 'Expected last success step token')
+    .option('-cn, --contract_name <contract_name>', 'DexPair contract name');
 
 program.parse(process.argv);
 
@@ -21,6 +22,7 @@ const options = program.opts();
 options.amount = options.amount ? +options.amount : 100;
 options.route = options.route ? JSON.parse(options.route) : ['foo', 'tst', 'bar'];
 options.wrong_pair = options.wrong_pair ? JSON.parse(options.wrong_pair) : [];
+options.contract_name = options.contract_name || 'DexPairV2';
 
 console.log(options);
 
@@ -72,7 +74,7 @@ async function dexPairInfo(left, right) {
             right_balance: '0',
         };
     }
-    const Pair = await locklift.factory.getContract('DexPairV2');
+    const Pair = await locklift.factory.getContract(options.contract_name);
     if (migration.exists(`DexPair${tokenLeft.symbol}${tokenRight.symbol}`)) {
         migration.load(Pair, `DexPair${tokenLeft.symbol}${tokenRight.symbol}`);
     } else {
@@ -173,7 +175,7 @@ describe('Check direct DexPairFooBar operations', async function () {
         for (let i = 1; i < options.route.length; i++) {
             const tokenLeft = Constants.tokens[options.route[i - 1]];
             const tokenRight = Constants.tokens[options.route[i]];
-            const pair = await locklift.factory.getContract('DexPairV2');
+            const pair = await locklift.factory.getContract(options.contract_name);
             if (migration.exists(`DexPair${tokenLeft.symbol}${tokenRight.symbol}`)) {
                 migration.load(pair, `DexPair${tokenLeft.symbol}${tokenRight.symbol}`);
                 logger.log(`DexPair${tokenLeft.symbol}${tokenRight.symbol}: ${pair.address}`);
