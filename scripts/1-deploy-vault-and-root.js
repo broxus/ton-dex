@@ -1,4 +1,16 @@
 const {getRandomNonce, Migration, afterRun} = require(process.cwd()+'/scripts/utils')
+const { Command } = require('commander');
+const program = new Command();
+
+program
+    .allowUnknownOption()
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'New version of contract name');
+
+program.parse(process.argv);
+
+const options = program.opts();
+options.pair_contract_name = options.pair_contract_name || 'DexPair';
+
 
 async function main() {
   const migration = new Migration();
@@ -7,7 +19,7 @@ async function main() {
 
   const DexPlatform = await locklift.factory.getContract('DexPlatform');
   const DexAccount = await locklift.factory.getContract('DexAccount');
-  const DexPair = await locklift.factory.getContract('DexPair');
+  const DexPair = await locklift.factory.getContract(options.pair_contract_name);
   const DexVaultLpTokenPending = await locklift.factory.getContract('DexVaultLpTokenPending');
 
   const [keyPair] = await locklift.keys.getKeyPairs();

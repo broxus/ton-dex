@@ -58,20 +58,20 @@ function logExpectedDeposit(expected) {
         logger.log(`    Step 1: skipped`);
     } else {
         logger.log(`    Step 1: `);
-        logger.log(`        Left deposit = ${expected.step_1_left_deposit.shiftedBy(-left_decimals).toString()}`);
-        logger.log(`        Right deposit = ${expected.step_1_right_deposit.shiftedBy(-right_decimals).toString()}`);
-        logger.log(`        LP reward = ${expected.step_1_lp_reward.shiftedBy(Constants.LP_DECIMALS).toString()}`);
+        logger.log(`        Left deposit = ${expected.step_1_left_deposit.shiftedBy(-left_decimals).toFixed(left_decimals)}`);
+        logger.log(`        Right deposit = ${expected.step_1_right_deposit.shiftedBy(-right_decimals).toFixed(right_decimals)}`);
+        logger.log(`        LP reward = ${expected.step_1_lp_reward.shiftedBy(-Constants.LP_DECIMALS).toFixed(Constants.LP_DECIMALS)}`);
     }
     if (expected.step_2_left_to_right) {
         logger.log(`    Step 2: `);
-        logger.log(`        Left amount for change = ${expected.step_2_spent.shiftedBy(-left_decimals).toString()}`);
-        logger.log(`        Left fee = ${expected.step_2_fee.shiftedBy(-left_decimals).toString()}`);
-        logger.log(`        Right received amount = ${expected.step_2_received.shiftedBy(-right_decimals).toString()}`);
+        logger.log(`        Left amount for change = ${expected.step_2_spent.shiftedBy(-left_decimals).toFixed(left_decimals)}`);
+        logger.log(`        Left fee = ${expected.step_2_fee.shiftedBy(-left_decimals).toFixed(left_decimals)}`);
+        logger.log(`        Right received amount = ${expected.step_2_received.shiftedBy(-right_decimals).toFixed(right_decimals)}`);
     } else if (expected.step_2_right_to_left) {
         logger.log(`    Step 2: `);
-        logger.log(`        Right amount for change = ${expected.step_2_spent.shiftedBy(-right_decimals).toString()}`);
-        logger.log(`        Right fee = ${expected.step_2_fee.shiftedBy(-right_decimals).toString()}`);
-        logger.log(`        Left received amount = ${expected.step_2_received.shiftedBy(-left_decimals).toString()}`);
+        logger.log(`        Right amount for change = ${expected.step_2_spent.shiftedBy(-right_decimals).toFixed(right_decimals)}`);
+        logger.log(`        Right fee = ${expected.step_2_fee.shiftedBy(-right_decimals).toFixed(right_decimals)}`);
+        logger.log(`        Left received amount = ${expected.step_2_received.shiftedBy(-left_decimals).toFixed(left_decimals)}`);
     } else {
         logger.log(`    Step 2: skipped`);
     }
@@ -79,12 +79,12 @@ function logExpectedDeposit(expected) {
         logger.log(`    Step 3: skipped`);
     } else {
         logger.log(`    Step 3: `);
-        logger.log(`        Left deposit = ${expected.step_3_left_deposit.shiftedBy(-left_decimals).toString()}`);
-        logger.log(`        Right deposit = ${expected.step_3_right_deposit.shiftedBy(-right_decimals).toString()}`);
-        logger.log(`        LP reward = ${expected.step_3_lp_reward.shiftedBy(Constants.LP_DECIMALS).toString()}`);
+        logger.log(`        Left deposit = ${expected.step_3_left_deposit.shiftedBy(-left_decimals).toFixed(left_decimals)}`);
+        logger.log(`        Right deposit = ${expected.step_3_right_deposit.shiftedBy(-right_decimals).toFixed(right_decimals)}`);
+        logger.log(`        LP reward = ${expected.step_3_lp_reward.shiftedBy(-Constants.LP_DECIMALS).toFixed(Constants.LP_DECIMALS)}`);
     }
     logger.log(`    TOTAL: `);
-    logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).shiftedBy(Constants.LP_DECIMALS).toString()}`);
+    logger.log(`        LP reward = ${expected.step_1_lp_reward.plus(expected.step_3_lp_reward).shiftedBy(-Constants.LP_DECIMALS).toFixed(Constants.LP_DECIMALS)}`);
 }
 
 async function dexAccountBalances(account) {
@@ -252,7 +252,7 @@ describe('DexAccount interact with DexPair', async function () {
             const dexPairInfoStart = await dexPairInfo();
 
             logger.log(`DexAccount#2 balance start: ` +
-                `${dexAccount2Start.foo} ${left_token.symbol}, ${dexAccount2Start.bar} ${right_token.symbol}, ${dexAccount2Start.lp} LP`);
+                `${dexAccount2Start.foo} ${left_token.symbol}, ${dexAccount2Start.bar} ${right_token.symbol}, ${dexAccount2Start.lp} LP, ${dexAccount2Start.walletLp} LP (wallet)`);
             logger.log(`DexPair start: ` +
                 `${dexPairInfoStart.foo} ${left_token.symbol}, ${dexPairInfoStart.bar} ${right_token.symbol}, ` +
                 `LP SUPPLY (PLAN): ${dexPairInfoStart.lp_supply || "0"} LP, ` +
@@ -300,7 +300,7 @@ describe('DexAccount interact with DexPair', async function () {
             const dexPairInfoEnd = await dexPairInfo();
 
             logger.log(`DexAccount#2 balance end: ` +
-                `${dexAccount2End.foo} ${left_token.symbol}, ${dexAccount2End.bar} ${right_token.symbol}, ${dexAccount2End.lp} LP`);
+                `${dexAccount2End.foo} ${left_token.symbol}, ${dexAccount2End.bar} ${right_token.symbol}, ${dexAccount2End.lp} LP, ${dexAccount2End.walletLp} LP (wallet)`);
             logger.log(`DexPair end: ` +
                 `${dexPairInfoEnd.foo} ${left_token.symbol}, ${dexPairInfoEnd.bar} ${right_token.symbol}, ` +
                 `LP SUPPLY (PLAN): ${dexPairInfoEnd.lp_supply || "0"} LP, ` +
@@ -313,9 +313,11 @@ describe('DexAccount interact with DexPair', async function () {
 
             let expectedDexAccount2Lp, expectedAccount2Lp;
             if (options.contract_name === 'DexPair') {
+                console.log('Used DexPair - LP reward check on dex-account');
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else if(options.contract_name === 'DexPairV2') {
+            } else {
+                console.log('Used DexPairV2 - LP reward check on wallet');
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
             }

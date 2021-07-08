@@ -36,17 +36,17 @@ const Constants = {
     foo: {
       name: 'Foo',
       symbol: 'Foo',
-      decimals: 3
+      decimals: 9
     },
     bar: {
       name: 'Bar',
       symbol: 'Bar',
-      decimals: 9
+      decimals: 18
     },
     tst: {
       name: 'Test',
       symbol: 'Tst',
-      decimals: 9
+      decimals: 3
     },
     qwe: {
       name: 'Qwerty',
