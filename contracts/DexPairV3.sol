@@ -553,41 +553,45 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     }(id, false, IWithdrawResult.WithdrawResult(tokens_amount, left_back_amount, right_back_amount));
                 }
 
-                IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
-                    flag: MsgFlag.SENDER_PAYS_FEES
-                }(
-                    left_back_amount,
-                    left_root,
-                    vault_left_wallet,
-                    sender_public_key,
-                    sender_address,
-                    deploy_wallet_grams,
-                    notify_success,
-                    success_payload,
-                    left_root,
-                    right_root,
-                    current_version,
-                    original_gas_to
-                );
+                if(left_back_amount > 0) {
+                    IDexVault(vault).transfer{
+                        value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        left_back_amount,
+                        left_root,
+                        vault_left_wallet,
+                        sender_public_key,
+                        sender_address,
+                        deploy_wallet_grams,
+                        notify_success,
+                        success_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
 
-                IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
-                    flag: MsgFlag.SENDER_PAYS_FEES
-                }(
-                    right_back_amount,
-                    right_root,
-                    vault_right_wallet,
-                    sender_public_key,
-                    sender_address,
-                    deploy_wallet_grams,
-                    notify_success,
-                    success_payload,
-                    left_root,
-                    right_root,
-                    current_version,
-                    original_gas_to
-                );
+                if(right_back_amount > 0) {
+                    IDexVault(vault).transfer{
+                        value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        right_back_amount,
+                        right_root,
+                        vault_right_wallet,
+                        sender_public_key,
+                        sender_address,
+                        deploy_wallet_grams,
+                        notify_success,
+                        success_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
 
                 IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                     tokens_amount,
@@ -893,28 +897,30 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
 
         (uint128 left_back_amount, uint128 right_back_amount) = _withdrawLiquidityBase(lp_amount);
 
-        require(left_back_amount > 0 && right_back_amount > 0, DexErrors.AMOUNT_TOO_LOW);
-
         IDexPairOperationCallback(account_owner).dexPairWithdrawSuccess{
             value: 3,
             flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
         }(call_id, true, IWithdrawResult.WithdrawResult(lp_amount, left_back_amount, right_back_amount));
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
-            left_back_amount,
-            left_root,
-            left_root,
-            right_root,
-            send_gas_to
-        );
+        if (left_back_amount > 0) {
+            IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+                left_back_amount,
+                left_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+        }
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
-            right_back_amount,
-            right_root,
-            left_root,
-            right_root,
-            send_gas_to
-        );
+        if (right_back_amount > 0) {
+            IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+                right_back_amount,
+                right_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+        }
 
         TvmCell empty;
 
