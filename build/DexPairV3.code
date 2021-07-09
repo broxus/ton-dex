@@ -4068,158 +4068,174 @@ PUSHCONT {
 				}
 				IF
 				;; end if
-				;; Remote call IDexVault.transfer
-				PUSHINT 500000000
-				;; +
-				;; push identifier deploy_wallet_grams
-				PUSH S3
-				ADD
-				UFITS 128
-				;; push identifier vault
-				GETGLOB 11
-				NEWC
-				STSLICECONST x62_
-				STSLICE
-				SWAP
-				STGRAMS
-				PUSHINT 105
-				STZEROES
-				STSLICECONST 0
-				STSLICECONST 1
-				NEWC
-				STSLICECONST x0635c6a0
-				;; amount
+				;; if
 				;; push identifier left_back_amount
-				PUSH S3
-				STUR 128
-				;; token_root
-				;; push identifier left_root
-				GETGLOB 14
-				STSLICER
-				;; vault_wallet
-				;; push identifier vault_left_wallet
-				GETGLOB 20
-				STSLICER
-				;; recipient_public_key
-				;; push identifier sender_public_key
-				PUSH S19
-				STUR 256
-				NEWC
-				;; recipient_address
-				;; push identifier sender_address
-				PUSH S19
-				STSLICER
-				;; deploy_wallet_grams
-				;; push identifier deploy_wallet_grams
-				PUSH S5
-				STUR 128
-				;; notify_receiver
-				;; push identifier notify_success
-				PUSH S12
-				STIR 1
-				;; payload
-				;; push identifier success_payload
-				PUSH S9
-				STREFR
-				;; left_root
-				;; push identifier left_root
-				GETGLOB 14
-				STSLICER
-				NEWC
-				;; right_root
-				;; push identifier right_root
-				GETGLOB 15
-				STSLICER
-				;; pair_version
-				;; push identifier current_version
-				GETGLOB 12
-				STUR 32
-				;; send_gas_to
-				;; push identifier original_gas_to
-				PUSH S18
-				STSLICER
-				STBREFR
-				STBREFR
-				STBREFR
-				ENDC
-				PUSHINT 1
-				SENDRAWMSG
-				;; Remote call IDexVault.transfer
-				PUSHINT 500000000
-				;; +
-				;; push identifier deploy_wallet_grams
-				PUSH S3
-				ADD
-				UFITS 128
-				;; push identifier vault
-				GETGLOB 11
-				NEWC
-				STSLICECONST x62_
-				STSLICE
-				SWAP
-				STGRAMS
-				PUSHINT 105
-				STZEROES
-				STSLICECONST 0
-				STSLICECONST 1
-				NEWC
-				STSLICECONST x0635c6a0
-				;; amount
+				PUSH S1
+				GTINT 0
+				PUSHCONT {
+					;; Remote call IDexVault.transfer
+					PUSHINT 500000000
+					;; +
+					;; push identifier deploy_wallet_grams
+					PUSH S3
+					ADD
+					UFITS 128
+					;; push identifier vault
+					GETGLOB 11
+					NEWC
+					STSLICECONST x62_
+					STSLICE
+					SWAP
+					STGRAMS
+					PUSHINT 105
+					STZEROES
+					STSLICECONST 0
+					STSLICECONST 1
+					NEWC
+					STSLICECONST x0635c6a0
+					;; amount
+					;; push identifier left_back_amount
+					PUSH S3
+					STUR 128
+					;; token_root
+					;; push identifier left_root
+					GETGLOB 14
+					STSLICER
+					;; vault_wallet
+					;; push identifier vault_left_wallet
+					GETGLOB 20
+					STSLICER
+					;; recipient_public_key
+					;; push identifier sender_public_key
+					PUSH S19
+					STUR 256
+					NEWC
+					;; recipient_address
+					;; push identifier sender_address
+					PUSH S19
+					STSLICER
+					;; deploy_wallet_grams
+					;; push identifier deploy_wallet_grams
+					PUSH S5
+					STUR 128
+					;; notify_receiver
+					;; push identifier notify_success
+					PUSH S12
+					STIR 1
+					;; payload
+					;; push identifier success_payload
+					PUSH S9
+					STREFR
+					;; left_root
+					;; push identifier left_root
+					GETGLOB 14
+					STSLICER
+					NEWC
+					;; right_root
+					;; push identifier right_root
+					GETGLOB 15
+					STSLICER
+					;; pair_version
+					;; push identifier current_version
+					GETGLOB 12
+					STUR 32
+					;; send_gas_to
+					;; push identifier original_gas_to
+					PUSH S18
+					STSLICER
+					STBREFR
+					STBREFR
+					STBREFR
+					ENDC
+					PUSHINT 1
+					SENDRAWMSG
+				}
+				IF
+				;; end if
+				;; if
 				;; push identifier right_back_amount
-				PUSH S2
-				STUR 128
-				;; token_root
-				;; push identifier right_root
-				GETGLOB 15
-				STSLICER
-				;; vault_wallet
-				;; push identifier vault_right_wallet
-				GETGLOB 21
-				STSLICER
-				;; recipient_public_key
-				;; push identifier sender_public_key
-				PUSH S19
-				STUR 256
-				NEWC
-				;; recipient_address
-				;; push identifier sender_address
-				PUSH S19
-				STSLICER
-				;; deploy_wallet_grams
-				;; push identifier deploy_wallet_grams
-				PUSH S5
-				STUR 128
-				;; notify_receiver
-				;; push identifier notify_success
-				PUSH S12
-				STIR 1
-				;; payload
-				;; push identifier success_payload
-				PUSH S9
-				STREFR
-				;; left_root
-				;; push identifier left_root
-				GETGLOB 14
-				STSLICER
-				NEWC
-				;; right_root
-				;; push identifier right_root
-				GETGLOB 15
-				STSLICER
-				;; pair_version
-				;; push identifier current_version
-				GETGLOB 12
-				STUR 32
-				;; send_gas_to
-				;; push identifier original_gas_to
-				PUSH S18
-				STSLICER
-				STBREFR
-				STBREFR
-				STBREFR
-				ENDC
-				PUSHINT 1
-				SENDRAWMSG
+				DUP
+				GTINT 0
+				PUSHCONT {
+					;; Remote call IDexVault.transfer
+					PUSHINT 500000000
+					;; +
+					;; push identifier deploy_wallet_grams
+					PUSH S3
+					ADD
+					UFITS 128
+					;; push identifier vault
+					GETGLOB 11
+					NEWC
+					STSLICECONST x62_
+					STSLICE
+					SWAP
+					STGRAMS
+					PUSHINT 105
+					STZEROES
+					STSLICECONST 0
+					STSLICECONST 1
+					NEWC
+					STSLICECONST x0635c6a0
+					;; amount
+					;; push identifier right_back_amount
+					PUSH S2
+					STUR 128
+					;; token_root
+					;; push identifier right_root
+					GETGLOB 15
+					STSLICER
+					;; vault_wallet
+					;; push identifier vault_right_wallet
+					GETGLOB 21
+					STSLICER
+					;; recipient_public_key
+					;; push identifier sender_public_key
+					PUSH S19
+					STUR 256
+					NEWC
+					;; recipient_address
+					;; push identifier sender_address
+					PUSH S19
+					STSLICER
+					;; deploy_wallet_grams
+					;; push identifier deploy_wallet_grams
+					PUSH S5
+					STUR 128
+					;; notify_receiver
+					;; push identifier notify_success
+					PUSH S12
+					STIR 1
+					;; payload
+					;; push identifier success_payload
+					PUSH S9
+					STREFR
+					;; left_root
+					;; push identifier left_root
+					GETGLOB 14
+					STSLICER
+					NEWC
+					;; right_root
+					;; push identifier right_root
+					GETGLOB 15
+					STSLICER
+					;; pair_version
+					;; push identifier current_version
+					GETGLOB 12
+					STUR 32
+					;; send_gas_to
+					;; push identifier original_gas_to
+					PUSH S18
+					STSLICER
+					STBREFR
+					STBREFR
+					STBREFR
+					ENDC
+					PUSHINT 1
+					SENDRAWMSG
+				}
+				IF
+				;; end if
 				;; Remote call IBurnableByOwnerTokenWallet.burnByOwner
 				;; push identifier lp_wallet
 				GETGLOB 17
@@ -6388,19 +6404,6 @@ SWAP
 SWAP
 ;; decl: left_back_amount
 ;; decl: right_back_amount
-;; push identifier left_back_amount
-PUSH S1
-GTINT 0
-;; short-circuiting &&
-DUP
-PUSHCONT {
-	DROP
-	;; push identifier right_back_amount
-	DUP
-	GTINT 0
-}
-IF
-THROWIFNOT 116
 ;; Remote call IDexPairOperationCallback.dexPairWithdrawSuccess
 ;; push identifier account_owner
 PUSH S7
@@ -6443,82 +6446,98 @@ PUSHINT 2
 ADD
 UFITS 8
 SENDRAWMSG
-;; Remote call IDexAccount.internalPairTransfer
-;; get member sender
-GETGLOB 9
-NEWC
-STSLICECONST x62_
-STSLICE
-PUSHSLICE x408f0d180000000000000000000000000004_
-STSLICER
-STSLICECONST 0
-STSLICECONST 1
-NEWC
-STSLICECONST x629f3a85
-;; amount
+;; if
 ;; push identifier left_back_amount
-PUSH S3
-STUR 128
-;; token_root
-;; push identifier left_root
-GETGLOB 14
-STSLICER
-;; sender_left_root
-;; push identifier left_root
-GETGLOB 14
-STSLICER
-NEWC
-;; sender_right_root
-;; push identifier right_root
-GETGLOB 15
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S8
-STSLICER
-STBREFR
-STBREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
-;; Remote call IDexAccount.internalPairTransfer
-;; get member sender
-GETGLOB 9
-NEWC
-STSLICECONST x62_
-STSLICE
-PUSHSLICE x408f0d180000000000000000000000000004_
-STSLICER
-STSLICECONST 0
-STSLICECONST 1
-NEWC
-STSLICECONST x629f3a85
-;; amount
+PUSH S1
+GTINT 0
+PUSHCONT {
+	;; Remote call IDexAccount.internalPairTransfer
+	;; get member sender
+	GETGLOB 9
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHSLICE x408f0d180000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST x629f3a85
+	;; amount
+	;; push identifier left_back_amount
+	PUSH S3
+	STUR 128
+	;; token_root
+	;; push identifier left_root
+	GETGLOB 14
+	STSLICER
+	;; sender_left_root
+	;; push identifier left_root
+	GETGLOB 14
+	STSLICER
+	NEWC
+	;; sender_right_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	;; send_gas_to
+	;; push identifier send_gas_to
+	PUSH S8
+	STSLICER
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+;; end if
+;; if
 ;; push identifier right_back_amount
-PUSH S2
-STUR 128
-;; token_root
-;; push identifier right_root
-GETGLOB 15
-STSLICER
-;; sender_left_root
-;; push identifier left_root
-GETGLOB 14
-STSLICER
-NEWC
-;; sender_right_root
-;; push identifier right_root
-GETGLOB 15
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S8
-STSLICER
-STBREFR
-STBREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
+DUP
+GTINT 0
+PUSHCONT {
+	;; Remote call IDexAccount.internalPairTransfer
+	;; get member sender
+	GETGLOB 9
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHSLICE x408f0d180000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST x629f3a85
+	;; amount
+	;; push identifier right_back_amount
+	PUSH S2
+	STUR 128
+	;; token_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	;; sender_left_root
+	;; push identifier left_root
+	GETGLOB 14
+	STSLICER
+	NEWC
+	;; sender_right_root
+	;; push identifier right_root
+	GETGLOB 15
+	STSLICER
+	;; send_gas_to
+	;; push identifier send_gas_to
+	PUSH S8
+	STSLICER
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+IF
+;; end if
 NEWC
 ENDC
 ;; decl: empty
