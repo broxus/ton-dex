@@ -7566,7 +7566,7 @@ PUSH S2
 GETGLOB 26
 ;; push identifier fee_denominator
 GETGLOB 27
-MULDIV
+MULDIVC
 UFITS 128
 ;; decl: a_fee
 ;; push identifier a_pool
@@ -7663,7 +7663,7 @@ DUP
 GETGLOB 26
 ;; push identifier fee_denominator
 GETGLOB 27
-MULDIV
+MULDIVC
 UFITS 128
 ;; decl: a_fee
 ;; return
