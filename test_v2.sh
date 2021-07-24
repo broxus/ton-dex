@@ -15,8 +15,8 @@ locklift test --config locklift.config.js --network dev --tests test/08-deposit-
 locklift test --config locklift.config.js --network dev --tests test/09-add-pair-test.js --left='foo' --right='bar' --account=2 --contract_name='DexPairV2' --ignore_already_added='true'
 locklift test --config locklift.config.js --network dev --tests test/09-add-pair-test.js --left='bar' --right='qwe' --account=2 --contract_name='DexPairV2' --ignore_already_added='true'
 locklift test --config locklift.config.js --network dev --tests test/09-add-pair-test.js --left='foo' --right='qwe' --account=2 --contract_name='DexPairV2' --ignore_already_added='true'
-locklift test --config locklift.config.js --network local --tests test/09-add-pair-test.js --left='foo' --right='tst' --account=2 --ignore_already_added='true' --contract_name='DexPairV2'
-locklift test --config locklift.config.js --network local --tests test/09-add-pair-test.js --left='bar' --right='tst' --account=2 --ignore_already_added='true' --contract_name='DexPairV2'
+locklift test --config locklift.config.js --network dev --tests test/09-add-pair-test.js --left='foo' --right='tst' --account=2 --ignore_already_added='true' --contract_name='DexPairV2'
+locklift test --config locklift.config.js --network dev --tests test/09-add-pair-test.js --left='bar' --right='tst' --account=2 --ignore_already_added='true' --contract_name='DexPairV2'
 locklift test --config locklift.config.js --network dev --tests test/10-deposit-to-dex-account.js --deposits='[{ "tokenId": "foo", "amount": 1000000 }, { "tokenId": "bar", "amount": 1000000 }, { "tokenId": "qwe", "amount": 1000000 }, { "tokenId": "tst", "amount": 1000000 }]'
 
 #initial liquidity deposit
