@@ -45,6 +45,7 @@ async function main() {
         decimals: tokenData.decimals
       }
     });
+    await afterRun();
     const deployedTokenRoot = await tokenFactoryCreateNewTokenFor.call({
       method: 'getDeployedToken',
       params: {answer_id: index}

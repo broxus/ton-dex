@@ -28,7 +28,7 @@ async function sleep(ms) {
 }
 
 const afterRun = async (tx) => {
-  await new Promise(resolve => setTimeout(resolve, 120000));
+  await new Promise(resolve => setTimeout(resolve, 60000));
 };
 
 const Constants = {

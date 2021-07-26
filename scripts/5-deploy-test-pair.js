@@ -48,6 +48,8 @@ async function main() {
       keyPair: keyPairs[1]
     });
 
+    await afterRun();
+
     const dexPairFooBarAddress = await dexRoot.call({
       method: 'getExpectedPairAddress',
       params: {
