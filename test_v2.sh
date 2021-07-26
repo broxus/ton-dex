@@ -24,7 +24,7 @@ locklift test --config locklift.config.js --network dev --tests test/12-pair-dep
 locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'foo' --right_token_id 'bar' --left_amount '3800' --right_amount '838.4260921287559342' --auto_change 'true' --contract_name='DexPairV2'
 
 locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'bar' --right_token_id 'qwe' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name='DexPairV2'
-locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'foo' --right_token_id 'qwe' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name'DexPairV2'
+locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'foo' --right_token_id 'qwe' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name='DexPairV2'
 locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'foo' --right_token_id 'tst' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name='DexPairV2'
 locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'bar' --right_token_id 'tst' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name='DexPairV2'
 
