@@ -1047,7 +1047,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
     }
 
     function _expectedExchange(uint128 a_amount, uint128 a_pool, uint128 b_pool) private view returns (uint128, uint128) {
-        uint128 a_fee = math.muldiv(a_amount, fee_numerator, fee_denominator);
+        uint128 a_fee = math.muldivc(a_amount, fee_numerator, fee_denominator);
 
         uint128 new_a_pool = a_pool + a_amount;
         uint128 new_b_pool = math.muldivc(a_pool, b_pool, new_a_pool - a_fee);
@@ -1062,7 +1062,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
         uint128 new_b_pool = b_pool - b_amount;
         uint128 new_a_pool = math.muldivc(a_pool, b_pool, new_b_pool);
         uint128 expected_a_amount = math.muldivc(new_a_pool - a_pool, fee_denominator, fee_d_minus_n);
-        uint128 a_fee = math.muldiv(expected_a_amount, fee_numerator, fee_denominator);
+        uint128 a_fee = math.muldivc(expected_a_amount, fee_numerator, fee_denominator);
 
         return (expected_a_amount, a_fee);
     }
