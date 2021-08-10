@@ -11,6 +11,8 @@ const DEX_OWNER_KEYS =  {
     secret: ''
 };
 
+const NewCodeContract = 'DexAccountV2';
+
 const afterRun = async (tx) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 };
@@ -32,6 +34,25 @@ async function main() {
   dexOwner.setAddress(DEX_OWNER_ADDRESS);
   dexOwner.afterRun = afterRun;
 
+  if (NewCodeContract) {
+      const NextVersionContract = await locklift.factory.getContract(NewCodeContract);
+      console.log(`Installing new DexAccount contract in DexRoot: ${dexRoot.address}`);
+      const startVersion = await dexRoot.call({method: 'getAccountVersion', params: { _answer_id: 0 }});
+      console.log(`Start version = ${startVersion}`);
+
+      await dexOwner.runTarget({
+          contract: dexRoot,
+          method: 'installOrUpdateAccountCode',
+          params: {code: NextVersionContract.code},
+          value: locklift.utils.convertCrystal(5, 'nano'),
+          keyPair: DEX_OWNER_KEYS
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 120000));
+
+      const endVersion = await dexRoot.call({method: 'getAccountVersion', params: { _answer_id: 0 }});
+      console.log(`End version = ${endVersion}`);
+  }
 
   console.log(`Start force upgrade DexAccounts. Count = ${dexAccounts.length}`);
 

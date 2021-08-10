@@ -13,4 +13,4 @@ locklift run --config locklift.config.js --network local --script scripts/4-depl
 locklift run --config locklift.config.js --network local --script scripts/4-deploy-test-dex-account.js --owner_n='3' --contract_name='DexAccount'
 locklift run --config locklift.config.js --network local --script scripts/4-deploy-test-dex-account.js --owner_n='4' --contract_name='DexAccount'
 locklift run --config locklift.config.js --network local --script scripts/4-deploy-test-dex-account.js --owner_n='5' --contract_name='DexAccount'
-locklift test --config locklift.config.js --network local --tests test/31-install-account-code.js --contract_name='DexAccountV2'
+#locklift test --config locklift.config.js --network local --tests test/31-install-account-code.js --contract_name='DexAccountV2'
