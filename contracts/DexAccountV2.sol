@@ -26,7 +26,7 @@ import "./interfaces/IDexAccountOwner.sol";
 
 import "./DexPlatform.sol";
 
-contract DexAccount is
+contract DexAccountV2 is
     IDexAccount,
     IExpectedWalletAddressCallback,
     ITokensReceivedCallback,
