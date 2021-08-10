@@ -29,12 +29,15 @@ async function main() {
       dexAccount.setAddress(dexAccountAddress.id);
       if ((await dexAccount.call({method: 'getRoot'})) === DEX_ROOT_ADDRESS) {
         const owner = await dexAccount.call({method: 'getOwner'})
-        console.log(owner);
-        dexOwnersToUpdate.push(owner);
+        console.log(`DexAccount ${dexAccountAddress.id}, owner = ${owner}`);
+        dexOwnersToUpdate.push({
+          dexAccount: dexAccountAddress.id,
+          owner: owner
+        });
       }
     }
   }
-  fs.writeFileSync('./owners.txt', dexOwnersToUpdate.join('\n'));
+  fs.writeFileSync('./dex_accounts.json', JSON.stringify(dexOwnersToUpdate));
 
 }
 

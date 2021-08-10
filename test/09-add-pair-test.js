@@ -91,6 +91,7 @@ describe('Check DexAccount add Pair', async function () {
         value: locklift.utils.convertCrystal(4, 'nano'),
         keyPair: keyPairs[options.account - 1]
       });
+      await afterRun();
       await logGas();
     });
     it('Check FooBar pair in DexAccount2', async function () {
