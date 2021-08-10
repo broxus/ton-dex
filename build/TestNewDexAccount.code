@@ -13,9 +13,9 @@ SETGLOB 6
 ;; end constructor protection
 ; Decode input parameters
 ENDS
-; constructor NewDexAccount
+; constructor TestNewDexAccount
 THROW 100
-; end constructor NewDexAccount
+; end constructor TestNewDexAccount
 CALLREF {
 	CALL $c7_to_c4$
 }

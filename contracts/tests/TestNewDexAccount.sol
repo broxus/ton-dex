@@ -9,7 +9,7 @@ import "../libraries/Gas.sol";
 import "../libraries/MsgFlag.sol";
 
 // This is just for test purposes, this is not a real contract!
-contract NewDexAccount {
+contract TestNewDexAccount {
     address root;
     address vault;
     uint32 current_version;
