@@ -3,6 +3,7 @@ locklift build --config locklift.config.js
 locklift run --config locklift.config.js --network prod --script scripts/0-reset-migration.js
 locklift run --config locklift.config.js --network prod --script scripts/0-deploy-account.js --key_number='0' --balance='15'
 locklift run --config locklift.config.js --network prod --script scripts/0-deploy-account.js --key_number='1' --balance='20'
+locklift run --config locklift.config.js --network prod --script scripts/0-deploy-account.js --key_number='2' --balance='5'
 locklift run --config locklift.config.js --network prod --script scripts/0-deploy-TokenFactory.js
 locklift run --config locklift.config.js --network prod --script scripts/1-deploy-vault-and-root.js --pair_contract_name='DexPairV2'
 locklift run --config locklift.config.js --network prod --script scripts/4-deploy-test-dex-account.js --owner_n='1' --contract_name='DexAccount'
@@ -19,6 +20,8 @@ locklift test --config locklift.config.js --network prod --tests test/10-deposit
 locklift test --config locklift.config.js --network prod --tests test/31-install-account-code.js --contract_name='DexAccountV2'
 locklift test --config locklift.config.js --network prod --tests test/36-upgrade-account.js --owner_n='1' --old_contract_name='DexAccount' --new_contract_name='DexAccountV2'
 locklift test --config locklift.config.js --network prod --tests test/37-upgrade-account-force.js --owner_n='2' --old_contract_name='DexAccount' --new_contract_name='DexAccountV2'
+
+locklift run --config locklift.config.js --network prod --script scripts/4-deploy-test-dex-account.js --owner_n='3' --contract_name='DexAccountV2'
 
 locklift test --config locklift.config.js --network prod --tests test/10-deposit-to-dex-account.js --owner_n='2' --deposits='[{ "tokenId": "bar", "amount": 100000 }]'
 locklift test --config locklift.config.js --network prod --tests test/15-dex-account-pair-operations.js --contract_name='DexPairV2'
