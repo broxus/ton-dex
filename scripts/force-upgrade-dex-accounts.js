@@ -36,7 +36,7 @@ async function main() {
               send_gas_to: dexOwner.address
           },
           value: locklift.utils.convertCrystal(6, 'nano'),
-          keyPair
+          DEX_OWNER_KEYS
       });
       console.log(`Transaction id: ${tx.transaction.id}`);
       console.log(``);
