@@ -23,7 +23,7 @@ const options = program.opts();
 
 options.contract_name = options.contract_name || 'DexPairV2';
 
-describe('Test Dex Pair contract upgrade', async function () {
+describe('Test DexAccount contract upgrade', async function () {
     this.timeout(Constants.TESTS_TIMEOUT);
 
     before('Load contracts', async function () {
