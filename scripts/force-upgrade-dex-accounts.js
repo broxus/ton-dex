@@ -3,13 +3,14 @@ const fs = require('fs');
 let dexAccounts;
 let dexOwner;
 
+
 const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
 const DEX_OWNER_ADDRESS = '';
 const DEX_OWNER_WALLET_TYPE = 'SafeMultisigWallet';
-const DEX_OWNER_KEYS =  {
+/*{
     public: '',
     secret: ''
-};
+};*/
 
 const NewCodeContract = 'DexAccountV2';
 
@@ -21,6 +22,9 @@ const data = fs.readFileSync('./dex_accounts.json', 'utf8');
 if (data) dexAccounts = JSON.parse(data);
 
 async function main() {
+  const keyPairs = await locklift.keys.getKeyPairs();
+  const DEX_OWNER_KEYS = keyPairs[0];
+
   const dexRoot = await locklift.factory.getContract('DexRoot');
   dexRoot.setAddress(DEX_ROOT_ADDRESS);
 
