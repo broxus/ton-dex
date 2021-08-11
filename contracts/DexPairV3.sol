@@ -982,7 +982,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                 _expectedExchange(spent_amount, left_balance, right_balance);
             require(right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
-            require(right_amount >= 0, DexErrors.AMOUNT_TOO_LOW);
+            require(right_amount > 0, DexErrors.AMOUNT_TOO_LOW);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
@@ -1014,7 +1014,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                 _expectedExchange(spent_amount, right_balance, left_balance);
             require(left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
-            require(left_amount >= 0, DexErrors.AMOUNT_TOO_LOW);
+            require(left_amount > 0, DexErrors.AMOUNT_TOO_LOW);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 

@@ -7171,9 +7171,7 @@ PUSHCONT {
 	THROWIFNOT 123
 	;; push identifier right_amount
 	PUSH S1
-	;; >=
-	PUSHINT 0
-	GEQ
+	GTINT 0
 	THROWIFNOT 116
 	PUSHINT 1000000000
 	PUSHINT 0
@@ -7375,9 +7373,7 @@ PUSHCONT {
 		THROWIFNOT 123
 		;; push identifier left_amount
 		PUSH S1
-		;; >=
-		PUSHINT 0
-		GEQ
+		GTINT 0
 		THROWIFNOT 116
 		PUSHINT 1000000000
 		PUSHINT 0
