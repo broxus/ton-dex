@@ -1767,7 +1767,7 @@ ENDS
 ;; param: payload
 ; function tokensReceivedCallback
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; push identifier payload
 DUP
@@ -4360,8 +4360,8 @@ PUSHCONT {
 	IF
 	;; end if
 	;; Remote call ITONTokenWallet.transfer
-	;; push identifier token_wallet
-	PUSH S15
+	;; get member sender
+	GETGLOB 9
 	NEWC
 	STSLICECONST x62_
 	STSLICE
@@ -4849,7 +4849,7 @@ PUSHCONT {
 IFNOT
 THROWIFNOT 116
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 PUSHINT 0
 ;; decl: lp_tokens_amount
@@ -6393,7 +6393,7 @@ GETGLOB 22
 SDEQ
 THROWIFNOT 113
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; push identifier lp_amount
 PUSH S7
@@ -7176,7 +7176,7 @@ PUSHCONT {
 	GEQ
 	THROWIFNOT 116
 	PUSHINT 1000000000
-	PUSHINT 2
+	PUSHINT 0
 	RAWRESERVE
 	;; push identifier spent_amount
 	PUSH S11
@@ -7380,7 +7380,7 @@ PUSHCONT {
 		GEQ
 		THROWIFNOT 116
 		PUSHINT 1000000000
-		PUSHINT 2
+		PUSHINT 0
 		RAWRESERVE
 		;; push identifier spent_amount
 		PUSH S11
@@ -7810,7 +7810,7 @@ SDEQ
 NOT
 THROWIFNOT 100
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; push identifier payload
 PUSH S2
@@ -8925,7 +8925,7 @@ SDEQ
 THROWIFNOT 105
 ; function checkPair
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; Remote call IDexAccount.checkPairCallback
 ;; get member sender
@@ -9166,7 +9166,7 @@ PUSHCONT {
 IFNOT
 PUSHCONT {
 	PUSHINT 1000000000
-	PUSHINT 2
+	PUSHINT 0
 	RAWRESERVE
 	;; transfer()
 	;; push identifier send_gas_to
@@ -9180,6 +9180,10 @@ PUSHCONT {
 	STSLICECONST 0
 	ENDC
 	PUSHINT 128
+	;; +
+	PUSHINT 2
+	ADD
+	UFITS 8
 	SENDRAWMSG
 }
 PUSHCONT {
@@ -9446,7 +9450,7 @@ SETGLOB 7
 ;; param: upgrade_data
 ; function onCodeUpgrade
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; set default state vars
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
@@ -9797,7 +9801,7 @@ SDEQ
 THROWIFNOT 101
 ; function afterInitialize
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ;; if
 ;; get member value
@@ -9855,6 +9859,10 @@ PUSHCONT {
 	STSLICECONST 0
 	ENDC
 	PUSHINT 128
+	;; +
+	PUSHINT 2
+	ADD
+	UFITS 8
 	SENDRAWMSG
 }
 IFELSE
@@ -10009,7 +10017,7 @@ SDEQ
 THROWIFNOT 115
 ; function liquidityTokenRootDeployed
 PUSHINT 1000000000
-PUSHINT 2
+PUSHINT 0
 RAWRESERVE
 ; expValue
 ; end expValue
@@ -10140,17 +10148,8 @@ PUSHCONT {
 	SENDRAWMSG
 }
 PUSHCONT {
-	;; get member balance
-	GETPARAM 7
-	INDEX 0
-	;; -
-	;; get member value
-	CALLREF {
-		CALL $message_balance_macro$
-	}
-	SUB
-	UFITS 128
-	PUSHINT 2
+	PUSHINT 1000000000
+	PUSHINT 0
 	RAWRESERVE
 	;; transfer()
 	;; push identifier send_gas_to
@@ -10164,6 +10163,10 @@ PUSHCONT {
 	STSLICECONST 0
 	ENDC
 	PUSHINT 128
+	;; +
+	PUSHINT 2
+	ADD
+	UFITS 8
 	SENDRAWMSG
 }
 IFELSE

@@ -13,7 +13,7 @@ locklift test --config locklift.config.js --network local --tests test/01-base-r
 locklift test --config locklift.config.js --network local --tests test/08-deposit-test.js
 locklift test --config locklift.config.js --network local --tests test/09-add-pair-test.js --left='foo' --right='bar' --account=2
 locklift test --config locklift.config.js --network local --tests test/10-deposit-to-dex-account.js --deposits='[{ "tokenId": "foo", "amount": 100000 }, { "tokenId": "bar", "amount": 100000 }]'
-locklift test --config locklift.config.js --network local --tests test/15-dex-account-pair-operations.js --contract_name='DexPair'
+locklift test --config locklift.config.js --network local --tests test/15-dex-account-pair-operations.js --pair_contract_name='DexPair' --account_contract_name='DexAccount'
 locklift test --config locklift.config.js --network local --tests test/20-pair-direct-operations.js
 locklift test --config locklift.config.js --network local --tests test/25-dex-accounts-interaction.js
 

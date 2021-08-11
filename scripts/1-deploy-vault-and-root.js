@@ -4,12 +4,14 @@ const program = new Command();
 
 program
     .allowUnknownOption()
-    .option('-pcn, --pair_contract_name <pair_contract_name>', 'New version of contract name');
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'DexPair contract name')
+    .option('-acn, --account_contract_name <account_contract_name>', 'DexAccount contract name');
 
 program.parse(process.argv);
 
 const options = program.opts();
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
+options.account_contract_name = options.account_contract_name || 'DexAccount';
 
 
 async function main() {

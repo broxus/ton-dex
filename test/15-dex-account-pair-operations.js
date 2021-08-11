@@ -10,13 +10,15 @@ const migration = new Migration();
 
 program
     .allowUnknownOption()
-    .option('-cn, --contract_name <contract_name>', 'DexPair contract name');
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'DexPair contract name')
+    .option('-acn, --account_contract_name <account_contract_name>', 'DexAccount contract name');
 
 program.parse(process.argv);
 
 const options = program.opts();
 
-options.contract_name = options.contract_name || 'DexPair';
+options.pair_contract_name = options.pair_contract_name || 'DexPair';
+options.account_contract_name = options.account_contract_name || 'DexAccount';
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
@@ -142,18 +144,18 @@ async function logGas() {
     }
 }
 
-describe(`DexAccount interact with ${options.contract_name}`, async function () {
+describe(`DexAccount interact with ${options.pair_contract_name}`, async function () {
     this.timeout(Constants.TESTS_TIMEOUT);
     before('Load contracts', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPairFooBar = await locklift.factory.getContract(options.contract_name);
+        DexPairFooBar = await locklift.factory.getContract(options.pair_contract_name);
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount('Wallet');
-        DexAccount2 = await locklift.factory.getContract('DexAccount');
+        DexAccount2 = await locklift.factory.getContract(options.account_contract_name);
         FooBarLpWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         FooWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
@@ -303,7 +305,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
                 let expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
                 let expectedDexAccount2Lp, expectedAccount2Lp;
-                if (options.contract_name === 'DexPair') {
+                if (options.pair_contract_name === 'DexPair') {
                     expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                     expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
                 } else {
@@ -399,7 +401,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
             let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.contract_name === 'DexPair') {
+            if (options.pair_contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
             } else {
@@ -491,7 +493,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
             let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.contract_name === 'DexPair') {
+            if (options.pair_contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
             } else {
@@ -583,7 +585,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
             let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.contract_name === 'DexPair') {
+            if (options.pair_contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
             } else {
@@ -678,7 +680,7 @@ describe(`DexAccount interact with ${options.contract_name}`, async function () 
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).plus(BAR_BACK_AMOUNT).toString();
 
             let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.contract_name === 'DexPair') {
+            if (options.pair_contract_name === 'DexPair') {
                 expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
                 expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
             } else {

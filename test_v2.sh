@@ -29,9 +29,9 @@ locklift test --config locklift.config.js --network dev --tests test/12-pair-dep
 locklift test --config locklift.config.js --network dev --tests test/12-pair-deposit-liquidity.js --left_token_id 'bar' --right_token_id 'tst' --left_amount '10000' --right_amount '10000' --auto_change 'false' --contract_name='DexPairV2'
 
 #old tests
-locklift test --config locklift.config.js --network dev --tests test/15-dex-account-pair-operations.js --contract_name='DexPairV2'
+locklift test --config locklift.config.js --network dev --tests test/15-dex-account-pair-operations.js --pair_contract_name='DexPairV2' --account_contract_name='DexAccount'
 locklift test --config locklift.config.js --network dev --tests test/20-pair-direct-operations.js --contract_name='DexPairV2'
-locklift test --config locklift.config.js --network dev --tests test/25-dex-accounts-interaction.js --contract_name='DexPairV2'
+locklift test --config locklift.config.js --network dev --tests test/25-dex-accounts-interaction.js --pair_contract_name='DexPairV2' --account_contract_name='DexAccount'
 
 # test cross-pair exchange
 locklift test --config locklift.config.js --network dev --tests test/40-cross-pair-exchange.js --amount=1000 --route='["foo","bar","qwe"]' --contract_name='DexPairV2'
