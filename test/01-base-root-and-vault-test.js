@@ -7,12 +7,14 @@ const migration = new Migration();
 
 program
     .allowUnknownOption()
-    .option('-pcn, --pair_contract_name <pair_contract_name>', 'New version of contract name');
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'DexPair contract code')
+    .option('-acn, --account_contract_name <account_contract_name>', 'DexAccount contract code');
 
 program.parse(process.argv);
 
 const options = program.opts();
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
+options.account_contract_name = options.account_contract_name || 'DexAccount';
 
 let DexRoot;
 let DexVault;
@@ -32,7 +34,7 @@ describe('Check for correct deployment', async function () {
     DexRoot = await locklift.factory.getContract('DexRoot');
     DexVault = await locklift.factory.getContract('DexVault');
     DexPlatform = await locklift.factory.getContract('DexPlatform');
-    DexAccount = await locklift.factory.getContract('DexAccount');
+    DexAccount = await locklift.factory.getContract(options.account_contract_name);
     DexPair = await locklift.factory.getContract(options.pair_contract_name);
     TokenFactory = await locklift.factory.getContract('TokenFactory');
     DexVaultLpTokenPending = await locklift.factory.getContract('DexVaultLpTokenPending');

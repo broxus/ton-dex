@@ -10,13 +10,15 @@ const migration = new Migration();
 
 program
     .allowUnknownOption()
-    .option('-cn, --contract_name <contract_name>', 'DexPair contract name');
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'DexPair contract name')
+    .option('-acn, --account_contract_name <account_contract_name>', 'DexAccount contract name');
 
 program.parse(process.argv);
 
 const options = program.opts();
 
-options.contract_name = options.contract_name || 'DexPair';
+options.pair_contract_name = options.pair_contract_name || 'DexPair';
+options.account_contract_name = options.account_contract_name || 'DexAccount';
 
 const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
@@ -106,7 +108,7 @@ describe('Check DEX accounts interaction', async function () {
         keyPairs = await locklift.keys.getKeyPairs();
 
         DexRoot = await locklift.factory.getContract('DexRoot');
-        DexPairFooBar = await locklift.factory.getContract(options.contract_name);
+        DexPairFooBar = await locklift.factory.getContract(options.pair_contract_name);
         FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
         FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
@@ -117,8 +119,8 @@ describe('Check DEX accounts interaction', async function () {
         Account2.afterRun = afterRun;
         Account3 = await locklift.factory.getAccount('Wallet');
         Account3.afterRun = afterRun;
-        DexAccount2 = await locklift.factory.getContract('DexAccount');
-        DexAccount3 = await locklift.factory.getContract('DexAccount');
+        DexAccount2 = await locklift.factory.getContract(options.account_contract_name);
+        DexAccount3 = await locklift.factory.getContract(options.account_contract_name);
         FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         BarWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
         FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);

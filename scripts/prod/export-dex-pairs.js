@@ -1,11 +1,11 @@
 const fs = require('fs');
 
-const OLD_DEX_ACCOUNT_CODE_HASH = '74007460d28b8e5c0d3bdb0b152d81833f20fa66e2b636cf9fdeab0918265cd0';
-const DEX_ROOT_ADDRESS = '0:90c5886ecc25f81000866d06851d7a99e3506bfbfcc7097474748a1ed826ad3c';
+const OLD_DEX_PAIR_CODE_HASH = '71597689db5b652e8fa5c80180ccc68d76f07b7dddb2e8c1546b11caba2453b1';
+const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
 
 async function main() {
   const dexOwnersToUpdate = [];
-  const dexAccount = await locklift.factory.getContract('DexAccount');
+  const dexAccount = await locklift.factory.getContract('DexPairV2');
 
   let lastAddress = locklift.utils.zeroAddress;
   let hasResults = true;
@@ -13,7 +13,7 @@ async function main() {
     let result = await locklift.ton.client.net.query_collection({
       collection: 'accounts',
       filter: {
-        code_hash: {eq: OLD_DEX_ACCOUNT_CODE_HASH},
+        code_hash: {eq: OLD_DEX_PAIR_CODE_HASH},
         id: {gt: lastAddress}
       },
       order: [{path: 'id', direction: 'ASC'}],
@@ -25,19 +25,21 @@ async function main() {
     if (hasResults) {
       lastAddress = result[49].id;
     }
-    for (const dexAccountAddress of result) {
-      dexAccount.setAddress(dexAccountAddress.id);
+    for (const dexPair of result) {
+      dexAccount.setAddress(dexPair.id);
       if ((await dexAccount.call({method: 'getRoot'})) === DEX_ROOT_ADDRESS) {
-        const owner = await dexAccount.call({method: 'getOwner'})
-        console.log(`DexAccount ${dexAccountAddress.id}, owner = ${owner}`);
+        const roots = await dexAccount.call({method: 'getTokenRoots'})
+        console.log(`DexPair ${dexPair.id}, left = ${roots.left}, right = ${roots.right}, lp = ${roots.lp}`);
         dexOwnersToUpdate.push({
-          dexAccount: dexAccountAddress.id,
-          owner: owner
+          dexPair: dexPair.id,
+          left: roots.left,
+          right: roots.right,
+          lp: roots.lp
         });
       }
     }
   }
-  fs.writeFileSync('./dex_accounts.json', JSON.stringify(dexOwnersToUpdate));
+  fs.writeFileSync('./dex_pairs.json', JSON.stringify(dexOwnersToUpdate));
 
 }
 

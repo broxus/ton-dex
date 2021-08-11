@@ -4,12 +4,14 @@ const program = new Command();
 
 program
     .allowUnknownOption()
-    .option('-pcn, --pair_contract_name <pair_contract_name>', 'New version of contract name');
+    .option('-pcn, --pair_contract_name <pair_contract_name>', 'DexPair contract name')
+    .option('-acn, --account_contract_name <account_contract_name>', 'DexAccount contract name');
 
 program.parse(process.argv);
 
 const options = program.opts();
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
+options.account_contract_name = options.account_contract_name || 'DexAccount';
 
 
 async function main() {
@@ -18,7 +20,7 @@ async function main() {
   account.afterRun = afterRun;
 
   const DexPlatform = await locklift.factory.getContract('DexPlatform');
-  const DexAccount = await locklift.factory.getContract('DexAccount');
+  const DexAccount = await locklift.factory.getContract(options.account_contract_name);
   const DexPair = await locklift.factory.getContract(options.pair_contract_name);
   const DexVaultLpTokenPending = await locklift.factory.getContract('DexVaultLpTokenPending');
 

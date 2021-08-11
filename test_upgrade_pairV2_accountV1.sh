@@ -1,3 +1,5 @@
+#run after test_pairV1_accountV1.sh
+
 #задать новый код пары
 locklift test --config locklift.config.js --network local --tests test/30-install-pair-code-v2.js --contract_name 'DexPairV2'
 
