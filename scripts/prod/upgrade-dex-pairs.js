@@ -3,13 +3,9 @@ const fs = require('fs');
 let dexPairs;
 let dexOwner;
 
-// const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
-// const DEX_OWNER_ADDRESS = '';
-// const DEX_OWNER_WALLET_TYPE = 'SafeMultisigWallet';
-
-const DEX_ROOT_ADDRESS = '0:20f4220c7aeb1cdaa630db86b1660404ef888152e8ce50ddc86fe4bf96cfb17c';
-const DEX_OWNER_ADDRESS = '0:c6422e69c90554ad3ac5edfb98d01c652ba17212640a7ffb70262e0429a4abc3';
-const DEX_OWNER_WALLET_TYPE = 'Wallet';
+const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
+const DEX_OWNER_ADDRESS = '';
+const DEX_OWNER_WALLET_TYPE = 'SafeMultisigWallet';
 
 const NewCodeContract = 'DexPairV3';
 

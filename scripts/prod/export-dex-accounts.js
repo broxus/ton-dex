@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const OLD_DEX_ACCOUNT_CODE_HASH = '74007460d28b8e5c0d3bdb0b152d81833f20fa66e2b636cf9fdeab0918265cd0';
-const DEX_ROOT_ADDRESS = '0:90c5886ecc25f81000866d06851d7a99e3506bfbfcc7097474748a1ed826ad3c';
+const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
 
 async function main() {
   const dexOwnersToUpdate = [];
