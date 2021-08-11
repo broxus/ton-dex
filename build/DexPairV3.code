@@ -1794,30 +1794,6 @@ PUSHCONT {
 		;; push identifier lp_supply
 		GETGLOB 23
 		EQINT 0
-		;; short-circuiting ||
-		DUP
-		PUSHCONT {
-			DROP
-			;; push identifier tokens_amount
-			PUSH S7
-			;; <
-			;; push identifier fee_denominator
-			GETGLOB 27
-			LESS
-			;; short-circuiting &&
-			DUP
-			PUSHCONT {
-				DROP
-				;; push identifier token_root
-				PUSH S8
-				;; push identifier lp_root
-				GETGLOB 22
-				SDEQ
-				NOT
-			}
-			IF
-		}
-		IFNOT
 	}
 	IFNOT
 }
@@ -2013,6 +1989,15 @@ PUSHCONT {
 					;; push identifier right_amount
 					PUSH S1
 					GTINT 0
+					;; short-circuiting &&
+					DUP
+					PUSHCONT {
+						DROP
+						;; push identifier left_fee
+						DUP
+						GTINT 0
+					}
+					IF
 				}
 				IF
 			}
@@ -2635,33 +2620,42 @@ PUSHCONT {
 							DUP
 							PUSHCONT {
 								DROP
-								;; get member value
-								;; push identifier next_token_root
-								PUSH S2
-								PARSEMSGADDR
-								INDEX 3
-								PLDU 256
-								NEQINT 0
+								;; push identifier left_fee
+								DUP
+								GTINT 0
 								;; short-circuiting &&
 								DUP
 								PUSHCONT {
 									DROP
+									;; get member value
 									;; push identifier next_token_root
 									PUSH S2
-									;; push identifier right_root
-									GETGLOB 15
-									SDEQ
-									NOT
+									PARSEMSGADDR
+									INDEX 3
+									PLDU 256
+									NEQINT 0
 									;; short-circuiting &&
 									DUP
 									PUSHCONT {
 										DROP
 										;; push identifier next_token_root
 										PUSH S2
-										;; push identifier left_root
-										GETGLOB 14
+										;; push identifier right_root
+										GETGLOB 15
 										SDEQ
 										NOT
+										;; short-circuiting &&
+										DUP
+										PUSHCONT {
+											DROP
+											;; push identifier next_token_root
+											PUSH S2
+											;; push identifier left_root
+											GETGLOB 14
+											SDEQ
+											NOT
+										}
+										IF
 									}
 									IF
 								}
@@ -3034,6 +3028,15 @@ PUSHCONT {
 						;; push identifier left_amount
 						PUSH S1
 						GTINT 0
+						;; short-circuiting &&
+						DUP
+						PUSHCONT {
+							DROP
+							;; push identifier right_fee
+							DUP
+							GTINT 0
+						}
+						IF
 					}
 					IF
 				}
@@ -3656,33 +3659,42 @@ PUSHCONT {
 								DUP
 								PUSHCONT {
 									DROP
-									;; get member value
-									;; push identifier next_token_root
-									PUSH S2
-									PARSEMSGADDR
-									INDEX 3
-									PLDU 256
-									NEQINT 0
+									;; push identifier right_fee
+									DUP
+									GTINT 0
 									;; short-circuiting &&
 									DUP
 									PUSHCONT {
 										DROP
+										;; get member value
 										;; push identifier next_token_root
 										PUSH S2
-										;; push identifier right_root
-										GETGLOB 15
-										SDEQ
-										NOT
+										PARSEMSGADDR
+										INDEX 3
+										PLDU 256
+										NEQINT 0
 										;; short-circuiting &&
 										DUP
 										PUSHCONT {
 											DROP
 											;; push identifier next_token_root
 											PUSH S2
-											;; push identifier left_root
-											GETGLOB 14
+											;; push identifier right_root
+											GETGLOB 15
 											SDEQ
 											NOT
+											;; short-circuiting &&
+											DUP
+											PUSHCONT {
+												DROP
+												;; push identifier next_token_root
+												PUSH S2
+												;; push identifier left_root
+												GETGLOB 14
+												SDEQ
+												NOT
+											}
+											IF
 										}
 										IF
 									}
@@ -7173,6 +7185,10 @@ PUSHCONT {
 	PUSH S1
 	GTINT 0
 	THROWIFNOT 116
+	;; push identifier left_fee
+	DUP
+	GTINT 0
+	THROWIFNOT 116
 	PUSHINT 1000000000
 	PUSHINT 0
 	RAWRESERVE
@@ -7373,6 +7389,10 @@ PUSHCONT {
 		THROWIFNOT 123
 		;; push identifier left_amount
 		PUSH S1
+		GTINT 0
+		THROWIFNOT 116
+		;; push identifier right_fee
+		DUP
 		GTINT 0
 		THROWIFNOT 116
 		PUSHINT 1000000000
@@ -7907,6 +7927,24 @@ PUSHCONT {
 		;; push identifier expected_amount
 		PUSH S6
 		GEQ
+		;; short-circuiting &&
+		DUP
+		PUSHCONT {
+			DROP
+			;; push identifier right_amount
+			PUSH S1
+			GTINT 0
+			;; short-circuiting &&
+			DUP
+			PUSHCONT {
+				DROP
+				;; push identifier left_fee
+				DUP
+				GTINT 0
+			}
+			IF
+		}
+		IF
 	}
 	IF
 	PUSHCONT {
@@ -8385,6 +8423,15 @@ PUSHCONT {
 				;; push identifier left_amount
 				PUSH S1
 				GTINT 0
+				;; short-circuiting &&
+				DUP
+				PUSHCONT {
+					DROP
+					;; push identifier right_fee
+					DUP
+					GTINT 0
+				}
+				IF
 			}
 			IF
 		}

@@ -207,8 +207,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
 
         bool need_cancel = !active ||
             payloadSlice.bits() < 200 ||
-            lp_supply == 0 ||
-            (tokens_amount < fee_denominator && token_root != lp_root);
+            lp_supply == 0;
 
         bool notify_success = payloadSlice.refs() >= 1;
         bool notify_cancel = payloadSlice.refs() >= 2;
@@ -233,7 +232,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     uint128 expected_amount = payloadSlice.decode(uint128);
                     (uint128 right_amount, uint128 left_fee) =
                     _expectedExchange(tokens_amount, left_balance, right_balance);
-                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0) {
+                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0) {
                         left_balance += tokens_amount;
                         right_balance -= right_amount;
 
@@ -325,7 +324,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     (uint128 expected_amount, address next_token_root) = payloadSlice.decode(uint128, address);
                     (uint128 right_amount, uint128 left_fee) =
                         _expectedExchange(tokens_amount, left_balance, right_balance);
-                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 &&
+                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0 &&
                         next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root) {
 
                         left_balance += tokens_amount;
@@ -390,7 +389,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     uint128 expected_amount = payloadSlice.decode(uint128);
                     (uint128 left_amount, uint128 right_fee) =
                     _expectedExchange(tokens_amount, right_balance, left_balance);
-                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0) {
+                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0) {
                         right_balance += tokens_amount;
                         left_balance -= left_amount;
 
@@ -482,7 +481,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
                     (uint128 expected_amount, address next_token_root) = payloadSlice.decode(uint128, address);
                     (uint128 left_amount, uint128 right_fee) =
                     _expectedExchange(tokens_amount, right_balance, left_balance);
-                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 &&
+                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0  &&
                         next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root) {
 
                         right_balance += tokens_amount;
@@ -983,6 +982,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             require(right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
             require(right_amount > 0, DexErrors.AMOUNT_TOO_LOW);
+            require(left_fee > 0, DexErrors.AMOUNT_TOO_LOW);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
@@ -1015,6 +1015,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             require(left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
             require(left_amount > 0, DexErrors.AMOUNT_TOO_LOW);
+            require(right_fee > 0, DexErrors.AMOUNT_TOO_LOW);
 
             tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
@@ -1109,7 +1110,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             (uint128 right_amount, uint128 left_fee) =
                 _expectedExchange(spent_amount, left_balance, right_balance);
 
-            if (right_amount <= right_balance && right_amount >= expected_amount) {
+            if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0) {
 
                 left_balance += spent_amount;
                 right_balance -= right_amount;
@@ -1202,7 +1203,7 @@ contract DexPairV3 is IDexPairV2, ITokensReceivedCallback, IExpectedWalletAddres
             (uint128 left_amount, uint128 right_fee) =
                 _expectedExchange(spent_amount, right_balance, left_balance);
 
-            if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0) {
+            if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0) {
                 right_balance += spent_amount;
                 left_balance -= left_amount;
 
