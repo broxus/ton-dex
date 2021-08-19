@@ -6,6 +6,10 @@ const program = new Command();
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
 
+let tx;
+
+const logTx = (tx) => logger.success(`Transaction: ${tx.transaction.id}`);
+
 const migration = new Migration();
 
 program
@@ -214,7 +218,7 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`Account balance start: ${accountStart.foo} FOO, ${accountStart.bar} BAR, ` +
                 `${accountStart.lp} LP, ${accountStart.ton} TON`);
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: DexRoot,
                 method: 'deployAccount',
                 params: {
@@ -225,6 +229,8 @@ describe('Check DEX accounts interaction', async function () {
                 keyPair: keyPairs[2]
             });
 
+            logTx(tx);
+            
             const dexAccount3 = await DexRoot.call({
                 method: 'getExpectedAccountAddress',
                 params: {
@@ -263,7 +269,7 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
@@ -276,6 +282,8 @@ describe('Check DEX accounts interaction', async function () {
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexAccount3End = await dexAccountBalances(DexAccount3);
@@ -303,7 +311,7 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
@@ -316,6 +324,8 @@ describe('Check DEX accounts interaction', async function () {
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexAccount3End = await dexAccountBalances(DexAccount3);
@@ -348,7 +358,7 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
@@ -361,6 +371,8 @@ describe('Check DEX accounts interaction', async function () {
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexAccount3End = await dexAccountBalances(DexAccount3);
@@ -398,7 +410,7 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`DexAccount#3 balance start: ` +
                 `${dexAccount3Start.foo} FOO, ${dexAccount3Start.bar} BAR, ${dexAccount3Start.lp} LP`);
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: BarWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -414,6 +426,8 @@ describe('Check DEX accounts interaction', async function () {
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexAccount3End = await dexAccountBalances(DexAccount3);
             const dexEnd = await dexBalances();
@@ -457,7 +471,8 @@ describe('Check DEX accounts interaction', async function () {
             const account3WalletsStart = await account3balances();
             logger.log(`Account3 wallets balance start: ${account3WalletsStart.foo} FOO, ${account3WalletsStart.bar} BAR, ` +
                 `${account3WalletsStart.lp} LP, ${account3WalletsStart.ton} TON`);
-            await Account3.runTarget({
+
+            tx = await Account3.runTarget({
                 contract: DexAccount3,
                 method: 'withdraw',
                 params: {
@@ -470,6 +485,9 @@ describe('Check DEX accounts interaction', async function () {
                 },
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
+            
             const dexAccount3end = await dexAccountBalances(DexAccount3);
             logger.log(`DexAccount#3 balance end: ` +
                 `${dexAccount3end.foo} FOO, ${dexAccount3end.bar} BAR, ${dexAccount3end.lp} LP`);

@@ -6,6 +6,10 @@ const program = new Command();
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
 
+let tx;
+
+const logTx = (tx) => logger.success(`Transaction: ${tx.transaction.id}`);
+
 const migration = new Migration();
 
 program
@@ -275,7 +279,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -291,6 +295,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('3', 'nano'),
                 keyPair: keyPairs[2]
             });
+            
+            logTx(tx);
 
             BarWallet3.setAddress(await BarRoot.call({
                 method: 'getWalletAddress', params: {
@@ -350,7 +356,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: BarWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -366,6 +372,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -415,7 +423,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: BarWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -431,6 +439,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -481,7 +491,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -497,6 +507,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.6', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -545,7 +557,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -560,7 +572,9 @@ describe('Check direct DexPairFooBar operations', async function () {
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
-            });
+            })
+
+            logTx(tx);
 
             FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
                 method: 'getWalletAddress', params: {
@@ -616,7 +630,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -632,6 +646,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
                 method: 'getWalletAddress', params: {
@@ -687,7 +703,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: BarWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -703,6 +719,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -752,7 +770,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 `${new BigNumber(expected.expected_right_amount)
                     .shiftedBy(-Constants.tokens[!IS_FOO_LEFT?'foo':'bar'].decimals).toString()}`);
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooBarLpWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -768,6 +786,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -823,7 +843,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 `${new BigNumber(expected.expected_right_amount)
                     .shiftedBy(-Constants.tokens[!IS_FOO_LEFT?'foo':'bar'].decimals).toString()}`);
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooBarLpWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -839,6 +859,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -888,7 +910,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -904,6 +926,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -942,7 +966,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -958,6 +982,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('1', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();
@@ -996,7 +1022,7 @@ describe('Check direct DexPairFooBar operations', async function () {
                 }
             });
 
-            await Account3.runTarget({
+            tx = await Account3.runTarget({
                 contract: FooWallet3,
                 method: 'transferToRecipient',
                 params: {
@@ -1012,6 +1038,8 @@ describe('Check direct DexPairFooBar operations', async function () {
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
                 keyPair: keyPairs[2]
             });
+
+            logTx(tx);
 
             const dexEnd = await dexBalances();
             const accountEnd = await account3balances();

@@ -6,6 +6,10 @@ const logger = require('mocha-logger');
 const { Command } = require('commander');
 const program = new Command();
 
+let tx;
+
+const logTx = (tx) => logger.success(`Transaction: ${tx.transaction.id}`);
+
 const migration = new Migration();
 
 program
@@ -273,7 +277,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
                 logExpectedDeposit(expected);
 
-                await Account2.runTarget({
+                tx = await Account2.runTarget({
                     contract: DexAccount2,
                     method: 'depositLiquidity',
                     params: {
@@ -288,6 +292,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                     value: locklift.utils.convertCrystal('1.1', 'nano'),
                     keyPair: keyPairs[1]
                 });
+
+                logTx(tx);
 
                 const dexAccount2End = await dexAccountBalances(DexAccount2);
                 const dexPairInfoEnd = await dexPairInfo();
@@ -369,7 +375,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
             logExpectedDeposit(expected);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
@@ -384,6 +390,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -461,7 +469,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
             logExpectedDeposit(expected);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
@@ -476,6 +484,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -553,7 +563,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
             logExpectedDeposit(expected);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
@@ -568,6 +578,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -648,7 +660,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
             logExpectedDeposit(expected);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
@@ -663,6 +675,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -728,7 +742,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).shiftedBy(-Constants.tokens.foo.decimals).toString()} FOO`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.bar.decimals).toString()} BAR`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
@@ -741,6 +755,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -785,7 +801,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).shiftedBy(-Constants.tokens.bar.decimals).toString()} BAR`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.foo.decimals).toString()} FOO`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
@@ -798,6 +814,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
@@ -842,7 +860,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`Expected fee: ${new BigNumber(expected.expected_fee).shiftedBy(-Constants.tokens.foo.decimals).toString()} FOO`);
             logger.log(`Expected receive amount: ${new BigNumber(expected.expected_amount).shiftedBy(-Constants.tokens.bar.decimals).toString()} BAR`);
 
-            await Account2.runTarget({
+            tx = await Account2.runTarget({
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
@@ -855,6 +873,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
                 keyPair: keyPairs[1]
             });
+
+            logTx(tx);
 
             const dexAccount2End = await dexAccountBalances(DexAccount2);
             const dexPairInfoEnd = await dexPairInfo();
