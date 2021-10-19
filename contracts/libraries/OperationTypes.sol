@@ -1,4 +1,4 @@
-pragma ton-solidity ^0.39.0;
+pragma ton-solidity >= 0.39.0;
 
 library OperationTypes {
     uint8 constant EXCHANGE = 1;

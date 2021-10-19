@@ -1,4 +1,4 @@
-pragma ton-solidity ^0.39.0;
+pragma ton-solidity >= 0.39.0;
 
 library DexErrors {
     uint8 constant NOT_MY_OWNER                     = 100;
