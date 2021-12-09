@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["time"],
 	"functions": [
 		{
@@ -29,7 +30,7 @@
 		{
 			"name": "getOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -38,7 +39,7 @@
 		{
 			"name": "getPendingOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -176,5 +177,16 @@
 		{"key":1,"name":"_nonce","type":"uint32"}
 	],
 	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"_nonce","type":"uint32"},
+		{"name":"root_code","type":"cell"},
+		{"name":"wallet_code","type":"cell"},
+		{"name":"storage_code","type":"cell"},
+		{"name":"owner","type":"address"},
+		{"name":"pending_owner","type":"address"}
 	]
 }

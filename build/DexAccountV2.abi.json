@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -20,7 +21,7 @@
 		{
 			"name": "getRoot",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -29,7 +30,7 @@
 		{
 			"name": "getOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -38,7 +39,7 @@
 		{
 			"name": "getVersion",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"uint32"}
@@ -47,7 +48,7 @@
 		{
 			"name": "getVault",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -56,7 +57,7 @@
 		{
 			"name": "getWalletData",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"token_root","type":"address"}
 			],
 			"outputs": [
@@ -83,7 +84,7 @@
 		{
 			"name": "getNonce",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"uint64"}
@@ -411,5 +412,23 @@
 			"outputs": [
 			]
 		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"root","type":"address"},
+		{"name":"vault","type":"address"},
+		{"name":"current_version","type":"uint32"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"owner","type":"address"},
+		{"name":"_nonce","type":"uint64"},
+		{"name":"_wallets","type":"map(address,address)"},
+		{"name":"_balances","type":"map(address,uint128)"},
+		{"name":"_tmp_deploying_wallets","type":"map(address,bool)"},
+		{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"_tmp_operations","type":"map(uint64,tuple[])"},
+		{"name":"_tmp_send_gas_to","type":"map(uint64,address)"},
+		{"name":"_tmp_expected_callback_sender","type":"map(uint64,address)"},
+		{"components":[{"name":"call_id","type":"uint64"},{"name":"recipient_public_key","type":"uint256"},{"name":"recipient_address","type":"address"},{"name":"deploy_wallet_grams","type":"uint128"}],"name":"_tmp_withdrawals","type":"map(address,tuple)"}
 	]
 }

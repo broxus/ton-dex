@@ -1,11 +1,11 @@
 module.exports = {
     compiler: {
-        // Path to https://github.com/broxus/TON-Solidity-Compiler
-        path: '../TON-Solidity-Compiler/build/solc',
+        // Path to https://github.com/tonlabs/TON-Solidity-Compiler/tree/064c5a4c6e021d294dcb465dad408a06d0b75168
+        path: '/usr/bin/solc-ton-tonlabs-064c5a4',
     },
     linker: {
-        // Path to https://github.com/tonlabs/TVM-linker
-        path: '../TVM-linker/tvm_linker/target/release/tvm_linker',
+        // Path to https://github.com/tonlabs/TVM-linker/tree/cd1b33dd972d073a19a47054184ef76bfe408c2f
+        path: '/usr/bin/tvm_linker-cd1b33d',
     },
     networks: {
         // You can use TON labs graphql endpoints or local node

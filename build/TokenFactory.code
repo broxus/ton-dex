@@ -1,43 +1,32 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
-; Decode storage_code_
-;; decode TvmCell
 LDREF
-; Decode initial_owner
-LDMSGADDR
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: storage_code_
-;; param: initial_owner
-; constructor TokenFactory
+.loc ../contracts/TokenFactory.sol, 30
 ACCEPT
-; expValue
-; end expValue
-;; push identifier storage_code_
-PUSH S1
-; colValue
+.loc ../contracts/TokenFactory.sol, 31
+SWAP
 SETGLOB 13
-; end colValue
-; expValue
-; end expValue
-;; push identifier initial_owner
-DUP
-; colValue
+.loc ../contracts/TokenFactory.sol, 32
 SETGLOB 14
-; end colValue
-; end constructor TokenFactory
-DROP2
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -46,16 +35,24 @@ SETGLOB 7
 
 .macro transferOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode new_owner
-LDMSGADDR
+.loc ../contracts/TokenFactory.sol, 46
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: new_owner
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $transferOwner_internal_macro$
 }
@@ -70,50 +67,37 @@ SETGLOB 7
 CALL $transferOwner_internal_macro$
 
 .macro transferOwner_internal_macro
-;; param: new_owner
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function transferOwner
-; expValue
-; end expValue
-;; push identifier new_owner
-DUP
-; colValue
+.loc ../contracts/TokenFactory.sol, 47
 SETGLOB 15
-; end colValue
-; function returnChange
-;; transfer()
-;; push identifier owner
+.loc ../contracts/TokenFactory.sol, 197
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 64
 SENDRAWMSG
-; end function returnChange
-; end function transferOwner
-; end modifier onlyOwner
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro acceptOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/TokenFactory.sol, 51
 ENDS
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $acceptOwner_internal_macro$
 }
@@ -128,59 +112,46 @@ SETGLOB 7
 CALL $acceptOwner_internal_macro$
 
 .macro acceptOwner_internal_macro
-; function acceptOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 52
 GETGLOB 9
-;; push identifier pending_owner
 GETGLOB 15
 SDEQ
 THROWIFNOT 101
-; expValue
-; end expValue
-;; push identifier pending_owner
+.loc ../contracts/TokenFactory.sol, 53
 GETGLOB 15
-; colValue
 SETGLOB 14
-; end colValue
+.loc ../contracts/TokenFactory.sol, 54
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-; expValue
-; end expValue
-; colValue
 SETGLOB 15
-; end colValue
-; function returnChange
-;; transfer()
-;; push identifier owner
+.loc ../contracts/TokenFactory.sol, 197
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 64
 SENDRAWMSG
-; end function returnChange
-; end function acceptOwner
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro getOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/TokenFactory.sol, 58
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getOwner
-;; return
+.loc ../contracts/TokenFactory.sol, 59
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -189,12 +160,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier owner
 GETGLOB 14
-; end function getOwner
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/TokenFactory.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -205,13 +173,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xe2c3961c
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -220,10 +188,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -235,22 +203,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -259,20 +226,21 @@ SETGLOB 7
 
 .macro getPendingOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/TokenFactory.sol, 62
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getPendingOwner
-;; return
+.loc ../contracts/TokenFactory.sol, 63
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -281,12 +249,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier pending_owner
 GETGLOB 15
-; end function getPendingOwner
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/TokenFactory.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -297,13 +262,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xa9697b62
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -312,10 +277,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -327,22 +292,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -351,17 +315,17 @@ SETGLOB 7
 
 .macro setRootCode
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode root_code_
-;; decode TvmCell
+.loc ../contracts/TokenFactory.sol, 66
 LDREF
 ENDS
-;; param: root_code_
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $setRootCode_internal_macro$
 }
@@ -376,54 +340,38 @@ SETGLOB 7
 CALL $setRootCode_internal_macro$
 
 .macro setRootCode_internal_macro
-;; param: root_code_
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function setRootCode
-; expValue
-; end expValue
-;; push identifier root_code_
-DUP
-; colValue
+.loc ../contracts/TokenFactory.sol, 67
 SETGLOB 11
-; end colValue
-; function returnChange
-;; transfer()
-;; push identifier owner
+.loc ../contracts/TokenFactory.sol, 197
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 64
 SENDRAWMSG
-; end function returnChange
-; end function setRootCode
-; end modifier onlyOwner
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro setWalletCode
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode wallet_code_
-;; decode TvmCell
+.loc ../contracts/TokenFactory.sol, 71
 LDREF
 ENDS
-;; param: wallet_code_
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $setWalletCode_internal_macro$
 }
@@ -438,64 +386,45 @@ SETGLOB 7
 CALL $setWalletCode_internal_macro$
 
 .macro setWalletCode_internal_macro
-;; param: wallet_code_
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function setWalletCode
-; expValue
-; end expValue
-;; push identifier wallet_code_
-DUP
-; colValue
+.loc ../contracts/TokenFactory.sol, 72
 SETGLOB 12
-; end colValue
-; function returnChange
-;; transfer()
-;; push identifier owner
+.loc ../contracts/TokenFactory.sol, 197
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 64
 SENDRAWMSG
-; end function returnChange
-; end function setWalletCode
-; end modifier onlyOwner
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro Token
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode answer_id
+.loc ../contracts/TokenFactory.sol, 76
 LDU 32
-; Decode root_public_key
 LDU 256
-; Decode root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode name
 DUP
 SREFS
 EQINT 1
@@ -506,7 +435,6 @@ PUSHCONT {
 }
 IF
 LDREF
-; Decode symbol
 DUP
 SBITREFS
 EQINT 1
@@ -520,10 +448,8 @@ PUSHCONT {
 }
 IF
 LDREF
-; Decode decimals
 LDUQ 8
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -531,12 +457,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: answer_id
-;; param: root_public_key
-;; param: root_owner_address
-;; param: name
-;; param: symbol
-;; param: decimals
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $Token_internal_macro$
 }
@@ -551,42 +472,26 @@ SETGLOB 7
 CALL $Token_internal_macro$
 
 .macro Token_internal_macro
-;; param: answer_id
-;; param: root_public_key
-;; param: root_owner_address
-;; param: name
-;; param: symbol
-;; param: decimals
-; function Token
+.loc ../contracts/TokenFactory.sol, 84
 PUSHINT 1000000000
-;; +
-PUSHINT 1000000000
+DUP
 ADD
 UFITS 128
-;; decl: expectedValue
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >=
-;; push identifier expectedValue
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 85
+DEPTH
+ADDCONST -2
+PICK
+SWAP
 GEQ
 THROWIFNOT 105
+.loc ../contracts/TokenFactory.sol, 86
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; push identifier name
-PUSH S3
-;; push identifier symbol
-PUSH S3
-;; push identifier decimals
-PUSH S3
-;; param: name
-;; param: symbol
-;; param: decimals
-; function _buildInitData
-;; return
+.loc ../contracts/TokenFactory.sol, 88
+PUSH3 S3, S4, S2
+BLKPUSH 2, 4
+.loc ../contracts/TokenFactory.sol, 168
 NEWDICT
 PUSHINT 0
 NEWC
@@ -595,7 +500,6 @@ PUSHINT 0
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier now
 NOW
 NEWC
 STU 256
@@ -603,27 +507,23 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier name
-PUSH S3
+ROLL 3
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETREF
-;; push identifier symbol
-PUSH S2
+ROT
 PUSHINT 3
 ROT
 PUSHINT 64
 DICTUSETREF
-;; push identifier decimals
-PUSH S1
+SWAP
 NEWC
 STU 8
 PUSHINT 4
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier wallet_code
 GETGLOB 12
 PUSHINT 5
 ROT
@@ -632,7 +532,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier root_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -640,8 +539,7 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 3, 1
+.loc ../contracts/TokenFactory.sol, 0
 DUP
 HASHCU
 NEWC
@@ -649,60 +547,49 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; -
+ROLLREV 3
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 1000000000
 SUB
 UFITS 128
-PUSH S1
+PUSH S4
 NEWC
 STSLICECONST x62_
 STSLICE
 SWAP
 STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST xc_
+PUSHSLICE x000000000000000000000000007_
+STSLICER
+STREF
 STSLICECONST 1
-PUSH S2
-STREFR
-STSLICECONST 1
+ROTREV
 NEWC
 STSLICECONST x01d53d1d
-;; root_public_key_
-;; push identifier root_public_key
-PUSH S9
-STUR 256
-;; root_owner_address_
-;; push identifier root_owner_address
-PUSH S8
-STSLICER
+STU 256
+STSLICE
 STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-NIP
-;; decl: tokenRoot
-;; Remote call RootTokenContract.getDetails
-;; push identifier tokenRoot
+.loc ../contracts/TokenFactory.sol, 94
 DUP
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x41dcd6500000000000000000000000000004_
+PUSHSLICE x41dcd6500000000000000000000000000000ffef48f8996dc6d1_
 STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x7ff7a47c
-STSLICECONST x4cb6e368
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; push identifier tokenRoot
-DUP
+.loc ../contracts/TokenFactory.sol, 96
+ROLL 6
+OVER
+BLKSWAP 5, 3
+GETGLOB 9
+TUPLE 8
+SWAP
 CALLREF {
 	CALL $_buildStorageInitData_internal_macro$
 }
@@ -711,117 +598,74 @@ HASHCU
 NEWC
 STSLICECONST x801_
 STU 256
-ENDC
-CTOS
-PUSHINT 0
-PUSH S1
 NEWC
 STSLICECONST x62_
-STSLICE
+STB
+PUSHSLICE x0000000000000000000000000007_
+STSLICER
+STREF
+STSLICECONST 1
 SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST xc_
-STSLICECONST 1
-PUSH S2
-STREFR
-STSLICECONST 1
 NEWC
 STSLICECONST x659f6c0e
-;; data
-;; push identifier answer_id
-PUSH S11
-;; push identifier tokenRoot
-PUSH S5
-;; push identifier root_public_key
-PUSH S12
-;; push identifier root_owner_address
-PUSH S12
-;; push identifier name
-PUSH S12
-;; push identifier symbol
-PUSH S12
-;; push identifier decimals
-PUSH S12
-;; get member sender
-GETGLOB 9
-TUPLE 8
+SWAP
 UNTUPLE 8
-BLKSWAP 1, 8
-PUSH S8
-STUR 32
-PUSH S7
-STSLICER
-PUSH S6
-STUR 256
-PUSH S5
-STSLICER
-PUSH S4
-STREFR
-PUSH S3
-STREFR
-PUSH S2
-STUR 8
+REVERSE 9, 0
+STU 32
+STSLICE
+STU 256
+ROLLREV 5
 NEWC
-PUSH S2
-STSLICER
-BLKDROP2 8, 2
+STSLICE
+STREF
+STREF
+STU 8
+SWAP
+NEWC
+STSLICE
+STBREFR
 STBREFR
 STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-NIP
-DROP
-DROP2
-; end function Token
-BLKDROP 6
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro onTokenGetDetails
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode details
-;; decode struct IRootTokenContractDetails details
-;; decode IRootTokenContractDetails.name
+.loc ../contracts/TokenFactory.sol, 113
 LDREF
-;; decode IRootTokenContractDetails.symbol
 LDREF
-;; decode IRootTokenContractDetails.decimals
 LDU 8
-;; decode IRootTokenContractDetails.root_public_key
 LDU 256
-;; decode IRootTokenContractDetails.root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; decode IRootTokenContractDetails.total_supply
 LDUQ 128
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 128
 }
 IFNOT
-;; build struct IRootTokenContractDetails ss:7
-BLKSWAP 6, 1
+ROLLREV 6
 TUPLE 6
 SWAP
 ENDS
-;; param: details
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $onTokenGetDetails_internal_macro$
 }
@@ -836,27 +680,17 @@ SETGLOB 7
 CALL $onTokenGetDetails_internal_macro$
 
 .macro onTokenGetDetails_internal_macro
-;; param: details
-; function onTokenGetDetails
+.loc ../contracts/TokenFactory.sol, 114
 NEWC
-;; decl: b
-; expValue
-DUP
-; end expValue
-;; get member root_public_key
-;; push identifier details
-PUSH S2
-INDEX 3
-STUR 256
-;; get member root_owner_address
-;; push identifier details
-PUSH S2
+.loc ../contracts/TokenFactory.sol, 115
+OVER
 INDEX 4
-STSLICER
-; colValue
-NIP
-; end colValue
-;; get member sender
+ROT
+INDEX 3
+ROT
+STU 256
+STSLICE
+.loc ../contracts/TokenFactory.sol, 116
 GETGLOB 9
 CALLREF {
 	CALL $_buildStorageInitData_internal_macro$
@@ -867,66 +701,56 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: tfStorage
-;; Remote call TokenFactoryStorage.getData
-;; push identifier tfStorage
-DUP
+.loc ../contracts/TokenFactory.sol, 117
+SWAP
+ENDC
+SWAP
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x24b22c1f
-STSLICECONST x1cf1da64
-;; meta
-;; push identifier b
-PUSH S2
-ENDC
-STREFR
+PUSHSLICE x00000000000000000000000000004964583e39e3b4c9_
+STSLICER
+STREF
 ENDC
 PUSHINT 64
 SENDRAWMSG
-DROP2
-; end function onTokenGetDetails
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro onStorageReadWithDetails
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode data
-;; decode struct StorageData data
-;; decode StorageData.answer_id
+.loc ../contracts/TokenFactory.sol, 124
 LDU 32
-;; decode StorageData.pending_token
-LDMSGADDR
-;; decode StorageData.root_public_key
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 LDUQ 256
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 256
 }
 IFNOT
-;; decode StorageData.root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; decode StorageData.name
 DUP
 SREFS
 EQINT 1
@@ -937,7 +761,6 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.symbol
 DUP
 SREFS
 EQINT 1
@@ -948,36 +771,28 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.decimals
 LDUQ 8
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 8
 }
 IFNOT
-;; decode StorageData.sender
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; build struct StorageData ss:9
-BLKSWAP 8, 1
+ROLLREV 8
 TUPLE 8
 SWAP
-; Decode meta
-;; decode TvmCell
 LDREF
 ENDS
-;; param: data
-;; param: meta
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $onStorageReadWithDetails_internal_macro$
 }
@@ -992,12 +807,8 @@ SETGLOB 7
 CALL $onStorageReadWithDetails_internal_macro$
 
 .macro onStorageReadWithDetails_internal_macro
-;; param: data
-;; param: meta
-; function onStorageReadWithDetails
-;; get member pending_token
-;; push identifier data
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 125
+OVER
 INDEX 1
 CALLREF {
 	CALL $_buildStorageInitData_internal_macro$
@@ -1008,122 +819,93 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: expected
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 126
 GETGLOB 9
-;; push identifier expected
-PUSH S1
 SDEQ
 THROWIFNOT 102
-;; push identifier meta
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 127
 CTOS
 LDU 256
-;; decode address
 LDMSGADDR
-; colValue
 DROP
+.loc ../contracts/TokenFactory.sol, 128
 SWAP
-SWAP
-;; decl: root_public_key
-;; decl: root_owner_address
-;; if
-;; push identifier root_public_key
-PUSH S1
-;; ==
-;; get member root_public_key
-;; push identifier data
-PUSH S5
+PUSH S2
 INDEX 2
 EQUAL
-;; short-circuiting &&
 DUP
 PUSHCONT {
 	DROP
-	;; push identifier root_owner_address
-	DUP
-	;; get member root_owner_address
-	;; push identifier data
-	PUSH S5
+	PUSH2 S0, S1
 	INDEX 3
 	SDEQ
 }
 IF
 PUSHCONT {
-	;; Remote call TokenFactoryStorage.prune
-	;; get member sender
+	.loc ../contracts/TokenFactory.sol, 129
 	GETGLOB 9
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHINT 109
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST x6fa13fc1
-	STSLICECONST x1ff85210
+	PUSHSLICE x0000000000000000000000000000df427f823ff0a421_
+	STSLICER
 	ENDC
 	PUSHINT 64
 	SENDRAWMSG
+	.loc ../contracts/TokenFactory.sol, 0
 }
 PUSHCONT {
-	;; Remote call TokenFactoryStorage.prune
-	;; get member sender
+	.loc ../contracts/TokenFactory.sol, 135
 	GETGLOB 9
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHINT 109
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST x6fa13fc1
-	STSLICECONST x7720e2ab
+	PUSHSLICE x0000000000000000000000000000df427f82ee41c557_
+	STSLICER
 	ENDC
 	PUSHINT 64
 	SENDRAWMSG
+	.loc ../contracts/TokenFactory.sol, 0
 }
 IFELSE
-;; end if
-BLKDROP 3
-; end function onStorageReadWithDetails
 DROP2
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro onStoragePruneNotify
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode data
-;; decode struct StorageData data
-;; decode StorageData.answer_id
+.loc ../contracts/TokenFactory.sol, 143
 LDU 32
-;; decode StorageData.pending_token
-LDMSGADDR
-;; decode StorageData.root_public_key
-LDUQ 256
-PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDU 256
-}
-IFNOT
-;; decode StorageData.root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; decode StorageData.name
+LDUQ 256
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 DUP
 SREFS
 EQINT 1
@@ -1134,7 +916,6 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.symbol
 DUP
 SBITREFS
 EQINT 1
@@ -1148,32 +929,27 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.decimals
 LDUQ 8
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 8
 }
 IFNOT
-;; decode StorageData.sender
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; build struct StorageData ss:9
-BLKSWAP 8, 1
+ROLLREV 8
 TUPLE 8
 SWAP
 ENDS
-;; param: data
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $onStoragePruneNotify_internal_macro$
 }
@@ -1188,10 +964,7 @@ SETGLOB 7
 CALL $onStoragePruneNotify_internal_macro$
 
 .macro onStoragePruneNotify_internal_macro
-;; param: data
-; function onStoragePruneNotify
-;; get member pending_token
-;; push identifier data
+.loc ../contracts/TokenFactory.sol, 144
 DUP
 INDEX 1
 CALLREF {
@@ -1203,17 +976,16 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: expected
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 145
 GETGLOB 9
-;; push identifier expected
-PUSH S1
 SDEQ
 THROWIFNOT 102
-;; Remote call ITokenRootDeployedCallback.notifyTokenRootDeployed
-;; get member sender
-;; push identifier data
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 146
+DUP
+INDEX 1
+OVER
+INDEX 0
+ROT
 INDEX 7
 FALSE
 NEWC
@@ -1222,65 +994,54 @@ STI 1
 PUSHINT 3
 STZEROES
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+ROTREV
+NEWC
 STSLICECONST x2c60fdaf
-;; answer_id
-;; get member answer_id
-;; push identifier data
-PUSH S2
-INDEX 0
-STUR 32
-;; token_root
-;; get member pending_token
-;; push identifier data
-PUSH S2
-INDEX 1
-STSLICER
+STU 32
+STSLICE
+STBREFR
 ENDC
 PUSHINT 64
 SENDRAWMSG
-DROP
-; end function onStoragePruneNotify
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro onStoragePruneReturn
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode data
-;; decode struct StorageData data
-;; decode StorageData.answer_id
+.loc ../contracts/TokenFactory.sol, 153
 LDU 32
-;; decode StorageData.pending_token
-LDMSGADDR
-;; decode StorageData.root_public_key
-LDUQ 256
-PUSHCONT {
-	;; load next cell
-	LDREF
-	ENDS
-	CTOS
-	LDU 256
-}
-IFNOT
-;; decode StorageData.root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; decode StorageData.name
+LDUQ 256
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 DUP
 SREFS
 EQINT 1
@@ -1291,7 +1052,6 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.symbol
 DUP
 SBITREFS
 EQINT 1
@@ -1305,32 +1065,27 @@ PUSHCONT {
 }
 IF
 LDREF
-;; decode StorageData.decimals
 LDUQ 8
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 8
 }
 IFNOT
-;; decode StorageData.sender
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; build struct StorageData ss:9
-BLKSWAP 8, 1
+ROLLREV 8
 TUPLE 8
 SWAP
 ENDS
-;; param: data
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $onStoragePruneReturn_internal_macro$
 }
@@ -1345,10 +1100,7 @@ SETGLOB 7
 CALL $onStoragePruneReturn_internal_macro$
 
 .macro onStoragePruneReturn_internal_macro
-;; param: data
-; function onStoragePruneReturn
-;; get member pending_token
-;; push identifier data
+.loc ../contracts/TokenFactory.sol, 154
 DUP
 INDEX 1
 CALLREF {
@@ -1360,17 +1112,16 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: expected
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 155
 GETGLOB 9
-;; push identifier expected
-PUSH S1
 SDEQ
 THROWIFNOT 102
-;; Remote call ITokenRootDeployedCallback.notifyTokenRootNotDeployed
-;; get member sender
-;; push identifier data
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 156
+DUP
+INDEX 1
+OVER
+INDEX 0
+ROT
 INDEX 7
 FALSE
 NEWC
@@ -1379,38 +1130,25 @@ STI 1
 PUSHINT 3
 STZEROES
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+ROTREV
+NEWC
 STSLICECONST x400134e1
-;; answer_id
-;; get member answer_id
-;; push identifier data
-PUSH S2
-INDEX 0
-STUR 32
-;; token_root
-;; get member pending_token
-;; push identifier data
-PUSH S2
-INDEX 1
-STSLICER
+STU 32
+STSLICE
+STBREFR
 ENDC
 PUSHINT 64
 SENDRAWMSG
-DROP
-; end function onStoragePruneReturn
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .globl	_buildStorageInitData_internal
 .type	_buildStorageInitData_internal, @function
 CALL $_buildStorageInitData_internal_macro$
 
 .macro _buildStorageInitData_internal_macro
-;; param: tokenRoot
-; function _buildStorageInitData
-;; return
+.loc ../contracts/TokenFactory.sol, 185
 NEWDICT
 PUSHINT 0
 NEWC
@@ -1424,8 +1162,7 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier tokenRoot
-PUSH S1
+SWAP
 PUSHINT 2
 ROT
 PUSHINT 64
@@ -1433,7 +1170,6 @@ DICTUSET
 NEWC
 STDICT
 ENDC
-;; push identifier storage_code
 GETGLOB 13
 NEWC
 STSLICECONST x2_
@@ -1441,22 +1177,21 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildStorageInitData
-NIP
+.loc ../contracts/TokenFactory.sol, 0
 
 .macro upgrade
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode code
-;; decode TvmCell
+.loc ../contracts/TokenFactory.sol, 200
 LDREF
 ENDS
-;; param: code
+.loc ../contracts/TokenFactory.sol, 0
 CALLREF {
 	CALL $upgrade_internal_macro$
 }
@@ -1471,98 +1206,70 @@ SETGLOB 7
 CALL $upgrade_internal_macro$
 
 .macro upgrade_internal_macro
-;; param: code
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function upgrade
-;; get member balance
+.loc ../contracts/TokenFactory.sol, 201
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier root_code
+.loc ../contracts/TokenFactory.sol, 203
 GETGLOB 11
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier wallet_code
+NEWC
+.loc ../contracts/TokenFactory.sol, 205
+STREF
+.loc ../contracts/TokenFactory.sol, 206
 GETGLOB 12
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier storage_code
+SWAP
+STREF
+.loc ../contracts/TokenFactory.sol, 207
 GETGLOB 13
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier owner
+SWAP
+STREF
+.loc ../contracts/TokenFactory.sol, 208
 GETGLOB 14
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier pending_owner
+SWAP
+STSLICE
+.loc ../contracts/TokenFactory.sol, 209
 GETGLOB 15
-STSLICER
-; colValue
-NIP
-; end colValue
-;; push identifier code
-PUSH S1
+SWAP
+STSLICE
+.loc ../contracts/TokenFactory.sol, 211
+OVER
 SETCODE
-;; push identifier code
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 212
+SWAP
+CTOS
+DUP
+PUSHSLICE x8adb35
+SDEQ
+PUSHCONT {
+	PLDREFIDX 1
+	CTOS
+}
+IF
+PLDREF
 CTOS
 BLESS
-POP c3
-;; push identifier builder
-DUP
+POP C3
+.loc ../contracts/TokenFactory.sol, 214
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
-DROP
-; end function upgrade
-; end modifier onlyOwner
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-;; param: upgrade_data
-; function onCodeUpgrade
-; end function onCodeUpgrade
+.loc ../contracts/TokenFactory.sol, 0
 DROP
 CALLREF {
 	CALL $c7_to_c4$
@@ -1572,43 +1279,42 @@ THROW 0
 
 .macro resetGas
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode receiver
-LDMSGADDR
+.loc ../contracts/TokenFactory.sol, 219
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: receiver
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function resetGas
+.loc ../contracts/TokenFactory.sol, 220
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; transfer()
-;; push identifier receiver
-DUP
+.loc ../contracts/TokenFactory.sol, 221
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function resetGas
-; end modifier onlyOwner
-DROP
+.loc ../contracts/TokenFactory.sol, 0
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1617,18 +1323,24 @@ SETGLOB 7
 
 .macro resetTargetGas
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode target
-LDMSGADDR
-; Decode receiver
+.loc ../contracts/TokenFactory.sol, 224
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+LDMSGADDRQ
+PUSHCONT {
 	LDREF
 	ENDS
 	CTOS
@@ -1636,51 +1348,39 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: target
-;; param: receiver
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/TokenFactory.sol, 36
 GETGLOB 9
-;; push identifier owner
 GETGLOB 14
 SDEQ
 THROWIFNOT 100
-; function resetTargetGas
+.loc ../contracts/TokenFactory.sol, 225
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; Remote call IResetGas.resetGas
-;; push identifier target
-PUSH S1
+.loc ../contracts/TokenFactory.sol, 226
+SWAP
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+SWAP
+NEWC
 STSLICECONST x06e29f2e
-;; receiver
-;; push identifier receiver
-PUSH S1
-STSLICER
+STSLICE
+STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function resetTargetGas
-; end modifier onlyOwner
-DROP2
+.loc ../contracts/TokenFactory.sol, 0
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1688,84 +1388,71 @@ TRUE
 SETGLOB 7
 
 .macro c7_to_c4
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-GETGLOB 13
-GETGLOB 14
-GETGLOB 15
-REVERSE 7, 0
+STU 64
+STONE
 STU 32
 STREF
 STREF
 STREF
 STSLICE
+SWAP
+NEWC
 STSLICE
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
 LDU 32
 LDREF
 LDREF
 LDREF
 LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
 SETGLOB 15
 SETGLOB 14
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDU 32
-	LDREF
-	LDREF
-	LDREF
-	LDMSGADDR
-	SETGLOB 15
-	SETGLOB 14
-	SETGLOB 13
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init _nonce
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
 	PUSHINT 1
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1776,27 +1463,19 @@ PUSHCONT {
 	}
 	IFELSE
 	SETGLOB 10
-	; init root_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 11
-	; init wallet_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 12
-	; init storage_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 13
-	; init owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 14
-	; init pending_owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 15
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -1804,53 +1483,48 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
 }
 IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
-LDU 4       ; bounced tail
-LDMSGADDR   ; bounced src tail
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
-; beg set default params for responsible func
 GETGLOB 4
-; bounce
 TRUE
 SETINDEXQ 1
-; tons
 PUSHINT 10000000
 SETINDEXQ 2
-; currency
 NULL
 SETINDEXQ 3
-; flag
 PUSHINT 0
 SETINDEXQ 4
 SETGLOB 4
-; end set default params for responsible func
 IFRET
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -1861,10 +1535,14 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 9
-PUSH S1
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -1873,19 +1551,19 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
 	ROT
 	GETGLOB 2
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 IF
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -1899,25 +1577,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 11
+OVER
 PUSHCONT {
-	GETGLOB 11
+	PUSHSLICE xc0000000000000000000000000dbdbfb99
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xdbdbfb99
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -1927,25 +1598,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 12
+OVER
 PUSHCONT {
-	GETGLOB 12
+	PUSHSLICE xc0000000000000000000000000a29719f7
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xa29719f7
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -1955,25 +1619,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 13
+OVER
 PUSHCONT {
-	GETGLOB 13
+	PUSHSLICE xc0000000000000000000000000cdac8163
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xcdac8163
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -1983,25 +1640,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 14
+OVER
 PUSHCONT {
-	GETGLOB 14
+	PUSHSLICE xc0000000000000000000000000df0bcfde
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xdf0bcfde
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -2011,37 +1661,30 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 15
+OVER
 PUSHCONT {
-	GETGLOB 15
+	PUSHSLICE xc0000000000000000000000000be875120
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xbe875120
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
 .macro public_function_selector
 DUP
-PUSHINT 485612132
+PUSHINT 1690205927
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
-	PUSHINT 209702378
+	PUSHINT 453826860
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
 		DUP
 		PUSHINT 115515182
 		EQUAL
@@ -2054,12 +1697,6 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $constructor$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 453826860
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 388172858
 		EQUAL
@@ -2073,23 +1710,16 @@ PUSHCONT {
 			CALL $transferOwner$
 		}
 	}
-	IFJMP
 	DUP
-	PUSHINT 485612132
-	EQUAL
-	IFJMPREF {
-		CALL $onStorageReadWithDetails$
-	}
-}
-IFJMP
-DUP
-PUSHINT 1287054184
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 580327927
+	PUSHINT 694778722
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
+		DUP
+		PUSHINT 485612132
+		EQUAL
+		IFJMPREF {
+			CALL $onStorageReadWithDetails$
+		}
 		DUP
 		PUSHINT 536367632
 		EQUAL
@@ -2102,42 +1732,29 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $wallet_code$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1049055520
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 694778722
 		EQUAL
 		IFJMPREF {
 			CALL $getPendingOwner$
 		}
+	}
+	DUP
+	PUSHINT 1541143449
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1049055520
 		EQUAL
 		IFJMPREF {
 			CALL $pending_owner$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1287054184
-	EQUAL
-	IFJMPREF {
-		CALL $onTokenGetDetails$
-	}
-}
-IFJMP
-DUP
-PUSHINT 1656985116
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1541143449
-	LEQ
-	PUSHCONT {
+		DUP
+		PUSHINT 1287054184
+		EQUAL
+		IFJMPREF {
+			CALL $onTokenGetDetails$
+		}
 		DUP
 		PUSHINT 1303150947
 		EQUAL
@@ -2151,11 +1768,10 @@ PUSHCONT {
 			CALL $root_code$
 		}
 	}
-	IFJMP
 	DUP
-	PUSHINT 1594609630
+	PUSHINT 1690205927
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
 		DUP
 		PUSHINT 1590035614
 		EQUAL
@@ -2168,56 +1784,42 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $owner$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1656985116
-	EQUAL
-	IFJMPREF {
-		CALL $getOwner$
-	}
-}
-IFJMP
-DUP
-PUSHINT 1998643883
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1707282005
-	LEQ
-	PUSHCONT {
+		DUP
+		PUSHINT 1656985116
+		EQUAL
+		IFJMPREF {
+			CALL $getOwner$
+		}
 		DUP
 		PUSHINT 1690205927
 		EQUAL
 		IFJMPREF {
 			CALL $Token$
 		}
-		DUP
-		PUSHINT 1707282005
-		EQUAL
-		IFJMPREF {
-			CALL $resetTargetGas$
-		}
 	}
-	IFJMP
+}
+DUP
+PUSHINT 1998643883
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1707282005
+	EQUAL
+	IFJMPREF {
+		CALL $resetTargetGas$
+	}
+	DUP
+	PUSHINT 1809145905
+	EQUAL
+	IFJMPREF {
+		CALL $acceptOwner$
+	}
 	DUP
 	PUSHINT 1911415692
-	LEQ
-	PUSHCONT {
-		DUP
-		PUSHINT 1809145905
-		EQUAL
-		IFJMPREF {
-			CALL $acceptOwner$
-		}
-		DUP
-		PUSHINT 1911415692
-		EQUAL
-		IFJMPREF {
-			CALL $setWalletCode$
-		}
+	EQUAL
+	IFJMPREF {
+		CALL $setWalletCode$
 	}
-	IFJMP
 	DUP
 	PUSHINT 1998643883
 	EQUAL
@@ -2225,4 +1827,4 @@ PUSHCONT {
 		CALL $onStoragePruneReturn$
 	}
 }
-IFJMP
+

@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -20,7 +21,7 @@
 		{
 			"name": "getRoot",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"dex_root","type":"address"}
@@ -29,7 +30,7 @@
 		{
 			"name": "getTokenRoots",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"left","type":"address"},
@@ -40,7 +41,7 @@
 		{
 			"name": "getTokenWallets",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"left","type":"address"},
@@ -51,7 +52,7 @@
 		{
 			"name": "getVersion",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"version","type":"uint32"}
@@ -60,7 +61,7 @@
 		{
 			"name": "getVault",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"dex_vault","type":"address"}
@@ -69,7 +70,7 @@
 		{
 			"name": "getVaultWallets",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"left","type":"address"},
@@ -88,7 +89,7 @@
 		{
 			"name": "getFeeParams",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"numerator","type":"uint16"},
@@ -98,7 +99,7 @@
 		{
 			"name": "isActive",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"bool"}
@@ -107,7 +108,7 @@
 		{
 			"name": "getBalances",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"components":[{"name":"lp_supply","type":"uint128"},{"name":"left_balance","type":"uint128"},{"name":"right_balance","type":"uint128"}],"name":"value0","type":"tuple"}
@@ -163,7 +164,7 @@
 		{
 			"name": "expectedDepositLiquidity",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"left_amount","type":"uint128"},
 				{"name":"right_amount","type":"uint128"},
 				{"name":"auto_change","type":"bool"}
@@ -190,7 +191,7 @@
 		{
 			"name": "expectedWithdrawLiquidity",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"lp_amount","type":"uint128"}
 			],
 			"outputs": [
@@ -214,7 +215,7 @@
 		{
 			"name": "expectedExchange",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"amount","type":"uint128"},
 				{"name":"spent_token_root","type":"address"}
 			],
@@ -226,7 +227,7 @@
 		{
 			"name": "expectedSpendAmount",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"receive_amount","type":"uint128"},
 				{"name":"receive_token_root","type":"address"}
 			],
@@ -448,5 +449,28 @@
 			"outputs": [
 			]
 		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"root","type":"address"},
+		{"name":"vault","type":"address"},
+		{"name":"current_version","type":"uint32"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"left_root","type":"address"},
+		{"name":"right_root","type":"address"},
+		{"name":"active","type":"bool"},
+		{"name":"lp_wallet","type":"address"},
+		{"name":"left_wallet","type":"address"},
+		{"name":"right_wallet","type":"address"},
+		{"name":"vault_left_wallet","type":"address"},
+		{"name":"vault_right_wallet","type":"address"},
+		{"name":"lp_root","type":"address"},
+		{"name":"lp_supply","type":"uint128"},
+		{"name":"left_balance","type":"uint128"},
+		{"name":"right_balance","type":"uint128"},
+		{"name":"fee_numerator","type":"uint16"},
+		{"name":"fee_denominator","type":"uint16"}
 	]
 }

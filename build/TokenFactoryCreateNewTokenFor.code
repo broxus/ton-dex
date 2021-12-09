@@ -1,21 +1,16 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
-; Decode factory
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -23,18 +18,11 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: factory
-; constructor TokenFactoryCreateNewTokenFor
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 22
 ACCEPT
-; expValue
-; end expValue
-;; push identifier factory
-DUP
-; colValue
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 23
 SETGLOB 11
-; end colValue
-; end constructor TokenFactoryCreateNewTokenFor
-DROP
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -43,35 +31,31 @@ SETGLOB 7
 
 .macro newToken
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode answer_id
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 26
 LDU 32
-; Decode value
 LDUQ 128
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 128
 }
 IFNOT
-; Decode owner
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode name
 DUP
 SREFS
 EQINT 1
@@ -82,7 +66,6 @@ PUSHCONT {
 }
 IF
 LDREF
-; Decode symbol
 DUP
 SBITREFS
 EQINT 1
@@ -96,10 +79,8 @@ PUSHCONT {
 }
 IF
 LDREF
-; Decode decimals
 LDUQ 8
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -107,12 +88,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: answer_id
-;; param: value
-;; param: owner
-;; param: name
-;; param: symbol
-;; param: decimals
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 CALLREF {
 	CALL $newToken_internal_macro$
 }
@@ -127,74 +103,49 @@ SETGLOB 7
 CALL $newToken_internal_macro$
 
 .macro newToken_internal_macro
-;; param: answer_id
-;; param: value
-;; param: owner
-;; param: name
-;; param: symbol
-;; param: decimals
-; function newToken
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 34
 ACCEPT
-;; Remote call ITokenFactory.Token
-;; push identifier value
-PUSH S4
-;; push identifier _factory
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 35
+XCHG S2
+ROLL 3
+PUSHINT 0
+BLKSWAP 2, 5
 GETGLOB 11
 NEWC
 STSLICECONST x62_
 STSLICE
 SWAP
 STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
+PUSHINT 1
+STUR 107
+ROLLREV 6
 NEWC
 STSLICECONST x64be7ee7
-;; answer_id
-;; push identifier answer_id
-PUSH S7
-STUR 32
-;; root_public_key
-PUSHINT 0
-STUR 256
-;; root_owner_address
-;; push identifier owner
-PUSH S5
-STSLICER
-;; name
-;; push identifier name
-PUSH S4
-STREFR
-;; symbol
-;; push identifier symbol
-PUSH S3
-STREFR
-;; decimals
-;; push identifier decimals
-PUSH S2
-STUR 8
+STU 32
+STU 256
+STSLICE
+STREF
+STREF
+STU 8
 STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-; end function newToken
-BLKDROP 6
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 
 .macro notifyTokenRootDeployed
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode answer_id
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 38
 LDU 32
-; Decode token_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -202,8 +153,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: answer_id
-;; param: token_root
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 CALLREF {
 	CALL $notifyTokenRootDeployed_internal_macro$
 }
@@ -218,61 +168,41 @@ SETGLOB 7
 CALL $notifyTokenRootDeployed_internal_macro$
 
 .macro notifyTokenRootDeployed_internal_macro
-;; param: answer_id
-;; param: token_root
-; function notifyTokenRootDeployed
-;; get member sender
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 39
 GETGLOB 9
-;; push identifier _factory
 GETGLOB 11
 SDEQ
 THROWIFNOT 100
-;; emit RootDepoyed
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 40
+DUP
+PUSHSLICE xc00000000000000000000000002f9065a1
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x2f9065a1
-;; root
-;; push identifier token_root
-PUSH S1
-STSLICER
+STSLICE
+STSLICE
 ENDC
 PUSHINT 0
 SENDRAWMSG
-; expValue
-;; fetch deployedTokens
-GETGLOB 12
-;; push identifier answer_id
-PUSH S2
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 41
 SWAP
-; end expValue
-;; push identifier token_root
-PUSH S2
-; colValue
-ROTREV
+GETGLOB 12
 PUSHINT 32
 DICTUSET
 SETGLOB 12
-; end colValue
-; end function notifyTokenRootDeployed
-DROP2
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 
 .macro notifyTokenRootNotDeployed
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode answer_id
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 43
 LDU 32
-; Decode token_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -280,8 +210,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: answer_id
-;; param: token_root
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 CALLREF {
 	CALL $notifyTokenRootNotDeployed_internal_macro$
 }
@@ -296,54 +225,40 @@ SETGLOB 7
 CALL $notifyTokenRootNotDeployed_internal_macro$
 
 .macro notifyTokenRootNotDeployed_internal_macro
-;; param: answer_id
-;; param: token_root
-; function notifyTokenRootNotDeployed
-;; get member sender
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 44
 GETGLOB 9
-;; push identifier _factory
 GETGLOB 11
 SDEQ
 THROWIFNOT 100
-;; emit RootNotDepoyed
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 45
+SWAP
+PUSHSLICE xc000000000000000000000000068223ffd
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x68223ffd
-;; answer_id
-;; push identifier answer_id
-PUSH S2
-STUR 32
-;; root
-;; push identifier token_root
-PUSH S1
-STSLICER
+STSLICE
+STU 32
+STSLICE
 ENDC
 PUSHINT 0
 SENDRAWMSG
-; end function notifyTokenRootNotDeployed
-DROP2
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 
 .macro getDeployedToken
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode answer_id
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 48
 LDU 32
 ENDS
-;; param: answer_id
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 CALLREF {
 	CALL $getDeployedToken_internal_macro$
 }
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -354,19 +269,21 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xd0b975f1
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP
+PUSHCONT {
+	DROP
+}
+IFELSE
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -378,13 +295,7 @@ SETGLOB 7
 CALL $getDeployedToken_internal_macro$
 
 .macro getDeployedToken_internal_macro
-;; param: answer_id
-; function getDeployedToken
-;; return
-;; index
-;; push identifier answer_id
-DUP
-;; push identifier deployedTokens
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 49
 GETGLOB 12
 PUSHINT 32
 DICTUGET
@@ -392,72 +303,62 @@ PUSHCONT {
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 IFNOT
-; end function getDeployedToken
-NIP
+.loc ../contracts/tests/TokenFactoryCreateNewTokenFor.sol, 0
 
 .macro c7_to_c4
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-REVERSE 4, 0
+STU 64
+STONE
 STU 256
+ROTREV
+NEWC
 STSLICE
 STDICT
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
 LDU 256
+LDREF
+ENDS
+CTOS
 LDMSGADDR
-PLDDICT
+LDDICT
+ENDS
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDU 256
-	LDMSGADDR
-	PLDDICT
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init _randomNonce
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
 	PUSHINT 1
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -468,15 +369,10 @@ PUSHCONT {
 	}
 	IFELSE
 	SETGLOB 10
-	; init _factory
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 11
-	; init deployedTokens
 	NEWDICT
 	SETGLOB 12
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -484,37 +380,38 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
 }
 IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
-LDU 4       ; bounced tail
-LDMSGADDR   ; bounced src tail
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
 IFRET
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -525,10 +422,14 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 9
-PUSH S1
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -537,40 +438,40 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
 	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	SWAP
 	PUSHCONT {
-		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
-		XCHG s3
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
 		SWAP
 	}
 	PUSHCONT {
-		XCHG s2
+		XCHG S2
 		GETGLOB 2
 	}
 	IFELSE
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 PUSHCONT {
-	LDU 1      ; havePubkey msgSlice
-	SWAP       ; msgSlice havePubkey
+	LDU 1 ; havePubkey msgSlice
+	SWAP
 	THROWIF 58 ; msgSlice
 }
 IFELSE
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU 32  ; expireAt msgSlice
-SWAP    ; msgSlice expireAt
-NOW     ; msgSlice expireAt now
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
 GREATER ; msgSlice expireAt>now
 THROWIFNOT 57
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -580,9 +481,9 @@ THROWIF 60
 
 .macro public_function_selector
 DUP
-PUSHINT 1073820897
+PUSHINT 1354331633
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
 	PUSHINT 744553903
 	EQUAL
@@ -595,12 +496,6 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $notifyTokenRootNotDeployed$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1354331633
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1196840156
 	EQUAL
@@ -614,10 +509,10 @@ PUSHCONT {
 		CALL $getDeployedToken$
 	}
 }
-IFJMP
 DUP
 PUSHINT 2054428688
 EQUAL
 IFJMPREF {
 	CALL $newToken$
 }
+
