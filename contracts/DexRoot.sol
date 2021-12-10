@@ -68,11 +68,11 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
-    function getAccountVersion() external view responsible returns (uint32) {
+    function getAccountVersion() override external view responsible returns (uint32) {
         return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } account_version;
     }
 
-    function getPairVersion() external view responsible returns (uint32) {
+    function getPairVersion() override external view responsible returns (uint32) {
         return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pair_version;
     }
 
@@ -85,7 +85,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
-    function getVault() external view responsible returns (address) {
+    function getVault() override external view responsible returns (address) {
         return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } vault;
     }
 
@@ -107,7 +107,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
-    function isActive() external view responsible returns (bool) {
+    function isActive() override external view responsible returns (bool) {
         return{ value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } active;
     }
 
@@ -258,14 +258,14 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         _;
     }
 
-    function getExpectedAccountAddress(address account_owner) external view responsible returns (address) {
+    function getExpectedAccountAddress(address account_owner) override external view responsible returns (address) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
             PlatformTypes.Account,
             _buildAccountParams(account_owner)
         )));
     }
 
-    function getExpectedPairAddress(address left_root, address right_root) external view responsible returns (address) {
+    function getExpectedPairAddress(address left_root, address right_root) override external view responsible returns (address) {
         return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
             PlatformTypes.Pair,
             _buildPairParams(left_root, right_root)
@@ -305,7 +305,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     // Deploy child contracts
 
-    function deployAccount(address account_owner, address send_gas_to) external onlyActive {
+    function deployAccount(address account_owner, address send_gas_to) override external onlyActive {
         require(msg.value >= Gas.DEPLOY_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(account_owner.value != 0, DexErrors.INVALID_ADDRESS);
 
@@ -332,7 +332,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
-    function deployPair(address left_root, address right_root, address send_gas_to) external onlyActive {
+    function deployPair(address left_root, address right_root, address send_gas_to) override external onlyActive {
         require(msg.value >= Gas.DEPLOY_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         require(left_root.value != right_root.value, DexErrors.WRONG_PAIR);
         require(left_root.value != 0, DexErrors.WRONG_PAIR);

@@ -1,41 +1,31 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
 ENDS
-; constructor NewDexVault
+.loc ../contracts/tests/TestNewDexVault.sol, 24
 THROW 100
-; end constructor NewDexVault
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
+.loc ../contracts/tests/TestNewDexVault.sol, 0
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-;; param: data
-; function onCodeUpgrade
-;; set default state vars
+.loc ../contracts/tests/TestNewDexVault.sol, 27
 PUSHINT 0
 SETGLOB 10
-NEWC
-ENDC
+PUSHREF {
+}
 SETGLOB 11
 PUSHINT 0
 SETGLOB 12
-NEWC
-ENDC
+PUSHREF {
+}
 SETGLOB 13
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 14
@@ -45,118 +35,59 @@ PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 16
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 17
-NEWC
-ENDC
+PUSHREF {
+}
 SETGLOB 18
-;; end set default state vars
-;; push identifier data
-DUP
+.loc ../contracts/tests/TestNewDexVault.sol, 28
 CTOS
-;; decl: s
-; expValue
+.loc ../contracts/tests/TestNewDexVault.sol, 29
 DUP
-; end expValue
-;; decode address
 LDMSGADDR
-;; decode address
 LDMSGADDR
-; colValue
 POP S3
-; end colValue
 SWAP
-; expValue
-; end expValue
-; colValue
 SETGLOB 14
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 17
-; end colValue
-; expValue
+.loc ../contracts/tests/TestNewDexVault.sol, 31
 DUP
-; end expValue
 LDREF
-; colValue
 POP S2
-; end colValue
-;; decl: owners_data
-;; push identifier owners_data
-DUP
+.loc ../contracts/tests/TestNewDexVault.sol, 32
 CTOS
-;; decode address
 LDMSGADDR
-;; decode address
 LDMSGADDR
-; colValue
 DROP
 SWAP
-; expValue
-; end expValue
-; colValue
 SETGLOB 15
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 16
-; end colValue
-; expValue
-PUSH S1
-; end expValue
+.loc ../contracts/tests/TestNewDexVault.sol, 34
+DUP
 LDREF
-; colValue
-POP S3
-; end colValue
-; expValue
-; end expValue
-; colValue
+POP S2
 SETGLOB 11
-; end colValue
-; expValue
-PUSH S1
-; end expValue
+.loc ../contracts/tests/TestNewDexVault.sol, 35
 LDREF
-; colValue
-POP S3
-; end colValue
-; expValue
-; end expValue
-; colValue
+DROP
 SETGLOB 13
-; end colValue
-; expValue
-; end expValue
+.loc ../contracts/tests/TestNewDexVault.sol, 37
 TRUE
-; colValue
 SETGLOB 12
-; end colValue
-; expValue
-; end expValue
-PUSHSLICE x4e6577205661756c74
-NEWC
-STSLICE
-ENDC
-; colValue
+.loc ../contracts/tests/TestNewDexVault.sol, 39
+PUSHREF {
+	.blob x4e6577205661756c74
+}
 SETGLOB 18
-; end colValue
-;; transfer()
-;; push identifier owner
+.loc ../contracts/tests/TestNewDexVault.sol, 41
 GETGLOB 15
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-DROP2
-; end function onCodeUpgrade
-DROP
+.loc ../contracts/tests/TestNewDexVault.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -165,19 +96,20 @@ THROW 0
 
 .macro newFunc
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/tests/TestNewDexVault.sol, 44
 ENDS
+.loc ../contracts/tests/TestNewDexVault.sol, 0
 CALLREF {
 	CALL $newFunc_internal_macro$
 }
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -188,19 +120,17 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xc113206e
-	PUSH S1
-	STREFR
+	PUSHSLICE x00000000000000000000000024509510a_
+	STSLICER
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP
+PUSHCONT {
+	DROP
+}
+IFELSE
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -212,114 +142,100 @@ SETGLOB 7
 CALL $newFunc_internal_macro$
 
 .macro newFunc_internal_macro
-; function newFunc
-;; return
-;; push identifier newTestField
+.loc ../contracts/tests/TestNewDexVault.sol, 45
 GETGLOB 18
-; end function newFunc
+.loc ../contracts/tests/TestNewDexVault.sol, 0
 
 .macro c7_to_c4
+GETGLOB 18
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
-NEWC
-GETGLOB 16
-GETGLOB 17
-XCHG s2
-STSLICE
-STSLICE
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-GETGLOB 13
-GETGLOB 14
-GETGLOB 15
-GETGLOB 18
-REVERSE 9, 0
-STBREF
+STU 64
+STONE
 STU 32
 STREF
 STI 1
 STREF
 STSLICE
+ROLLREV 4
+NEWC
+STSLICE
+ROLLREV 3
+NEWC
+STSLICE
+ROTREV
+NEWC
 STSLICE
 STREF
+STBREFR
+STBREFR
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
-LDREFRTOS
-LDMSGADDR
-SETGLOB 17
-SETGLOB 16
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
 LDU 32
 LDREF
 LDI 1
 LDREF
 LDMSGADDR
+LDREF
+ENDS
+CTOS
 LDMSGADDR
-PLDREF
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
 SETGLOB 18
+SETGLOB 17
+SETGLOB 16
 SETGLOB 15
 SETGLOB 14
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDREFRTOS
-	LDMSGADDR
-	SETGLOB 17
-	SETGLOB 16
-	LDU 32
-	LDREF
-	LDI 1
-	LDREF
-	LDMSGADDR
-	LDMSGADDR
-	PLDREF
-	SETGLOB 18
-	SETGLOB 15
-	SETGLOB 14
-	SETGLOB 13
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init _nonce
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
 	PUSHINT 1
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -330,36 +246,25 @@ PUSHCONT {
 	}
 	IFELSE
 	SETGLOB 10
-	; init platform_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 11
-	; init has_platform_code
 	PUSHINT 0
 	SETGLOB 12
-	; init lp_token_pending_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 13
-	; init root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 14
-	; init owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 15
-	; init pending_owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 16
-	; init token_factory
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 17
-	; init newTestField
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 18
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -367,34 +272,35 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
 }
 IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
 PLDU 4
 MODPOW2 1
 IFRET
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -405,8 +311,12 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
-PUSH S1
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -415,19 +325,19 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
 	ROT
 	GETGLOB 2
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 IF
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -441,25 +351,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 11
+OVER
 PUSHCONT {
-	GETGLOB 11
+	PUSHSLICE xc0000000000000000000000000e6d44df5
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xe6d44df5
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -469,25 +372,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 13
+OVER
 PUSHCONT {
-	GETGLOB 13
+	PUSHSLICE xc0000000000000000000000000ba6fedbf
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xba6fedbf
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -497,25 +393,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 14
+OVER
 PUSHCONT {
-	GETGLOB 14
+	PUSHSLICE xc0000000000000000000000000b7295e20
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xb7295e20
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -525,25 +414,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 15
+OVER
 PUSHCONT {
-	GETGLOB 15
+	PUSHSLICE xc0000000000000000000000000df0bcfde
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xdf0bcfde
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -553,25 +435,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 16
+OVER
 PUSHCONT {
-	GETGLOB 16
+	PUSHSLICE xc0000000000000000000000000be875120
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xbe875120
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -581,33 +456,32 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 17
+OVER
 PUSHCONT {
-	GETGLOB 17
+	PUSHSLICE xc0000000000000000000000000fa58c34a
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xfa58c34a
-	PUSH S1
-	STSLICER
+	STSLICE
+	STSLICE
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
 .macro public_function_selector
 DUP
-PUSHINT 980413887
+PUSHINT 1049055520
 LEQ
-PUSHCONT {
+IFJMPREF {
+	DUP
+	PUSHINT 289559618
+	EQUAL
+	IFJMPREF {
+		CALL $newFunc$
+	}
 	DUP
 	PUSHINT 925457952
 	EQUAL
@@ -620,30 +494,17 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $lp_token_pending_code$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1091772526
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1049055520
 	EQUAL
 	IFJMPREF {
 		CALL $pending_owner$
 	}
-	DUP
-	PUSHINT 1091772526
-	EQUAL
-	IFJMPREF {
-		CALL $newFunc$
-	}
 }
-IFJMP
 DUP
-PUSHINT 1725189621
+PUSHINT 2052637514
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
 	PUSHINT 1594609630
 	EQUAL
@@ -656,12 +517,6 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $platform_code$
 	}
-}
-IFJMP
-DUP
-PUSHINT 2052637514
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1756716863
 	EQUAL
@@ -675,4 +530,4 @@ PUSHCONT {
 		CALL $token_factory$
 	}
 }
-IFJMP
+

@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -12,7 +13,7 @@
 		{
 			"name": "getRoot",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -21,7 +22,7 @@
 		{
 			"name": "getOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -30,7 +31,7 @@
 		{
 			"name": "getVersion",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"uint32"}
@@ -39,7 +40,7 @@
 		{
 			"name": "getVault",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -48,7 +49,7 @@
 		{
 			"name": "getWalletData",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"token_root","type":"address"}
 			],
 			"outputs": [
@@ -77,7 +78,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"value0","type":"bytes"}
+				{"name":"value0","type":"string"}
 			]
 		},
 		{
@@ -92,5 +93,18 @@
 	"data": [
 	],
 	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"root","type":"address"},
+		{"name":"vault","type":"address"},
+		{"name":"current_version","type":"uint32"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"owner","type":"address"},
+		{"name":"_wallets","type":"map(address,address)"},
+		{"name":"_balances","type":"map(address,uint128)"},
+		{"name":"newTestField","type":"string"}
 	]
 }

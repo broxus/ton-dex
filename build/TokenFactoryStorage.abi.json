@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["time"],
 	"functions": [
 		{
@@ -13,7 +14,7 @@
 		{
 			"name": "getData",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"meta","type":"cell"}
 			],
 			"outputs": [
@@ -24,7 +25,7 @@
 		{
 			"name": "prune",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"value0","type":"tuple"}
@@ -36,5 +37,13 @@
 		{"key":2,"name":"pending_token","type":"address"}
 	],
 	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"root","type":"address"},
+		{"name":"pending_token","type":"address"},
+		{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"_data","type":"tuple"}
 	]
 }

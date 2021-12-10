@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -59,5 +60,15 @@
 		{"key":3,"name":"params","type":"cell"}
 	],
 	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"root","type":"address"},
+		{"name":"type_id","type":"uint8"},
+		{"name":"params","type":"cell"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"has_platform_code","type":"bool"}
 	]
 }

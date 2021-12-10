@@ -1,11 +1,11 @@
 const fs = require('fs');
 
-const OLD_DEX_PAIR_CODE_HASH = '71597689db5b652e8fa5c80180ccc68d76f07b7dddb2e8c1546b11caba2453b1';
+const OLD_DEX_PAIR_CODE_HASH = '04693de56d179b1f009b68f118a0d28700be24d25db09be62881f4ce92ec20dc';
 const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940';
 
 async function main() {
   const dexOwnersToUpdate = [];
-  const dexAccount = await locklift.factory.getContract('DexPairV2');
+  const dexPair = await locklift.factory.getContract('DexPairV2');
 
   let lastAddress = locklift.utils.zeroAddress;
   let hasResults = true;
@@ -26,9 +26,9 @@ async function main() {
       lastAddress = result[49].id;
     }
     for (const dexPair of result) {
-      dexAccount.setAddress(dexPair.id);
-      if ((await dexAccount.call({method: 'getRoot'})) === DEX_ROOT_ADDRESS) {
-        const roots = await dexAccount.call({method: 'getTokenRoots'})
+      dexPair.setAddress(dexPair.id);
+      if ((await dexPair.call({method: 'getRoot'})) === DEX_ROOT_ADDRESS) {
+        const roots = await dexPair.call({method: 'getTokenRoots'})
         console.log(`DexPair ${dexPair.id}, left = ${roots.left}, right = ${roots.right}, lp = ${roots.lp}`);
         dexOwnersToUpdate.push({
           dexPair: dexPair.id,

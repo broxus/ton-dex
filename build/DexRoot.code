@@ -1,31 +1,24 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
-; Decode initial_owner
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode initial_vault
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -33,42 +26,28 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: initial_owner
-;; param: initial_vault
-; constructor DexRoot
+.loc ../contracts/DexRoot.sol, 37
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
+.loc ../contracts/DexRoot.sol, 38
 ACCEPT
-; expValue
-; end expValue
-;; push identifier initial_owner
-PUSH S1
-; colValue
+.loc ../contracts/DexRoot.sol, 39
+SWAP
 SETGLOB 18
-; end colValue
-; expValue
-; end expValue
-;; push identifier initial_vault
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 40
 SETGLOB 19
-; end colValue
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 41
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end constructor DexRoot
-DROP2
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -77,62 +56,44 @@ SETGLOB 7
 
 .macro installPlatformOnce
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode code
-;; decode TvmCell
+.loc ../contracts/DexRoot.sol, 46
 LDREF
 ENDS
-;; param: code
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function installPlatformOnce
-;; !
-;; push identifier has_platform_code
+.loc ../contracts/DexRoot.sol, 48
 GETGLOB 12
-NOT
-THROWIFNOT 108
+THROWIF 108
+.loc ../contracts/DexRoot.sol, 49
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-; expValue
-; end expValue
-;; push identifier code
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 50
 SETGLOB 11
-; end colValue
-; expValue
-; end expValue
+.loc ../contracts/DexRoot.sol, 51
 TRUE
-; colValue
 SETGLOB 12
-; end colValue
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 52
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function installPlatformOnce
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -141,75 +102,52 @@ SETGLOB 7
 
 .macro installOrUpdateAccountCode
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode code
-;; decode TvmCell
+.loc ../contracts/DexRoot.sol, 55
 LDREF
 ENDS
-;; param: code
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function installOrUpdateAccountCode
+.loc ../contracts/DexRoot.sol, 56
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-; expValue
-; end expValue
-;; push identifier code
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 57
 SETGLOB 13
-; end colValue
-;; ++
-; expValue
-;; fetch account_version
+.loc ../contracts/DexRoot.sol, 58
 GETGLOB 14
-; end expValue
 INC
 UFITS 32
-; colValue
+DUP
 SETGLOB 14
-; end colValue
-;; emit AccountCodeUpgraded
+.loc ../contracts/DexRoot.sol, 59
+PUSHSLICE xc00000000000000000000000005e12d57f
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x5e12d57f
-;; version
-;; push identifier account_version
-GETGLOB 14
-STUR 32
+STSLICE
+STU 32
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 60
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function installOrUpdateAccountCode
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -218,75 +156,52 @@ SETGLOB 7
 
 .macro installOrUpdatePairCode
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode code
-;; decode TvmCell
+.loc ../contracts/DexRoot.sol, 63
 LDREF
 ENDS
-;; param: code
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function installOrUpdatePairCode
+.loc ../contracts/DexRoot.sol, 64
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-; expValue
-; end expValue
-;; push identifier code
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 65
 SETGLOB 15
-; end colValue
-;; ++
-; expValue
-;; fetch pair_version
+.loc ../contracts/DexRoot.sol, 66
 GETGLOB 16
-; end expValue
 INC
 UFITS 32
-; colValue
+DUP
 SETGLOB 16
-; end colValue
-;; emit PairCodeUpgraded
+.loc ../contracts/DexRoot.sol, 67
+PUSHSLICE xc00000000000000000000000003e8d42be
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x3e8d42be
-;; version
-;; push identifier pair_version
-GETGLOB 16
-STUR 32
+STSLICE
+STU 32
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 68
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function installOrUpdatePairCode
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -295,20 +210,21 @@ SETGLOB 7
 
 .macro getAccountVersion
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 71
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getAccountVersion
-;; return
+.loc ../contracts/DexRoot.sol, 72
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -317,12 +233,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier account_version
 GETGLOB 14
-; end function getAccountVersion
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -333,13 +246,9 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xbb296644
-	PUSH S1
-	STUR 32
+	PUSHSLICE x0000000000000000000000002eca59912_
+	STSLICER
+	STU 32
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -348,10 +257,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -363,22 +272,18 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
+	PUSHINT 106
 	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STUR 32
+	STU 32
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -387,20 +292,21 @@ SETGLOB 7
 
 .macro getPairVersion
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 75
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getPairVersion
-;; return
+.loc ../contracts/DexRoot.sol, 76
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -409,12 +315,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier pair_version
 GETGLOB 16
-; end function getPairVersion
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -425,13 +328,9 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xaae57883
-	PUSH S1
-	STUR 32
+	PUSHSLICE x0000000000000000000000002ab95e20e_
+	STSLICER
+	STU 32
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -440,10 +339,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -455,22 +354,18 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
+	PUSHINT 106
 	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STUR 32
+	STU 32
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -479,16 +374,16 @@ SETGLOB 7
 
 .macro setVaultOnce
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode new_vault
+.loc ../contracts/DexRoot.sol, 81
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -496,49 +391,34 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: new_vault
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function setVaultOnce
-;; get member value
-;; push identifier vault
+.loc ../contracts/DexRoot.sol, 82
 GETGLOB 19
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-EQINT 0
-THROWIFNOT 108
+THROWIF 108
+.loc ../contracts/DexRoot.sol, 83
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-; expValue
-; end expValue
-;; push identifier new_vault
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 84
 SETGLOB 19
-; end colValue
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 85
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function setVaultOnce
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -547,20 +427,21 @@ SETGLOB 7
 
 .macro getVault
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 88
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getVault
-;; return
+.loc ../contracts/DexRoot.sol, 89
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -569,12 +450,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier vault
 GETGLOB 19
-; end function getVault
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -585,13 +463,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xbd1bd325
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -600,10 +478,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -615,22 +493,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -639,56 +516,44 @@ SETGLOB 7
 
 .macro setActive
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode new_active
+.loc ../contracts/DexRoot.sol, 99
 LDI 1
 ENDS
-;; param: new_active
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function setActive
+.loc ../contracts/DexRoot.sol, 100
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; if
-;; push identifier new_active
-DUP
-;; push identifier has_platform_code
+.loc ../contracts/DexRoot.sol, 101
 GETGLOB 12
 AND
-;; short-circuiting &&
 DUP
 PUSHCONT {
 	DROP
-	;; get member value
-	;; push identifier vault
 	GETGLOB 19
 	PARSEMSGADDR
 	INDEX 3
 	PLDU 256
 	NEQINT 0
-	;; short-circuiting &&
 	DUP
 	PUSHCONT {
 		DROP
-		;; push identifier account_version
 		GETGLOB 14
 		GTINT 0
-		;; short-circuiting &&
 		DUP
 		PUSHCONT {
 			DROP
-			;; push identifier pair_version
 			GETGLOB 16
 			GTINT 0
 		}
@@ -698,53 +563,38 @@ PUSHCONT {
 }
 IF
 PUSHCONT {
-	; expValue
-	; end expValue
+	.loc ../contracts/DexRoot.sol, 102
 	TRUE
-	; colValue
 	SETGLOB 17
-	; end colValue
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	; expValue
-	; end expValue
+	.loc ../contracts/DexRoot.sol, 104
 	FALSE
-	; colValue
 	SETGLOB 17
-	; end colValue
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-;; emit ActiveUpdated
-NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x06f5aa9c
-;; new_active
-;; push identifier active
+.loc ../contracts/DexRoot.sol, 106
 GETGLOB 17
-STIR 1
+PUSHSLICE xc000000000000000000000000006f5aa9c
+NEWC
+STSLICE
+STI 1
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; transfer()
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 107
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function setActive
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -753,20 +603,21 @@ SETGLOB 7
 
 .macro isActive
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 110
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function isActive
-;; return
+.loc ../contracts/DexRoot.sol, 111
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -775,12 +626,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier active
 GETGLOB 17
-; end function isActive
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -791,13 +639,9 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xa1adfdea
-	PUSH S1
-	STIR 1
+	PUSHSLICE x000000000000000000000000286b7f7aa_
+	STSLICER
+	STI 1
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -806,10 +650,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -821,22 +665,18 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
+	PUSHINT 106
 	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STIR 1
+	STI 1
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -845,144 +685,98 @@ SETGLOB 7
 
 .macro upgrade
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode code
-;; decode TvmCell
+.loc ../contracts/DexRoot.sol, 121
 LDREF
 ENDS
-;; param: code
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function upgrade
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >
+.loc ../contracts/DexRoot.sol, 123
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 5000000000
 GREATER
 THROWIFNOT 103
+.loc ../contracts/DexRoot.sol, 125
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; emit RootCodeUpgraded
-NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x5c131a68
-ENDC
+.loc ../contracts/DexRoot.sol, 127
+PUSHREF {
+	.blob xc00000000000000000000000005c131a68
+}
 PUSHINT 0
 SENDRAWMSG
-; expValue
-; end expValue
+.loc ../contracts/DexRoot.sol, 129
 FALSE
-; colValue
 SETGLOB 17
-; end colValue
-NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier account_version
+.loc ../contracts/DexRoot.sol, 131
 GETGLOB 14
-STUR 32
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier pair_version
+NEWC
+.loc ../contracts/DexRoot.sol, 133
+STU 32
+.loc ../contracts/DexRoot.sol, 134
 GETGLOB 16
-STUR 32
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier owner
+SWAP
+STU 32
+.loc ../contracts/DexRoot.sol, 136
 GETGLOB 18
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier vault
+SWAP
+STSLICE
+.loc ../contracts/DexRoot.sol, 137
 GETGLOB 19
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier pending_owner
+SWAP
+STSLICE
+.loc ../contracts/DexRoot.sol, 138
 GETGLOB 20
-STSLICER
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier platform_code
+SWAP
+STSLICE
+.loc ../contracts/DexRoot.sol, 140
 GETGLOB 11
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier account_code
+SWAP
+STREF
+.loc ../contracts/DexRoot.sol, 141
 GETGLOB 13
-STREFR
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier pair_code
+SWAP
+STREF
+.loc ../contracts/DexRoot.sol, 142
 GETGLOB 15
-STREFR
-; colValue
-NIP
-; end colValue
-;; push identifier code
-PUSH S1
+SWAP
+STREF
+.loc ../contracts/DexRoot.sol, 144
+OVER
 SETCODE
-;; push identifier code
-PUSH S1
+.loc ../contracts/DexRoot.sol, 145
+SWAP
+CTOS
+DUP
+PUSHSLICE x8adb35
+SDEQ
+PUSHCONT {
+	PLDREFIDX 1
+	CTOS
+}
+IF
+PLDREF
 CTOS
 BLESS
-POP c3
-;; push identifier builder
-DUP
+POP C3
+.loc ../contracts/DexRoot.sol, 147
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
-DROP
-; end function upgrade
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -991,9 +785,7 @@ SETGLOB 7
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-;; param: data
-; function onCodeUpgrade
-; end function onCodeUpgrade
+.loc ../contracts/DexRoot.sol, 0
 DROP
 CALLREF {
 	CALL $c7_to_c4$
@@ -1003,28 +795,25 @@ THROW 0
 
 .macro requestUpgradeAccount
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode current_version
+.loc ../contracts/DexRoot.sol, 152
 LDU 32
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode account_owner
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1032,39 +821,15 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: current_version
-;; param: send_gas_to
-;; param: account_owner
-; modifier onlyAccount
-;; push identifier account_owner
-DUP
+.loc ../contracts/DexRoot.sol, 244
 PUSHINT 1
-;; push identifier account_owner
-PUSH S1
-;; param: account_owner
-; function _buildAccountParams
+SWAP
 NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier account_owner
-PUSH S2
-STSLICER
-; colValue
-NIP
-; end colValue
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 277
+STSLICE
+.loc ../contracts/DexRoot.sol, 278
 ENDC
-NIP
-; end function _buildAccountParams
-NIP
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -1078,16 +843,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -1095,7 +858,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -1103,103 +865,79 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: expected
-;; get member sender
+.loc ../contracts/DexRoot.sol, 248
 GETGLOB 9
-;; push identifier expected
-PUSH S1
 SDEQ
 THROWIFNOT 105
-; function requestUpgradeAccount
+.loc ../contracts/DexRoot.sol, 157
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; if
-;; push identifier current_version
-PUSH S4
-;; ==
-;; push identifier account_version
+.loc ../contracts/DexRoot.sol, 158
+SWAP
 GETGLOB 14
 EQUAL
-;; short-circuiting ||
 DUP
 PUSHCONT {
 	DROP
-	;; !
-	;; push identifier active
 	GETGLOB 17
 	NOT
 }
 IFNOT
 PUSHCONT {
-	;; transfer()
-	;; push identifier send_gas_to
-	PUSH S3
+	.loc ../contracts/DexRoot.sol, 159
+	DUP
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHINT 109
+	PUSHINT 111
 	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
 	ENDC
 	PUSHINT 128
 	SENDRAWMSG
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	;; Remote call IUpgradableByRequest.upgrade
-	;; get member sender
+	.loc ../contracts/DexRoot.sol, 161
+	DUP
+	GETGLOB 14
+	GETGLOB 13
 	GETGLOB 9
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHINT 109
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 111
+	ROLLREV 3
+	NEWC
 	STSLICECONST x64a578c8
-	;; code
-	;; push identifier account_code
-	GETGLOB 13
-	STREFR
-	;; new_version
-	;; push identifier account_version
-	GETGLOB 14
-	STUR 32
-	;; send_gas_to
-	;; push identifier send_gas_to
-	PUSH S4
-	STSLICER
+	STREF
+	STU 32
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 128
 	SENDRAWMSG
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-; end function requestUpgradeAccount
+.loc ../contracts/DexRoot.sol, 0
 DROP
-DROP
-; end modifier onlyAccount
-BLKDROP 3
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -1208,26 +946,24 @@ SETGLOB 7
 
 .macro forceUpgradeAccount
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode account_owner
+.loc ../contracts/DexRoot.sol, 169
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1235,80 +971,51 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: account_owner
-;; param: send_gas_to
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function forceUpgradeAccount
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >=
+.loc ../contracts/DexRoot.sol, 173
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 5000000000
 GEQ
 THROWIFNOT 103
+.loc ../contracts/DexRoot.sol, 174
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; emit RequestedForceAccountUpgrade
+.loc ../contracts/DexRoot.sol, 175
+OVER
+PUSHSLICE xc00000000000000000000000005e002dc2
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x5e002dc2
-;; account_owner
-;; push identifier account_owner
-PUSH S2
-STSLICER
+STSLICE
+STSLICE
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; Remote call IUpgradableByRequest.upgrade
+.loc ../contracts/DexRoot.sol, 176
+GETGLOB 14
+GETGLOB 13
 PUSHINT 1
-;; push identifier account_owner
-PUSH S2
-;; param: account_owner
-; function _buildAccountParams
+ROLL 4
+.loc ../contracts/DexRoot.sol, 276
 NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier account_owner
-PUSH S2
-STSLICER
-; colValue
-NIP
-; end colValue
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 277
+STSLICE
+.loc ../contracts/DexRoot.sol, 278
 ENDC
-NIP
-; end function _buildAccountParams
-NIP
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -1322,16 +1029,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -1339,7 +1044,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -1347,8 +1051,7 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -1358,29 +1061,18 @@ CTOS
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+ROLLREV 3
+NEWC
 STSLICECONST x64a578c8
-;; code
-;; push identifier account_code
-GETGLOB 13
-STREFR
-;; new_version
-;; push identifier account_version
-GETGLOB 14
-STUR 32
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S1
-STSLICER
+STREF
+STU 32
+STSLICE
+STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function forceUpgradeAccount
-; end modifier onlyOwner
-DROP2
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1389,36 +1081,32 @@ SETGLOB 7
 
 .macro upgradePair
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode left_root
+.loc ../contracts/DexRoot.sol, 182
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode right_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1426,136 +1114,92 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: left_root
-;; param: right_root
-;; param: send_gas_to
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function upgradePair
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >=
+.loc ../contracts/DexRoot.sol, 187
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 5000000000
 GEQ
 THROWIFNOT 103
+.loc ../contracts/DexRoot.sol, 188
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; emit RequestedPairUpgrade
+.loc ../contracts/DexRoot.sol, 189
+PUSH2 S1, S2
+PUSHSLICE xc0000000000000000000000001
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
+STSLICE
+ROTREV
+NEWC
 STSLICECONST x66f69858
-;; left_root
-;; push identifier left_root
-PUSH S3
-STSLICER
-;; right_root
-;; push identifier right_root
-PUSH S2
-STSLICER
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; Remote call IUpgradableByRequest.upgrade
+.loc ../contracts/DexRoot.sol, 190
+GETGLOB 16
+GETGLOB 15
 PUSHINT 2
-;; push identifier left_root
-PUSH S3
-;; push identifier right_root
-PUSH S3
-;; param: left_root
-;; param: right_root
-; function _buildPairParams
+BLKSWAP 2, 4
+.loc ../contracts/DexRoot.sol, 282
 NEWC
-;; decl: builder
-;; if
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 283
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; <
-;; get member value
-;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 284
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 285
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 287
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 288
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 290
 ENDC
-NIP
-; end function _buildPairParams
+.loc ../contracts/DexRoot.sol, 0
 BLKDROP2 2, 1
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -1569,16 +1213,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -1586,7 +1228,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -1594,8 +1235,7 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
@@ -1605,29 +1245,18 @@ CTOS
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+ROLLREV 3
+NEWC
 STSLICECONST x64a578c8
-;; code
-;; push identifier pair_code
-GETGLOB 15
-STREFR
-;; new_version
-;; push identifier pair_version
-GETGLOB 16
-STUR 32
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S1
-STSLICER
+STREF
+STU 32
+STSLICE
+STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function upgradePair
-; end modifier onlyOwner
-BLKDROP 3
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1636,16 +1265,16 @@ SETGLOB 7
 
 .macro resetGas
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode receiver
+.loc ../contracts/DexRoot.sol, 198
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1653,34 +1282,25 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: receiver
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function resetGas
+.loc ../contracts/DexRoot.sol, 199
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; transfer()
-;; push identifier receiver
-DUP
+.loc ../contracts/DexRoot.sol, 200
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function resetGas
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1689,26 +1309,24 @@ SETGLOB 7
 
 .macro resetTargetGas
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode target
+.loc ../contracts/DexRoot.sol, 203
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode receiver
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1716,51 +1334,39 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: target
-;; param: receiver
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function resetTargetGas
+.loc ../contracts/DexRoot.sol, 204
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; Remote call IResetGas.resetGas
-;; push identifier target
-PUSH S1
+.loc ../contracts/DexRoot.sol, 205
+SWAP
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+SWAP
+NEWC
 STSLICECONST x06e29f2e
-;; receiver
-;; push identifier receiver
-PUSH S1
-STSLICER
+STSLICE
+STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-; end function resetTargetGas
-; end modifier onlyOwner
-DROP2
+.loc ../contracts/DexRoot.sol, 0
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1769,22 +1375,21 @@ SETGLOB 7
 
 .macro getOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 215
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-;; ret param: dex_owner
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-; function getOwner
-;; return
+.loc ../contracts/DexRoot.sol, 216
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -1793,13 +1398,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier owner
 GETGLOB 18
-NIP
-; end function getOwner
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -1810,13 +1411,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xe2c3961c
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -1825,10 +1426,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -1840,22 +1441,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1864,22 +1464,21 @@ SETGLOB 7
 
 .macro getPendingOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 219
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-;; ret param: dex_pending_owner
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-; function getPendingOwner
-;; return
+.loc ../contracts/DexRoot.sol, 220
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -1888,13 +1487,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier pending_owner
 GETGLOB 20
-NIP
-; end function getPendingOwner
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/DexRoot.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -1905,13 +1500,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xa9697b62
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -1920,10 +1515,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -1935,22 +1530,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -1959,16 +1553,16 @@ SETGLOB 7
 
 .macro transferOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode new_owner
+.loc ../contracts/DexRoot.sol, 223
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -1976,43 +1570,32 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: new_owner
-; modifier onlyOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 211
 GETGLOB 9
-;; push identifier owner
 GETGLOB 18
 SDEQ
 THROWIFNOT 100
-; function transferOwner
-;; emit RequestedOwnerTransfer
-NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x39a1cc5a
-;; old_owner
-;; push identifier owner
+.loc ../contracts/DexRoot.sol, 224
+DUP
 GETGLOB 18
-STSLICER
-;; new_owner
-;; push identifier new_owner
-PUSH S1
-STSLICER
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICECONST x39a1cc5a
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-; expValue
-; end expValue
-;; push identifier new_owner
-DUP
-; colValue
+.loc ../contracts/DexRoot.sol, 225
 SETGLOB 20
-; end colValue
-; end function transferOwner
-; end modifier onlyOwner
-DROP
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -2021,53 +1604,45 @@ SETGLOB 7
 
 .macro acceptOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/DexRoot.sol, 228
 ENDS
-; function acceptOwner
-;; get member sender
+.loc ../contracts/DexRoot.sol, 229
 GETGLOB 9
-;; push identifier pending_owner
 GETGLOB 20
 SDEQ
 THROWIFNOT 102
-;; emit OwnerTransferAccepted
-NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x1251dc40
-;; old_owner
-;; push identifier owner
-GETGLOB 18
-STSLICER
-;; new_owner
-;; push identifier pending_owner
+.loc ../contracts/DexRoot.sol, 230
 GETGLOB 20
-STSLICER
+GETGLOB 18
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICECONST x1251dc40
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-; expValue
-; end expValue
-;; push identifier pending_owner
+.loc ../contracts/DexRoot.sol, 231
 GETGLOB 20
-; colValue
 SETGLOB 18
-; end colValue
-;; address.makeAddrStd()
+.loc ../contracts/DexRoot.sol, 232
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-; expValue
-; end expValue
-; colValue
 SETGLOB 20
-; end colValue
-; end function acceptOwner
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -2076,21 +1651,21 @@ SETGLOB 7
 
 .macro getExpectedAccountAddress
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 261
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
-; Decode account_owner
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -2098,9 +1673,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: account_owner
-; function getExpectedAccountAddress
-;; return
+.loc ../contracts/DexRoot.sol, 262
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -2110,32 +1683,13 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 PUSHINT 1
-;; push identifier account_owner
-PUSH S1
-;; param: account_owner
-; function _buildAccountParams
+SWAP
 NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier account_owner
-PUSH S2
-STSLICER
-; colValue
-NIP
-; end colValue
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 277
+STSLICE
+.loc ../contracts/DexRoot.sol, 278
 ENDC
-NIP
-; end function _buildAccountParams
-NIP
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -2149,16 +1703,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -2166,7 +1718,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -2174,19 +1725,14 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-; end function getExpectedAccountAddress
-NIP
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -2197,13 +1743,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xc4c8e8d1
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -2212,10 +1758,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -2227,22 +1773,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -2251,31 +1796,29 @@ SETGLOB 7
 
 .macro getExpectedPairAddress
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/DexRoot.sol, 268
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
-; Decode left_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode right_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -2283,10 +1826,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: left_root
-;; param: right_root
-; function getExpectedPairAddress
-;; return
+.loc ../contracts/DexRoot.sol, 269
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -2296,83 +1836,47 @@ PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
 PUSHINT 2
-;; push identifier left_root
-PUSH S2
-;; push identifier right_root
-PUSH S2
-;; param: left_root
-;; param: right_root
-; function _buildPairParams
+ROTREV
+.loc ../contracts/DexRoot.sol, 282
 NEWC
-;; decl: builder
-;; if
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 283
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; <
-;; get member value
-;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 284
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 285
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 287
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 288
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 290
 ENDC
-NIP
-; end function _buildPairParams
+.loc ../contracts/DexRoot.sol, 0
 BLKDROP2 2, 1
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -2386,16 +1890,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -2403,7 +1905,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -2411,19 +1912,14 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-; end function getExpectedPairAddress
-BLKDROP2 2, 1
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -2434,13 +1930,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xac7cef91
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -2449,10 +1945,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -2464,22 +1960,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -2488,26 +1983,24 @@ SETGLOB 7
 
 .macro deployAccount
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode account_owner
+.loc ../contracts/DexRoot.sol, 308
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -2515,70 +2008,44 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: account_owner
-;; param: send_gas_to
-; modifier onlyActive
-;; push identifier active
+.loc ../contracts/DexRoot.sol, 115
 GETGLOB 17
 THROWIFNOT 114
-; function deployAccount
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >=
+.loc ../contracts/DexRoot.sol, 309
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 2000000000
 GEQ
 THROWIFNOT 103
-;; get member value
-;; push identifier account_owner
-PUSH S1
+.loc ../contracts/DexRoot.sol, 310
+OVER
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-NEQINT 0
 THROWIFNOT 111
+.loc ../contracts/DexRoot.sol, 312
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
+.loc ../contracts/DexRoot.sol, 314
 PUSHINT 1
-;; push identifier account_owner
-PUSH S2
-;; param: account_owner
-; function _buildAccountParams
 NEWC
-;; decl: builder
-; expValue
-DUP
-; end expValue
-;; push identifier account_owner
-PUSH S2
-STSLICER
-; colValue
-NIP
-; end colValue
-;; return
-;; push identifier builder
-DUP
+ROLL 3
+.loc ../contracts/DexRoot.sol, 277
+SWAP
+STSLICE
+.loc ../contracts/DexRoot.sol, 278
 ENDC
-NIP
-; end function _buildAccountParams
-NIP
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -2592,16 +2059,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -2609,7 +2074,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -2617,8 +2081,7 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 DUP
 HASHCU
 NEWC
@@ -2626,93 +2089,65 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-PUSHINT 100000000
-PUSH S1
-NEWC
-STSLICECONST x62_
-STSLICE
 SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST xc_
-STSLICECONST 1
-PUSH S2
-STREFR
-STSLICECONST 0
-STSLICECONST x68b55f3f
-ENDC
-PUSHINT 1
-SENDRAWMSG
-NIP
-;; decl: platform
-;; Remote call DexPlatform.setPlatformCode
-;; push identifier platform
-DUP
+OVER
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x405f5e100000000000000000000000000004_
+PUSHSLICE x405f5e100000000000000000000000000007_
 STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x6c2507f0
-;; code
-;; push identifier platform_code
+STREF
+STSLICECONST x345aaf9fc_
+ENDC
+PUSHINT 1
+SENDRAWMSG
+.loc ../contracts/DexRoot.sol, 319
 GETGLOB 11
-STREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
-;; Remote call DexPlatform.initialize
-;; push identifier platform
-DUP
+OVER
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x43b9aca00000000000000000000000000004_
+PUSHSLICE x405f5e100000000000000000000000000000d84a0fe1_
 STSLICER
-STSLICECONST 0
-STSLICECONST 1
+STREF
+ENDC
+PUSHINT 1
+SENDRAWMSG
+.loc ../contracts/DexRoot.sol, 323
+OVER
+GETGLOB 19
+GETGLOB 14
+GETGLOB 13
+ROLL 4
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x43b9aca00000000000000000000000000003_
+STSLICER
+ROLLREV 4
 NEWC
 STSLICECONST x636762a3
-;; code
-;; push identifier account_code
-GETGLOB 13
-STREFR
-;; version
-;; push identifier account_version
-GETGLOB 14
-STUR 32
-;; vault
-;; push identifier vault
-GETGLOB 19
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S3
-STSLICER
+STREF
+STU 32
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
 STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-;; transfer()
-;; push identifier send_gas_to
-PUSH S1
+.loc ../contracts/DexRoot.sol, 332
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-DROP
-; end function deployAccount
-; end modifier onlyActive
-DROP2
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -2721,36 +2156,32 @@ SETGLOB 7
 
 .macro deployPair
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode left_root
+.loc ../contracts/DexRoot.sol, 335
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode right_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -2758,145 +2189,94 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: left_root
-;; param: right_root
-;; param: send_gas_to
-; modifier onlyActive
-;; push identifier active
+.loc ../contracts/DexRoot.sol, 115
 GETGLOB 17
 THROWIFNOT 114
-; function deployPair
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
-;; >=
+.loc ../contracts/DexRoot.sol, 336
+DEPTH
+ADDCONST -2
+PICK
 PUSHINT 5000000000
 GEQ
 THROWIFNOT 103
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 337
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; !=
-;; get member value
-;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 NEQ
 THROWIFNOT 121
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 338
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-NEQINT 0
 THROWIFNOT 121
-;; get member value
-;; push identifier right_root
-PUSH S1
+.loc ../contracts/DexRoot.sol, 339
+OVER
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-NEQINT 0
 THROWIFNOT 121
+.loc ../contracts/DexRoot.sol, 341
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
+.loc ../contracts/DexRoot.sol, 343
 PUSHINT 2
-;; push identifier left_root
-PUSH S3
-;; push identifier right_root
-PUSH S3
-;; param: left_root
-;; param: right_root
-; function _buildPairParams
+SWAP2
+.loc ../contracts/DexRoot.sol, 282
 NEWC
-;; decl: builder
-;; if
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 283
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; <
-;; get member value
-;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 284
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 285
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 287
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 288
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 290
 ENDC
-NIP
-; end function _buildPairParams
+.loc ../contracts/DexRoot.sol, 0
 BLKDROP2 2, 1
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -2910,16 +2290,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -2927,7 +2305,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -2935,8 +2312,7 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 DUP
 HASHCU
 NEWC
@@ -2944,98 +2320,70 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-PUSHINT 100000000
-PUSH S1
-NEWC
-STSLICECONST x62_
-STSLICE
 SWAP
-STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST xc_
-STSLICECONST 1
-PUSH S2
-STREFR
-STSLICECONST 0
-STSLICECONST x68b55f3f
-ENDC
-PUSHINT 1
-SENDRAWMSG
-NIP
-;; decl: platform
-;; Remote call DexPlatform.setPlatformCode
-;; push identifier platform
-DUP
+OVER
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x405f5e100000000000000000000000000004_
+PUSHSLICE x405f5e100000000000000000000000000007_
 STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x6c2507f0
-;; code
-;; push identifier platform_code
+STREF
+STSLICECONST x345aaf9fc_
+ENDC
+PUSHINT 1
+SENDRAWMSG
+.loc ../contracts/DexRoot.sol, 348
 GETGLOB 11
-STREFR
-ENDC
-PUSHINT 1
-SENDRAWMSG
-;; Remote call DexPlatform.initialize
-;; push identifier platform
-DUP
+OVER
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x43b9aca00000000000000000000000000004_
+PUSHSLICE x405f5e100000000000000000000000000000d84a0fe1_
 STSLICER
-STSLICECONST 0
-STSLICECONST 1
+STREF
+ENDC
+PUSHINT 1
+SENDRAWMSG
+.loc ../contracts/DexRoot.sol, 352
+OVER
+GETGLOB 19
+GETGLOB 16
+GETGLOB 15
+PUSH S4
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x43b9aca00000000000000000000000000003_
+STSLICER
+ROLLREV 4
 NEWC
 STSLICECONST x636762a3
-;; code
-;; push identifier pair_code
-GETGLOB 15
-STREFR
-;; version
-;; push identifier pair_version
-GETGLOB 16
-STUR 32
-;; vault
-;; push identifier vault
-GETGLOB 19
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S3
-STSLICER
+STREF
+STU 32
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
 STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-;; Remote call IAfterInitialize.afterInitialize
-;; push identifier platform
-DUP
+.loc ../contracts/DexRoot.sol, 361
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 0
+PUSHINT 1
+STUR 111
+SWAP
+NEWC
 STSLICECONST x2aff056b
-;; send_gas_to
-;; push identifier send_gas_to
-PUSH S2
-STSLICER
+STSLICE
+STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
-DROP
-; end function deployPair
-; end modifier onlyActive
-BLKDROP 3
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -3044,36 +2392,32 @@ SETGLOB 7
 
 .macro onPairCreated
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode left_root
+.loc ../contracts/DexRoot.sol, 364
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode right_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-; Decode send_gas_to
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -3081,92 +2425,51 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: left_root
-;; param: right_root
-;; param: send_gas_to
-; modifier onlyPair
-;; push identifier left_root
-PUSH S2
-;; push identifier right_root
-PUSH S2
+.loc ../contracts/DexRoot.sol, 0
+BLKPUSH 2, 2
+.loc ../contracts/DexRoot.sol, 253
 PUSHINT 2
-;; push identifier left_root
-PUSH S2
-;; push identifier right_root
-PUSH S2
-;; param: left_root
-;; param: right_root
-; function _buildPairParams
+ROTREV
+.loc ../contracts/DexRoot.sol, 282
 NEWC
-;; decl: builder
-;; if
-;; get member value
-;; push identifier left_root
+.loc ../contracts/DexRoot.sol, 283
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
-;; <
-;; get member value
-;; push identifier right_root
 PUSH S2
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 LESS
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 284
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 285
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 PUSHCONT {
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier right_root
+	.loc ../contracts/DexRoot.sol, 287
+	OVER
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 288
 	PUSH S2
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
-	; expValue
-	DUP
-	; end expValue
-	;; push identifier left_root
-	PUSH S3
-	STSLICER
-	; colValue
-	NIP
-	; end colValue
+	SWAP
+	STSLICE
+	.loc ../contracts/DexRoot.sol, 0
 }
 IFELSE
-;; end if
-;; return
-;; push identifier builder
-DUP
+.loc ../contracts/DexRoot.sol, 290
 ENDC
-NIP
-; end function _buildPairParams
+.loc ../contracts/DexRoot.sol, 0
 BLKDROP2 2, 1
-;; param: type_id
-;; param: params
-; function _buildInitData
-;; return
+.loc ../contracts/DexRoot.sol, 294
 NEWDICT
 PUSHINT 0
 NEWC
@@ -3180,16 +2483,14 @@ PUSHINT 1
 ROT
 PUSHINT 64
 DICTUSET
-;; push identifier type_id
-PUSH S2
+ROT
 NEWC
 STU 8
 PUSHINT 2
 ROT
 PUSHINT 64
 DICTUSETB
-;; push identifier params
-PUSH S1
+SWAP
 PUSHINT 3
 ROT
 PUSHINT 64
@@ -3197,7 +2498,6 @@ DICTUSETREF
 NEWC
 STDICT
 ENDC
-;; push identifier platform_code
 GETGLOB 11
 NEWC
 STSLICECONST x2_
@@ -3205,76 +2505,58 @@ STOPTREF
 STOPTREF
 STZERO
 ENDC
-; end function _buildInitData
-BLKDROP2 2, 1
+.loc ../contracts/DexRoot.sol, 0
 HASHCU
 NEWC
 STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-;; decl: expected
-;; get member sender
+.loc ../contracts/DexRoot.sol, 257
 GETGLOB 9
-;; push identifier expected
-PUSH S1
 SDEQ
 THROWIFNOT 106
-; function onPairCreated
+.loc ../contracts/DexRoot.sol, 369
 PUSHINT 1000000000
-;; get member balance
 GETPARAM 7
 INDEX 0
-;; -
-;; get member value
-CALLREF {
-	CALL $message_balance_macro$
-}
+DEPTH
+ADDCONST -2
+PICK
 SUB
 UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-;; emit NewPairCreated
+.loc ../contracts/DexRoot.sol, 370
+XCHG S2
+PUSHSLICE xc0000000000000000000000001
 NEWC
-PUSHSLICE xc0000000000000000000000002_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
+STSLICE
+ROTREV
+NEWC
 STSLICECONST x75cdbccf
-;; left_root
-;; push identifier left_root
-PUSH S6
-STSLICER
-;; right_root
-;; push identifier right_root
-PUSH S5
-STSLICER
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-;; transfer()
-;; push identifier send_gas_to
-PUSH S3
+.loc ../contracts/DexRoot.sol, 371
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
-;; +
-PUSHINT 2
-ADD
+ADDCONST 2
 UFITS 8
 SENDRAWMSG
-; end function onPairCreated
-DROP
-DROP2
-; end modifier onlyPair
-BLKDROP 3
+.loc ../contracts/DexRoot.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -3282,50 +2564,50 @@ TRUE
 SETGLOB 7
 
 .macro c7_to_c4
+GETGLOB 20
+GETGLOB 19
+GETGLOB 18
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
+STU 64
+STONE
+STU 32
+STREF
+STI 1
+STREF
+STU 32
+STREF
+STU 32
+STI 1
+STSLICE
+ROTREV
 NEWC
-GETGLOB 20
+STSLICE
 SWAP
+NEWC
 STSLICE
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-GETGLOB 13
-GETGLOB 14
-GETGLOB 15
-GETGLOB 16
-GETGLOB 17
-GETGLOB 18
-GETGLOB 19
-REVERSE 12, 0
-STBREF
-STU 32
-STREF
-STI 1
-STREF
-STU 32
-STREF
-STU 32
-STI 1
-STSLICE
-STSLICE
+STBREFR
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
-LDREFRTOS
-SETGLOB 20
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
 LDU 32
 LDREF
 LDI 1
@@ -3335,6 +2617,16 @@ LDREF
 LDU 32
 LDI 1
 LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+SETGLOB 20
 SETGLOB 19
 SETGLOB 18
 SETGLOB 17
@@ -3345,54 +2637,24 @@ SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDREFRTOS
-	SETGLOB 20
-	LDU 32
-	LDREF
-	LDI 1
-	LDREF
-	LDU 32
-	LDREF
-	LDU 32
-	LDI 1
-	LDMSGADDR
-	SETGLOB 19
-	SETGLOB 18
-	SETGLOB 17
-	SETGLOB 16
-	SETGLOB 15
-	SETGLOB 14
-	SETGLOB 13
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init _nonce
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
 	PUSHINT 1
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -3403,42 +2665,29 @@ PUSHCONT {
 	}
 	IFELSE
 	SETGLOB 10
-	; init platform_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 11
-	; init has_platform_code
 	PUSHINT 0
 	SETGLOB 12
-	; init account_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 13
-	; init account_version
 	PUSHINT 0
 	SETGLOB 14
-	; init pair_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 15
-	; init pair_version
 	PUSHINT 0
 	SETGLOB 16
-	; init active
 	PUSHINT 0
 	SETGLOB 17
-	; init owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 18
-	; init vault
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 19
-	; init pending_owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 20
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -3446,53 +2695,48 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
 }
 IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
-LDU 4       ; bounced tail
-LDMSGADDR   ; bounced src tail
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
-; beg set default params for responsible func
 GETGLOB 4
-; bounce
 TRUE
 SETINDEXQ 1
-; tons
 PUSHINT 10000000
 SETINDEXQ 2
-; currency
 NULL
 SETINDEXQ 3
-; flag
 PUSHINT 0
 SETINDEXQ 4
 SETGLOB 4
-; end set default params for responsible func
 IFRET
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -3503,10 +2747,14 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 9
-PUSH S1
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -3515,40 +2763,40 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
 	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	SWAP
 	PUSHCONT {
-		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
-		XCHG s3
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
 		SWAP
 	}
 	PUSHCONT {
-		XCHG s2
+		XCHG S2
 		GETGLOB 2
 	}
 	IFELSE
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 PUSHCONT {
-	LDU 1      ; havePubkey msgSlice
-	SWAP       ; msgSlice havePubkey
+	LDU 1 ; havePubkey msgSlice
+	SWAP
 	THROWIF 58 ; msgSlice
 }
 IFELSE
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU 32  ; expireAt msgSlice
-SWAP    ; msgSlice expireAt
-NOW     ; msgSlice expireAt now
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
 GREATER ; msgSlice expireAt>now
 THROWIFNOT 57
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -3562,25 +2810,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 11
+OVER
 PUSHCONT {
-	GETGLOB 11
+	PUSHSLICE xc0000000000000000000000000e6d44df5
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xe6d44df5
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -3590,25 +2831,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 13
+OVER
 PUSHCONT {
-	GETGLOB 13
+	PUSHSLICE xc0000000000000000000000000e9ecce1d
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xe9ecce1d
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -3618,37 +2852,30 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 15
+OVER
 PUSHCONT {
-	GETGLOB 15
+	PUSHSLICE xc0000000000000000000000000bd092577
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xbd092577
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
 .macro public_function_selector
 DUP
-PUSHINT 588538914
+PUSHINT 1154017489
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
-	PUSHINT 152428875
+	PUSHINT 388172858
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
 		DUP
 		PUSHINT 115515182
 		EQUAL
@@ -3661,12 +2888,6 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $onPairCreated$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 388172858
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 230920640
 		EQUAL
@@ -3680,11 +2901,10 @@ PUSHCONT {
 			CALL $upgrade$
 		}
 	}
-	IFJMP
 	DUP
-	PUSHINT 565050858
+	PUSHINT 694778722
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
 		DUP
 		PUSHINT 453826860
 		EQUAL
@@ -3697,42 +2917,29 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $isActive$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 588538914
-	EQUAL
-	IFJMPREF {
-		CALL $requestUpgradeAccount$
-	}
-}
-IFJMP
-DUP
-PUSHINT 1024009591
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 719681667
-	LEQ
-	PUSHCONT {
+		DUP
+		PUSHINT 588538914
+		EQUAL
+		IFJMPREF {
+			CALL $requestUpgradeAccount$
+		}
 		DUP
 		PUSHINT 694778722
 		EQUAL
 		IFJMPREF {
 			CALL $getPendingOwner$
 		}
+	}
+	DUP
+	PUSHINT 992568900
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 719681667
 		EQUAL
 		IFJMPREF {
 			CALL $getPairVersion$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 746385297
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 720190441
 		EQUAL
@@ -3745,42 +2952,29 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $getExpectedPairAddress$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 999058976
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 992568900
 		EQUAL
 		IFJMPREF {
 			CALL $getAccountVersion$
 		}
+	}
+	DUP
+	PUSHINT 1154017489
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 999058976
 		EQUAL
 		IFJMPREF {
 			CALL $installOrUpdatePairCode$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1024009591
-	EQUAL
-	IFJMPREF {
-		CALL $pair_code$
-	}
-}
-IFJMP
-DUP
-PUSHINT 1656985116
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1154017489
-	LEQ
-	PUSHCONT {
+		DUP
+		PUSHINT 1024009591
+		EQUAL
+		IFJMPREF {
+			CALL $pair_code$
+		}
 		DUP
 		PUSHINT 1025233701
 		EQUAL
@@ -3794,11 +2988,15 @@ PUSHCONT {
 			CALL $getExpectedAccountAddress$
 		}
 	}
-	IFJMP
+}
+DUP
+PUSHINT 2144984146
+LEQ
+IFJMPREF {
 	DUP
-	PUSHINT 1526386332
+	PUSHINT 1632005121
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
 		DUP
 		PUSHINT 1241152735
 		EQUAL
@@ -3811,12 +3009,6 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $setActive$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1632005121
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1543215676
 		EQUAL
@@ -3830,23 +3022,16 @@ PUSHCONT {
 			CALL $setVaultOnce$
 		}
 	}
-	IFJMP
 	DUP
-	PUSHINT 1656985116
-	EQUAL
-	IFJMPREF {
-		CALL $getOwner$
-	}
-}
-IFJMP
-DUP
-PUSHINT 2144984146
-LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1725189621
+	PUSHINT 1777126941
 	LEQ
-	PUSHCONT {
+	IFJMPREF {
+		DUP
+		PUSHINT 1656985116
+		EQUAL
+		IFJMPREF {
+			CALL $getOwner$
+		}
 		DUP
 		PUSHINT 1707282005
 		EQUAL
@@ -3859,30 +3044,23 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $platform_code$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1782970727
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1777126941
 		EQUAL
 		IFJMPREF {
 			CALL $account_code$
 		}
+	}
+	DUP
+	PUSHINT 2144984146
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1782970727
 		EQUAL
 		IFJMPREF {
 			CALL $deployPair$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 1915630326
-	LEQ
-	PUSHCONT {
 		DUP
 		PUSHINT 1809145905
 		EQUAL
@@ -3895,13 +3073,12 @@ PUSHCONT {
 		IFJMPREF {
 			CALL $upgradePair$
 		}
-	}
-	IFJMP
-	DUP
-	PUSHINT 2144984146
-	EQUAL
-	IFJMPREF {
-		CALL $installPlatformOnce$
+		DUP
+		PUSHINT 2144984146
+		EQUAL
+		IFJMPREF {
+			CALL $installPlatformOnce$
+		}
 	}
 }
-IFJMP
+

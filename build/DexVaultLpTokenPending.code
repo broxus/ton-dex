@@ -1,33 +1,32 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
-; Decode token_factory_
-LDMSGADDR
-; Decode value_
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 LDUQ 128
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 128
 }
 IFNOT
-; Decode send_gas_to_
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -35,82 +34,44 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: token_factory_
-;; param: value_
-;; param: send_gas_to_
-; modifier onlyVault
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 49
 GETGLOB 9
-;; push identifier vault
 GETGLOB 14
 SDEQ
 THROWIFNOT 101
-; constructor DexVaultLpTokenPending
-; expValue
-; end expValue
-;; push identifier token_factory_
-PUSH S2
-; colValue
+.loc ../contracts/DexVaultLpTokenPending.sol, 64
+ROT
 SETGLOB 18
-; end colValue
-; expValue
-; end expValue
-;; push identifier send_gas_to_
-DUP
-; colValue
+.loc ../contracts/DexVaultLpTokenPending.sol, 65
 SETGLOB 21
-; end colValue
-; expValue
-; end expValue
-;; push identifier value_
-PUSH S1
-; colValue
+.loc ../contracts/DexVaultLpTokenPending.sol, 66
 SETGLOB 20
-; end colValue
-;; Remote call IRootTokenContract.getDetails
-;; push identifier left_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 68
 GETGLOB 16
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x41dcd6500000000000000000000000000004_
+PUSHSLICE x41dcd6500000000000000000000000000000ffef48f84f269d85_
 STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x7ff7a47c
-STSLICECONST x27934ec2
 ENDC
 PUSHINT 1
 SENDRAWMSG
-;; Remote call IRootTokenContract.getDetails
-;; push identifier right_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 73
 GETGLOB 17
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x41dcd6500000000000000000000000000004_
+PUSHSLICE x41dcd6500000000000000000000000000000ffef48f84f269d85_
 STSLICER
-STSLICECONST 0
-STSLICECONST 0
-STSLICECONST x7ff7a47c
-STSLICECONST x27934ec2
 ENDC
 PUSHINT 1
 SENDRAWMSG
-PUSHINT 2
-; expValue
-;; fetch pending_messages
+.loc ../contracts/DexVaultLpTokenPending.sol, 78
 GETGLOB 23
-; end expValue
-SWAP
-ADD
+ADDCONST 2
 UFITS 8
-; colValue
 SETGLOB 23
-; end colValue
-; end constructor DexVaultLpTokenPending
-; end modifier onlyVault
-BLKDROP 3
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -119,13 +80,16 @@ SETGLOB 7
 
 .macro terminate
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/DexVaultLpTokenPending.sol, 81
 ENDS
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $terminate_internal_macro$
 }
@@ -140,108 +104,90 @@ SETGLOB 7
 CALL $terminate_internal_macro$
 
 .macro terminate_internal_macro
-; function terminate
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 82
 GETGLOB 9
-;; push identifier send_gas_to
 GETGLOB 21
 SDEQ
 THROWIFNOT 100
+.loc ../contracts/DexVaultLpTokenPending.sol, 83
 ACCEPT
-; function _onLiquidityTokenNotDeployed
-;; Remote call IDexVault.onLiquidityTokenNotDeployed
-;; push identifier vault
+.loc ../contracts/DexVaultLpTokenPending.sol, 125
+GETGLOB 21
+GETGLOB 19
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 13
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
+PUSHINT 1
+STUR 111
+ROLLREV 6
 NEWC
 STSLICECONST x5cbd6524
-;; nonce
-;; push identifier _nonce
-GETGLOB 13
-STUR 32
-;; pair
-;; push identifier pair
-GETGLOB 15
-STSLICER
-;; left_root
-;; push identifier left_root
-GETGLOB 16
-STSLICER
-;; right_root
-;; push identifier right_root
-GETGLOB 17
-STSLICER
+STU 32
+STSLICE
+ROLLREV 4
 NEWC
-;; lp_root
-;; push identifier lp_token_root
-GETGLOB 19
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-GETGLOB 21
-STSLICER
+STSLICE
+ROLLREV 3
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+STBREFR
 STBREFR
 STBREFR
 ENDC
 PUSHINT 128
-;; +
-PUSHINT 32
-ADD
+ADDCONST 32
 UFITS 8
 SENDRAWMSG
-; end function _onLiquidityTokenNotDeployed
-; end function terminate
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 
 .macro onGetDetails
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode details
-;; decode struct IRootTokenContractDetails details
-;; decode IRootTokenContractDetails.name
+.loc ../contracts/DexVaultLpTokenPending.sol, 87
 LDREF
-;; decode IRootTokenContractDetails.symbol
 LDREF
-;; decode IRootTokenContractDetails.decimals
 LDU 8
-;; decode IRootTokenContractDetails.root_public_key
 LDU 256
-;; decode IRootTokenContractDetails.root_owner_address
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDMSGADDR
 }
 IFNOT
-;; decode IRootTokenContractDetails.total_supply
 LDUQ 128
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
 	LDU 128
 }
 IFNOT
-;; build struct IRootTokenContractDetails ss:7
-BLKSWAP 6, 1
+ROLLREV 6
 TUPLE 6
 SWAP
 ENDS
-;; param: details
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $onGetDetails_internal_macro$
 }
@@ -256,203 +202,152 @@ SETGLOB 7
 CALL $onGetDetails_internal_macro$
 
 .macro onGetDetails_internal_macro
-;; param: details
-; modifier onlyExpectedToken
+.loc ../contracts/DexVaultLpTokenPending.sol, 59
 CALLREF {
 	CALL $isSenderExpectedToken_internal_macro$
 }
 THROWIFNOT 126
-; function onGetDetails
-;; --
-; expValue
-;; fetch pending_messages
+.loc ../contracts/DexVaultLpTokenPending.sol, 88
 GETGLOB 23
-; end expValue
 DEC
 UFITS 8
-; colValue
 SETGLOB 23
-; end colValue
-;; if
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 89
 GETGLOB 9
-;; push identifier left_root
 GETGLOB 16
 SDEQ
 PUSHCONT {
-	;; push identifier details
-	DUP
-	;; param: details
-	; function simplifyTokenDetails
-	;; return
-	;; get member name
-	;; push identifier details
-	DUP
+	.loc ../contracts/DexVaultLpTokenPending.sol, 90
+	BLKPUSH 2, 0
+	.loc ../contracts/DexVaultLpTokenPending.sol, 168
 	INDEX 0
-	;; get member symbol
-	;; push identifier details
-	PUSH S1
+	OVER
 	INDEX 1
-	;; get member decimals
-	;; push identifier details
-	PUSH S2
+	ROT
 	INDEX 2
-	TUPLE 3
-	; end function simplifyTokenDetails
-	NIP
-	; expValue
-	; end expValue
-	; colValue
+	TRIPLE
+	.loc ../contracts/DexVaultLpTokenPending.sol, 0
 	SETGLOB 24
-	; end colValue
-	; expValue
-	; end expValue
+	.loc ../contracts/DexVaultLpTokenPending.sol, 91
 	TRUE
-	; colValue
 	SETGLOB 25
-	; end colValue
-	;; if
-	;; push identifier right_root_details_received
+	.loc ../contracts/DexVaultLpTokenPending.sol, 92
 	GETGLOB 27
 	PUSHCONT {
+		.loc ../contracts/DexVaultLpTokenPending.sol, 93
 		CALLREF {
 			CALL $createLpTokenAndWallets_internal_macro$
 		}
+		.loc ../contracts/DexVaultLpTokenPending.sol, 0
 	}
 	IF
-	;; end if
+	.loc ../contracts/DexVaultLpTokenPending.sol, 0
 }
 PUSHCONT {
-	;; if
-	;; get member sender
 	GETGLOB 9
-	;; push identifier right_root
 	GETGLOB 17
 	SDEQ
 	PUSHCONT {
-		;; push identifier details
-		DUP
-		;; param: details
-		; function simplifyTokenDetails
-		;; return
-		;; get member name
-		;; push identifier details
-		DUP
+		.loc ../contracts/DexVaultLpTokenPending.sol, 96
+		BLKPUSH 2, 0
+		.loc ../contracts/DexVaultLpTokenPending.sol, 168
 		INDEX 0
-		;; get member symbol
-		;; push identifier details
-		PUSH S1
+		OVER
 		INDEX 1
-		;; get member decimals
-		;; push identifier details
-		PUSH S2
+		ROT
 		INDEX 2
-		TUPLE 3
-		; end function simplifyTokenDetails
-		NIP
-		; expValue
-		; end expValue
-		; colValue
+		TRIPLE
+		.loc ../contracts/DexVaultLpTokenPending.sol, 0
 		SETGLOB 26
-		; end colValue
-		; expValue
-		; end expValue
+		.loc ../contracts/DexVaultLpTokenPending.sol, 97
 		TRUE
-		; colValue
 		SETGLOB 27
-		; end colValue
-		;; if
-		;; push identifier left_root_details_received
+		.loc ../contracts/DexVaultLpTokenPending.sol, 98
 		GETGLOB 25
 		PUSHCONT {
+			.loc ../contracts/DexVaultLpTokenPending.sol, 99
 			CALLREF {
 				CALL $createLpTokenAndWallets_internal_macro$
 			}
+			.loc ../contracts/DexVaultLpTokenPending.sol, 0
 		}
 		IF
-		;; end if
+		.loc ../contracts/DexVaultLpTokenPending.sol, 0
 	}
 	IF
-	;; end if
+	.loc ../contracts/DexVaultLpTokenPending.sol, 0
 }
 IFELSE
-;; end if
-; function terminateIfEmptyQueue
-;; if
-;; push identifier pending_messages
+.loc ../contracts/DexVaultLpTokenPending.sol, 188
 GETGLOB 23
 PUSHCONT {
-	; function _onLiquidityTokenNotDeployed
-	;; Remote call IDexVault.onLiquidityTokenNotDeployed
-	;; push identifier vault
+	.loc ../contracts/DexVaultLpTokenPending.sol, 125
+	GETGLOB 21
+	GETGLOB 19
+	GETGLOB 17
+	GETGLOB 16
+	GETGLOB 15
+	GETGLOB 13
 	GETGLOB 14
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHINT 109
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 1
+	PUSHINT 1
+	STUR 111
+	ROLLREV 6
 	NEWC
 	STSLICECONST x5cbd6524
-	;; nonce
-	;; push identifier _nonce
-	GETGLOB 13
-	STUR 32
-	;; pair
-	;; push identifier pair
-	GETGLOB 15
-	STSLICER
-	;; left_root
-	;; push identifier left_root
-	GETGLOB 16
-	STSLICER
-	;; right_root
-	;; push identifier right_root
-	GETGLOB 17
-	STSLICER
+	STU 32
+	STSLICE
+	ROLLREV 4
 	NEWC
-	;; lp_root
-	;; push identifier lp_token_root
-	GETGLOB 19
-	STSLICER
-	;; send_gas_to
-	;; push identifier send_gas_to
-	GETGLOB 21
-	STSLICER
+	STSLICE
+	ROLLREV 3
+	NEWC
+	STSLICE
+	ROTREV
+	NEWC
+	STSLICE
+	SWAP
+	NEWC
+	STSLICE
+	STBREFR
+	STBREFR
+	STBREFR
 	STBREFR
 	STBREFR
 	ENDC
 	PUSHINT 128
-	;; +
-	PUSHINT 32
-	ADD
+	ADDCONST 32
 	UFITS 8
 	SENDRAWMSG
-	; end function _onLiquidityTokenNotDeployed
+	.loc ../contracts/DexVaultLpTokenPending.sol, 0
 }
 IFNOT
-;; end if
-; end function terminateIfEmptyQueue
-; end function onGetDetails
-; end modifier onlyExpectedToken
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 DROP
 
 .macro notifyTokenRootDeployed
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode 
+.loc ../contracts/DexVaultLpTokenPending.sol, 105
 LDU 32
-; Decode token_root
-LDMSGADDR
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: 
-;; param: token_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $notifyTokenRootDeployed_internal_macro$
 }
@@ -467,97 +362,84 @@ SETGLOB 7
 CALL $notifyTokenRootDeployed_internal_macro$
 
 .macro notifyTokenRootDeployed_internal_macro
-;; param: 
-;; param: token_root
-; modifier onlyTokenFactory
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 54
 GETGLOB 9
-;; push identifier token_factory
 GETGLOB 18
 SDEQ
 THROWIFNOT 125
-; function notifyTokenRootDeployed
-; expValue
-; end expValue
-;; push identifier token_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 109
 DUP
-; colValue
 SETGLOB 19
-; end colValue
-;; push identifier token_root
-DUP
-;; push identifier vault
+.loc ../contracts/DexVaultLpTokenPending.sol, 110
 GETGLOB 14
-;; push identifier send_gas_to
 GETGLOB 21
 CALLREF {
 	CALL $deployEmptyWallet_internal_macro$
 }
-;; Remote call IDexVault.onLiquidityTokenDeployed
-;; push identifier vault
+.loc ../contracts/DexVaultLpTokenPending.sol, 111
+GETGLOB 21
+GETGLOB 19
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 13
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
+PUSHINT 1
+STUR 111
+ROLLREV 6
 NEWC
 STSLICECONST x1211151f
-;; nonce
-;; push identifier _nonce
-GETGLOB 13
-STUR 32
-;; pair
-;; push identifier pair
-GETGLOB 15
-STSLICER
-;; left_root
-;; push identifier left_root
-GETGLOB 16
-STSLICER
-;; right_root
-;; push identifier right_root
-GETGLOB 17
-STSLICER
+STU 32
+STSLICE
+ROLLREV 4
 NEWC
-;; lp_root
-;; push identifier lp_token_root
-GETGLOB 19
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-GETGLOB 21
-STSLICER
+STSLICE
+ROLLREV 3
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+STBREFR
 STBREFR
 STBREFR
 ENDC
 PUSHINT 128
-;; +
-PUSHINT 32
-ADD
+ADDCONST 32
 UFITS 8
 SENDRAWMSG
-; end function notifyTokenRootDeployed
-; end modifier onlyTokenFactory
-DROP2
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
+DROP
 
 .macro notifyTokenRootNotDeployed
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
-; Decode 
+.loc ../contracts/DexVaultLpTokenPending.sol, 117
 LDU 32
-; Decode 
-LDMSGADDR
+LDMSGADDRQ
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
 ENDS
-;; param: 
-;; param: 
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $notifyTokenRootNotDeployed_internal_macro$
 }
@@ -572,66 +454,52 @@ SETGLOB 7
 CALL $notifyTokenRootNotDeployed_internal_macro$
 
 .macro notifyTokenRootNotDeployed_internal_macro
-;; param: 
-;; param: 
-; modifier onlyTokenFactory
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 54
 GETGLOB 9
-;; push identifier token_factory
 GETGLOB 18
 SDEQ
 THROWIFNOT 125
-; function notifyTokenRootNotDeployed
-; function _onLiquidityTokenNotDeployed
-;; Remote call IDexVault.onLiquidityTokenNotDeployed
-;; push identifier vault
+.loc ../contracts/DexVaultLpTokenPending.sol, 125
+GETGLOB 21
+GETGLOB 19
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 13
 GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
+PUSHINT 1
+STUR 111
+ROLLREV 6
 NEWC
 STSLICECONST x5cbd6524
-;; nonce
-;; push identifier _nonce
-GETGLOB 13
-STUR 32
-;; pair
-;; push identifier pair
-GETGLOB 15
-STSLICER
-;; left_root
-;; push identifier left_root
-GETGLOB 16
-STSLICER
-;; right_root
-;; push identifier right_root
-GETGLOB 17
-STSLICER
+STU 32
+STSLICE
+ROLLREV 4
 NEWC
-;; lp_root
-;; push identifier lp_token_root
-GETGLOB 19
-STSLICER
-;; send_gas_to
-;; push identifier send_gas_to
-GETGLOB 21
-STSLICER
+STSLICE
+ROLLREV 3
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+STBREFR
 STBREFR
 STBREFR
 ENDC
 PUSHINT 128
-;; +
-PUSHINT 32
-ADD
+ADDCONST 32
 UFITS 8
 SENDRAWMSG
-; end function _onLiquidityTokenNotDeployed
-; end function notifyTokenRootNotDeployed
-; end modifier onlyTokenFactory
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 DROP2
 
 .globl	createLpTokenAndWallets_internal
@@ -639,529 +507,399 @@ DROP2
 CALL $createLpTokenAndWallets_internal_macro$
 
 .macro createLpTokenAndWallets_internal_macro
-; function createLpTokenAndWallets
-;; get member symbol
-;; push identifier left_root_details
+.loc ../contracts/DexVaultLpTokenPending.sol, 132
 GETGLOB 24
 INDEX 1
-;; get member symbol
-;; push identifier right_root_details
 GETGLOB 26
 INDEX 1
-;; param: left_symbol
-;; param: right_symbol
-; function lpTokenSymbol
-;; push identifier LP_TOKEN_SYMBOL_PREFIX
+.loc ../contracts/DexVaultLpTokenPending.sol, 176
 GETGLOB 10
-;; decl: name
-; expValue
-DUP
-; end expValue
-;; push identifier left_symbol
-PUSH S3
+.loc ../contracts/DexVaultLpTokenPending.sol, 177
+ROT
 CALLREF {
 	CALL $concatenateStrings_macro$
 }
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier LP_TOKEN_SYMBOL_SEPARATOR
+.loc ../contracts/DexVaultLpTokenPending.sol, 178
 GETGLOB 11
 CALLREF {
 	CALL $concatenateStrings_macro$
 }
-; colValue
-NIP
-; end colValue
-; expValue
-DUP
-; end expValue
-;; push identifier right_symbol
-PUSH S2
+.loc ../contracts/DexVaultLpTokenPending.sol, 179
+SWAP
 CALLREF {
 	CALL $concatenateStrings_macro$
 }
-; colValue
-NIP
-; end colValue
-;; return
-;; push identifier name
-DUP
-;; bytes
-NIP
-; end function lpTokenSymbol
-BLKDROP2 2, 1
-;; decl: lp_token_sybmol
-;; push identifier lp_token_sybmol
-DUP
-;; push identifier LP_TOKEN_DECIMALS
+.loc ../contracts/DexVaultLpTokenPending.sol, 133
 GETGLOB 12
-;; param: symbol
-;; param: decimals
-; function deployLpToken
-;; ++
-; expValue
-;; fetch pending_messages
+.loc ../contracts/DexVaultLpTokenPending.sol, 139
 GETGLOB 23
-; end expValue
 INC
 UFITS 8
-; colValue
 SETGLOB 23
-; end colValue
-;; Remote call ITokenFactory.Token
+.loc ../contracts/DexVaultLpTokenPending.sol, 140
+OVER
+ROT
+GETGLOB 15
+PUSHINT 0
+DUP
 PUSHINT 1000000000
-;; +
-PUSHINT 1000000000
+DUP
 ADD
 UFITS 128
-;; push identifier token_factory
 GETGLOB 18
 NEWC
 STSLICECONST x62_
 STSLICE
 SWAP
 STGRAMS
-PUSHINT 105
-STZEROES
-STSLICECONST 0
-STSLICECONST 1
+PUSHINT 1
+STUR 107
+ROLLREV 6
 NEWC
 STSLICECONST x64be7ee7
-;; answer_id
-PUSHINT 0
-STUR 32
-;; root_public_key
-PUSHINT 0
-STUR 256
-;; root_owner_address
-;; push identifier pair
-GETGLOB 15
-STSLICER
-;; name
-;; push identifier symbol
-PUSH S3
-STREFR
-;; symbol
-;; push identifier symbol
-PUSH S3
-STREFR
-;; decimals
-;; push identifier decimals
-PUSH S2
-STUR 8
+STU 32
+STU 256
+STSLICE
+STREF
+STREF
+STU 8
 STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-; end function deployLpToken
-DROP2
-;; push identifier left_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 134
 GETGLOB 16
-;; push identifier vault
 GETGLOB 14
 MYADDR
 CALLREF {
 	CALL $deployEmptyWallet_internal_macro$
 }
-;; push identifier right_root
+.loc ../contracts/DexVaultLpTokenPending.sol, 135
 GETGLOB 17
-;; push identifier vault
 GETGLOB 14
 MYADDR
 CALLREF {
 	CALL $deployEmptyWallet_internal_macro$
 }
-DROP
-; end function createLpTokenAndWallets
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 
 .globl	deployEmptyWallet_internal
 .type	deployEmptyWallet_internal, @function
 CALL $deployEmptyWallet_internal_macro$
 
 .macro deployEmptyWallet_internal_macro
-;; param: token_root
-;; param: wallet_owner
-;; param: gas_back_address
-; function deployEmptyWallet
-;; Remote call IRootTokenContract.deployEmptyWallet
-;; push identifier token_root
-PUSH S2
+.loc ../contracts/DexVaultLpTokenPending.sol, 154
+SWAP
+PUSHINT 0
+PUSHINT 100000000
+ROLL 4
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHSLICE x40bebc200000000000000000000000000004_
+PUSHSLICE x40bebc200000000000000000000000000003_
 STSLICER
-STSLICECONST 0
-STSLICECONST 1
+ROLLREV 4
 NEWC
 STSLICECONST x542b1672
-;; deploy_grams
-PUSHINT 100000000
-STUR 128
-;; wallet_public_key
-PUSHINT 0
-STUR 256
-;; owner_address
-;; push identifier wallet_owner
-PUSH S3
-STSLICER
-;; gas_back_address
-;; push identifier gas_back_address
-PUSH S2
-STSLICER
+STU 128
+STU 256
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
 STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-; end function deployEmptyWallet
-BLKDROP 3
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 
 .globl	isSenderExpectedToken_internal
 .type	isSenderExpectedToken_internal, @function
 CALL $isSenderExpectedToken_internal_macro$
 
 .macro isSenderExpectedToken_internal_macro
-; function isSenderExpectedToken
-;; return
-;; get member sender
+.loc ../contracts/DexVaultLpTokenPending.sol, 184
 GETGLOB 9
-;; push identifier left_root
 GETGLOB 16
 SDEQ
-;; short-circuiting ||
 DUP
 PUSHCONT {
 	DROP
-	;; get member sender
 	GETGLOB 9
-	;; push identifier right_root
 	GETGLOB 17
 	SDEQ
 }
 IFNOT
-; end function isSenderExpectedToken
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 
 .macro on_bounce_macro
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-;; param: 
-; function onBounce
-;; if
+.loc ../contracts/DexVaultLpTokenPending.sol, 194
+DROP
 CALLREF {
 	CALL $isSenderExpectedToken_internal_macro$
 }
-;; short-circuiting &&
 DUP
 PUSHCONT {
 	DROP
-	;; get member sender
 	GETGLOB 9
-	;; push identifier token_factory
 	GETGLOB 18
 	SDEQ
 }
 IF
 PUSHCONT {
-	;; --
-	; expValue
-	;; fetch pending_messages
+	.loc ../contracts/DexVaultLpTokenPending.sol, 195
 	GETGLOB 23
-	; end expValue
 	DEC
 	UFITS 8
-	; colValue
+	DUP
 	SETGLOB 23
-	; end colValue
-	; function terminateIfEmptyQueue
-	;; if
-	;; push identifier pending_messages
-	GETGLOB 23
+	.loc ../contracts/DexVaultLpTokenPending.sol, 188
 	PUSHCONT {
-		; function _onLiquidityTokenNotDeployed
-		;; Remote call IDexVault.onLiquidityTokenNotDeployed
-		;; push identifier vault
+		.loc ../contracts/DexVaultLpTokenPending.sol, 125
+		GETGLOB 21
+		GETGLOB 19
+		GETGLOB 17
+		GETGLOB 16
+		GETGLOB 15
+		GETGLOB 13
 		GETGLOB 14
 		NEWC
 		STSLICECONST x62_
 		STSLICE
-		PUSHINT 109
-		STZEROES
-		STSLICECONST 0
-		STSLICECONST 1
+		PUSHINT 1
+		STUR 111
+		ROLLREV 6
 		NEWC
 		STSLICECONST x5cbd6524
-		;; nonce
-		;; push identifier _nonce
-		GETGLOB 13
-		STUR 32
-		;; pair
-		;; push identifier pair
-		GETGLOB 15
-		STSLICER
-		;; left_root
-		;; push identifier left_root
-		GETGLOB 16
-		STSLICER
-		;; right_root
-		;; push identifier right_root
-		GETGLOB 17
-		STSLICER
+		STU 32
+		STSLICE
+		ROLLREV 4
 		NEWC
-		;; lp_root
-		;; push identifier lp_token_root
-		GETGLOB 19
-		STSLICER
-		;; send_gas_to
-		;; push identifier send_gas_to
-		GETGLOB 21
-		STSLICER
+		STSLICE
+		ROLLREV 3
+		NEWC
+		STSLICE
+		ROTREV
+		NEWC
+		STSLICE
+		SWAP
+		NEWC
+		STSLICE
+		STBREFR
+		STBREFR
+		STBREFR
 		STBREFR
 		STBREFR
 		ENDC
 		PUSHINT 128
-		;; +
-		PUSHINT 32
-		ADD
+		ADDCONST 32
 		UFITS 8
 		SENDRAWMSG
-		; end function _onLiquidityTokenNotDeployed
+		.loc ../contracts/DexVaultLpTokenPending.sol, 0
 	}
 	IFNOT
-	;; end if
-	; end function terminateIfEmptyQueue
+	.loc ../contracts/DexVaultLpTokenPending.sol, 0
 }
 IF
-;; end if
-; end function onBounce
-DROP
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
 
 .macro receive_macro
-; function receive
-; end function receive
+GETGLOB 6
+THROWIFNOT 76
+.loc ../contracts/DexVaultLpTokenPending.sol, 0
 IFREF {
 	CALL $c7_to_c4$
 }
 
 .macro c7_to_c4
+GETGLOB 27
+GETGLOB 26
+GETGLOB 25
+GETGLOB 24
+GETGLOB 23
+GETGLOB 22
+GETGLOB 21
+GETGLOB 20
+GETGLOB 19
+GETGLOB 18
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
-NEWC
-GETGLOB 16
-GETGLOB 17
-GETGLOB 18
-GETGLOB 24
-GETGLOB 26
-REVERSE 6, 0
-STSLICE
-STSLICE
-STSLICE
-SWAP
-UNTUPLE 3
-NEWC
-PUSH S3
-STREFR
-PUSH S2
-STREFR
-PUSH S1
-STUR 8
-BLKDROP2 3, 1
-STBREFR
-SWAP
-UNTUPLE 3
-NEWC
-PUSH S3
-STREFR
-PUSH S2
-STREFR
-PUSH S1
-STUR 8
-BLKDROP2 3, 1
-STBREFR
-NEWC
-GETGLOB 19
-GETGLOB 20
-GETGLOB 21
-REVERSE 4, 0
-STSLICE
-STU 128
-STSLICE
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-GETGLOB 13
-GETGLOB 14
-GETGLOB 15
-GETGLOB 22
-GETGLOB 23
-GETGLOB 25
-GETGLOB 27
-REVERSE 13, 0
-STBREF
-STBREF
+STU 64
+STONE
 STREF
 STREF
 STU 8
 STU 32
 STSLICE
+ROLLREV 13
+NEWC
+STSLICE
+ROLLREV 12
+NEWC
+STSLICE
+ROLLREV 11
+NEWC
+STSLICE
+ROLLREV 10
+NEWC
+STSLICE
+ROLLREV 9
+NEWC
+STSLICE
+STU 128
+ROLLREV 7
+NEWC
 STSLICE
 STI 1
 STU 8
+SWAP
+UNTRIPLE
+REVERSE 4, 0
+STREF
+STREF
+STU 8
 STI 1
+SWAP
+UNTRIPLE
+REVERSE 4, 0
+STREF
+ROLLREV 3
+NEWC
+STREF
+STU 8
 STI 1
+STBREFR
+STBREFR
+STBREFR
+STBREFR
+STBREFR
+STBREFR
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
-LDREFRTOS
-LDMSGADDR
-LDMSGADDR
-LDMSGADDR
-LDREFRTOS
-LDREF
-LDREF
-PLDU 8
-TUPLE 3
-SETGLOB 24
-LDREFRTOS
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
 NIP
-LDREF
-LDREF
-PLDU 8
-TUPLE 3
-SETGLOB 26
-SETGLOB 18
-SETGLOB 17
-SETGLOB 16
-LDREFRTOS
-LDMSGADDR
-LDU 128
-SETGLOB 21
-SETGLOB 20
-SETGLOB 19
 LDREF
 LDREF
 LDU 8
 LDU 32
 LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
 LDMSGADDR
 LDI 1
 LDU 8
+LDREF
+LDREF
+LDU 8
+ROLLREV 3
+TRIPLE
+SWAP
 LDI 1
-PLDI 1
+LDREF
+LDREF
+ENDS
+CTOS
+LDREF
+LDU 8
+ROLLREV 3
+TRIPLE
+SWAP
+LDI 1
+ENDS
 SETGLOB 27
+SETGLOB 26
 SETGLOB 25
+SETGLOB 24
 SETGLOB 23
 SETGLOB 22
+SETGLOB 21
+SETGLOB 20
+SETGLOB 19
+SETGLOB 18
+SETGLOB 17
+SETGLOB 16
 SETGLOB 15
 SETGLOB 14
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDREFRTOS
-	LDMSGADDR
-	LDMSGADDR
-	LDMSGADDR
-	LDREFRTOS
-	LDREF
-	LDREF
-	PLDU 8
-	TUPLE 3
-	SETGLOB 24
-	LDREFRTOS
-	NIP
-	LDREF
-	LDREF
-	PLDU 8
-	TUPLE 3
-	SETGLOB 26
-	SETGLOB 18
-	SETGLOB 17
-	SETGLOB 16
-	LDREFRTOS
-	LDMSGADDR
-	LDU 128
-	SETGLOB 21
-	SETGLOB 20
-	SETGLOB 19
-	LDREF
-	LDREF
-	LDU 8
-	LDU 32
-	LDMSGADDR
-	LDMSGADDR
-	LDI 1
-	LDU 8
-	LDI 1
-	PLDI 1
-	SETGLOB 27
-	SETGLOB 25
-	SETGLOB 23
-	SETGLOB 22
-	SETGLOB 15
-	SETGLOB 14
-	SETGLOB 13
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init LP_TOKEN_SYMBOL_PREFIX
-	NEWC
-	ENDC
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHREF {
+	}
 	SETGLOB 10
-	; init LP_TOKEN_SYMBOL_SEPARATOR
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 11
-	; init LP_TOKEN_DECIMALS
 	PUSHINT 0
 	SETGLOB 12
-	; init _nonce
 	PUSHINT 1
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1172,9 +910,8 @@ PUSHCONT {
 	}
 	IFELSE
 	SETGLOB 13
-	; init vault
 	PUSHINT 2
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1182,9 +919,8 @@ PUSHCONT {
 	}
 	IFNOT
 	SETGLOB 14
-	; init pair
 	PUSHINT 3
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1192,9 +928,8 @@ PUSHCONT {
 	}
 	IFNOT
 	SETGLOB 15
-	; init left_root
 	PUSHINT 4
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1202,9 +937,8 @@ PUSHCONT {
 	}
 	IFNOT
 	SETGLOB 16
-	; init right_root
 	PUSHINT 5
-	PUSH S1
+	OVER
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1212,49 +946,36 @@ PUSHCONT {
 	}
 	IFNOT
 	SETGLOB 17
-	; init token_factory
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 18
-	; init lp_token_root
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 19
-	; init deploy_value
 	PUSHINT 0
 	SETGLOB 20
-	; init send_gas_to
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 21
-	; init need_to_terminate
 	PUSHINT 0
 	SETGLOB 22
-	; init pending_messages
 	PUSHINT 0
 	SETGLOB 23
-	; init left_root_details
-	NEWC
-	ENDC
-	NEWC
-	ENDC
+	PUSHREF {
+	}
+	PUSHREF {
+	}
 	PUSHINT 0
-	TUPLE 3
+	TRIPLE
 	SETGLOB 24
-	; init left_root_details_received
 	PUSHINT 0
 	SETGLOB 25
-	; init right_root_details
-	NEWC
-	ENDC
-	NEWC
-	ENDC
+	PUSHREF {
+	}
+	PUSHREF {
+	}
 	PUSHINT 0
-	TUPLE 3
+	TRIPLE
 	SETGLOB 26
-	; init right_root_details_received
 	PUSHINT 0
 	SETGLOB 27
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -1262,23 +983,14 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
-	;; init state var: LP_TOKEN_SYMBOL_PREFIX
-	PUSHSLICE x544f4e535741502d4c502d
-	NEWC
-	STSLICE
-	ENDC
+	PUSHREF {
+		.blob x544f4e535741502d4c502d
+	}
 	SETGLOB 10
-	;; init state var: LP_TOKEN_SYMBOL_SEPARATOR
-	PUSHSLICE x2d
-	NEWC
-	STSLICE
-	ENDC
+	PUSHREF {
+		.blob x2d
+	}
 	SETGLOB 11
-	;; init state var: LP_TOKEN_DECIMALS
 	PUSHINT 9
 	SETGLOB 12
 }
@@ -1286,34 +998,38 @@ IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
-LDU 4       ; bounced tail
-LDMSGADDR   ; bounced src tail
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
-PUSHCONT {
-	PUSH S1
+IFJMPREF {
+	OVER
 	LDSLICE 32
 	NIP
 	CALL $on_bounce_macro$
 }
-IFJMP
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -1324,10 +1040,14 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 9
-PUSH S1
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -1336,19 +1056,19 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
 	ROT
 	GETGLOB 2
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 IF
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -1358,9 +1078,9 @@ THROWIF 60
 
 .macro public_function_selector
 DUP
-PUSHINT 694542156
+PUSHINT 1073820897
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
 	PUSHINT 663965378
 	EQUAL
@@ -1373,12 +1093,6 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $terminate$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1073820897
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 744553903
 	EQUAL
@@ -1392,10 +1106,10 @@ PUSHCONT {
 		CALL $notifyTokenRootNotDeployed$
 	}
 }
-IFJMP
 DUP
 PUSHINT 1265177579
 EQUAL
 IFJMPREF {
 	CALL $constructor$
 }
+

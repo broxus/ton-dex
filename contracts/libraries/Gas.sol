@@ -55,4 +55,6 @@ library Gas {
 
     uint128 constant ADD_PAIR_MIN_VALUE             = 3 ton;
 
+    uint128 constant OPERATION_CALLBACK_BASE        = 0.01 ton;
+
 }

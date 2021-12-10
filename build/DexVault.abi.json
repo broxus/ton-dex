@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["time"],
 	"functions": [
 		{
@@ -30,7 +31,7 @@
 		{
 			"name": "getOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -39,7 +40,7 @@
 		{
 			"name": "getPendingOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -287,5 +288,18 @@
 			"outputs": [
 			]
 		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"_nonce","type":"uint32"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"has_platform_code","type":"bool"},
+		{"name":"lp_token_pending_code","type":"cell"},
+		{"name":"root","type":"address"},
+		{"name":"owner","type":"address"},
+		{"name":"pending_owner","type":"address"},
+		{"name":"token_factory","type":"address"}
 	]
 }

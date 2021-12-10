@@ -1,5 +1,6 @@
 {
 	"ABI version": 2,
+	"version": "2.1",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -38,7 +39,7 @@
 		{
 			"name": "getAccountVersion",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"uint32"}
@@ -47,7 +48,7 @@
 		{
 			"name": "getPairVersion",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"uint32"}
@@ -64,7 +65,7 @@
 		{
 			"name": "getVault",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"address"}
@@ -81,7 +82,7 @@
 		{
 			"name": "isActive",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"value0","type":"bool"}
@@ -144,7 +145,7 @@
 		{
 			"name": "getOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"dex_owner","type":"address"}
@@ -153,7 +154,7 @@
 		{
 			"name": "getPendingOwner",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"}
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"dex_pending_owner","type":"address"}
@@ -177,7 +178,7 @@
 		{
 			"name": "getExpectedAccountAddress",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"account_owner","type":"address"}
 			],
 			"outputs": [
@@ -187,7 +188,7 @@
 		{
 			"name": "getExpectedPairAddress",
 			"inputs": [
-				{"name":"_answer_id","type":"uint32"},
+				{"name":"answerId","type":"uint32"},
 				{"name":"left_root","type":"address"},
 				{"name":"right_root","type":"address"}
 			],
@@ -328,5 +329,21 @@
 			"outputs": [
 			]
 		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"_nonce","type":"uint32"},
+		{"name":"platform_code","type":"cell"},
+		{"name":"has_platform_code","type":"bool"},
+		{"name":"account_code","type":"cell"},
+		{"name":"account_version","type":"uint32"},
+		{"name":"pair_code","type":"cell"},
+		{"name":"pair_version","type":"uint32"},
+		{"name":"active","type":"bool"},
+		{"name":"owner","type":"address"},
+		{"name":"vault","type":"address"},
+		{"name":"pending_owner","type":"address"}
 	]
 }

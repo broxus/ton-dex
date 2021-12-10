@@ -1,43 +1,36 @@
+.version sol 0.49.0
+
 .macro constructor
 DROP
-GETGLOB 1
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-;; constructor protection
 GETGLOB 6
 THROWIF 51
-PUSHINT 1
-SETGLOB 6
-;; end constructor protection
-; Decode input parameters
 ENDS
-; constructor TestNewDexAccount
+.loc ../contracts/tests/TestNewDexAccount.sol, 28
 THROW 100
-; end constructor TestNewDexAccount
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
 
 .macro getRoot
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/tests/TestNewDexAccount.sol, 30
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getRoot
-;; return
+.loc ../contracts/tests/TestNewDexAccount.sol, 31
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -46,12 +39,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier root
 GETGLOB 10
-; end function getRoot
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -62,13 +52,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xf441a21e
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -77,10 +67,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -92,22 +82,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -116,20 +105,21 @@ SETGLOB 7
 
 .macro getOwner
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/tests/TestNewDexAccount.sol, 34
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getOwner
-;; return
+.loc ../contracts/tests/TestNewDexAccount.sol, 35
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -138,12 +128,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier owner
 GETGLOB 14
-; end function getOwner
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -154,13 +141,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xe2c3961c
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -169,10 +156,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -184,22 +171,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -208,20 +194,21 @@ SETGLOB 7
 
 .macro getVersion
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/tests/TestNewDexAccount.sol, 38
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getVersion
-;; return
+.loc ../contracts/tests/TestNewDexAccount.sol, 39
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -230,12 +217,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier current_version
 GETGLOB 12
-; end function getVersion
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -246,13 +230,9 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xada94d2f
-	PUSH S1
-	STUR 32
+	PUSHSLICE x0000000000000000000000002b6a534be_
+	STSLICER
+	STU 32
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -261,10 +241,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -276,22 +256,18 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
+	PUSHINT 106
 	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STUR 32
+	STU 32
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -300,20 +276,21 @@ SETGLOB 7
 
 .macro getVault
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/tests/TestNewDexAccount.sol, 42
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
 ENDS
-; function getVault
-;; return
+.loc ../contracts/tests/TestNewDexAccount.sol, 43
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -322,12 +299,9 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; push identifier vault
 GETGLOB 11
-; end function getVault
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -338,13 +312,13 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	SWAP
+	NEWC
 	STSLICECONST xbd1bd325
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -353,10 +327,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -368,22 +342,21 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	SWAP
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S1
-	STSLICER
+	STSLICE
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -392,21 +365,21 @@ SETGLOB 7
 
 .macro getWalletData
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
+.loc ../contracts/tests/TestNewDexAccount.sol, 46
 LDU 32
 GETGLOB 4
 ROT
 SETINDEXQ 5
 SETGLOB 4
-; Decode input parameters
-; Decode token_root
 LDMSGADDRQ
 PUSHCONT {
-	;; load next cell
 	LDREF
 	ENDS
 	CTOS
@@ -414,13 +387,7 @@ PUSHCONT {
 }
 IFNOT
 ENDS
-;; param: token_root
-;; ret param: wallet
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-;; ret param: balance
-PUSHINT 0
-; function getWalletData
-;; return
+.loc ../contracts/tests/TestNewDexAccount.sol, 47
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -429,50 +396,31 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-;; map.exists
-;; push identifier token_root
-PUSH S2
-;; push identifier _wallets
+DUP
 GETGLOB 15
 PUSHINT 267
 DICTGET
-DUP
+NULLSWAPIFNOT
+NIP
 PUSHCONT {
-	NIP
-}
-IF
-PUSHCONT {
-	;; map.at
-	;; push identifier token_root
-	PUSH S2
-	;; push identifier _wallets
+	DUP
 	GETGLOB 15
 	PUSHINT 267
 	DICTGET
 	THROWIFNOT 50
 }
 PUSHCONT {
-	;; address.makeAddrStd()
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 IFELSE
-;; map.exists
-;; push identifier token_root
-PUSH S3
-;; push identifier _balances
+OVER
 GETGLOB 16
 PUSHINT 267
 DICTGET
-DUP
+NULLSWAPIFNOT
+NIP
 PUSHCONT {
-	NIP
-}
-IF
-PUSHCONT {
-	;; map.at
-	;; push identifier token_root
-	PUSH S3
-	;; push identifier _balances
+	OVER
 	GETGLOB 16
 	PUSHINT 267
 	DICTGET
@@ -483,12 +431,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IFELSE
-BLKDROP2 2, 2
-; end function getWalletData
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
 BLKDROP2 1, 2
-;; emitting 2 value(s)
 PUSH S2
-EQINT -1
 PUSHCONT {
 	PUSH S4
 	CTOS
@@ -499,15 +444,14 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 98
+	XCHG S2
+	NEWC
 	STSLICECONST xd8e91dbe
-	PUSH S2
-	STSLICER
-	PUSH S1
-	STUR 128
+	STSLICE
+	STU 128
+	STBREFR
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -516,10 +460,10 @@ PUSHCONT {
 	GETGLOB 4
 	DUP
 	INDEX 3
-	PUSH S1
+	OVER
 	INDEX 2
 	GETGLOB 9
-	BLKSWAP 1, 3
+	ROLL 3
 	INDEX 1
 	NEWC
 	PUSHINT 2
@@ -531,24 +475,22 @@ PUSHCONT {
 	SWAP
 	STGRAMS
 	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
+	PUSHINT 1
+	STUR 106
+	XCHG S2
+	NEWC
 	GETGLOB 4
 	INDEX 5
 	STUR 32
-	PUSH S2
-	STSLICER
-	PUSH S1
-	STUR 128
+	STSLICE
+	STU 128
+	STBREFR
 	ENDC
 	GETGLOB 4
 	INDEX 4
 	SENDRAWMSG
 }
 IFELSE
-DROP2
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -557,21 +499,19 @@ SETGLOB 7
 
 .macro getWallets
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/tests/TestNewDexAccount.sol, 53
 ENDS
-; function getWallets
-;; return
-;; push identifier _wallets
+.loc ../contracts/tests/TestNewDexAccount.sol, 54
 GETGLOB 15
-; end function getWallets
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -582,20 +522,17 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xdde687f1
-	PUSH S1
-	SWAP
+	PUSHSLICE x0000000000000000000000003779a1fc6_
+	STSLICER
 	STDICT
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP
+PUSHCONT {
+	DROP
+}
+IFELSE
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -604,21 +541,19 @@ SETGLOB 7
 
 .macro getBalances
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/tests/TestNewDexAccount.sol, 57
 ENDS
-; function getBalances
-;; return
-;; push identifier _balances
+.loc ../contracts/tests/TestNewDexAccount.sol, 58
 GETGLOB 16
-; end function getBalances
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -629,20 +564,17 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST x851e0c43
-	PUSH S1
-	SWAP
+	PUSHSLICE x00000000000000000000000021478310e_
+	STSLICER
 	STDICT
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP
+PUSHCONT {
+	DROP
+}
+IFELSE
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -651,20 +583,19 @@ SETGLOB 7
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-;; param: data
-; function onCodeUpgrade
+.loc ../contracts/tests/TestNewDexAccount.sol, 62
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-;; set default state vars
+.loc ../contracts/tests/TestNewDexAccount.sol, 63
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 10
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 11
 PUSHINT 0
 SETGLOB 12
-NEWC
-ENDC
+PUSHREF {
+}
 SETGLOB 13
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 14
@@ -672,141 +603,63 @@ NEWDICT
 SETGLOB 15
 NEWDICT
 SETGLOB 16
-NEWC
-ENDC
+PUSHREF {
+}
 SETGLOB 17
-;; end set default state vars
-;; push identifier data
-DUP
+.loc ../contracts/tests/TestNewDexAccount.sol, 64
 CTOS
-;; decl: s
-PUSHINT 0
-;; decl: old_version
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-;; decl: send_gas_to
-; expValue
-PUSH S2
-; end expValue
-;; decode address
+.loc ../contracts/tests/TestNewDexAccount.sol, 67
+DUP
 LDMSGADDR
-;; decode address
 LDMSGADDR
 LDU 32
 LDU 32
-;; decode address
 LDMSGADDR
-; colValue
-POP S8
-; end colValue
+POP S6
 REVERSE 5, 0
-; expValue
-; end expValue
-; colValue
 SETGLOB 10
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 11
-; end colValue
-; expValue
-; end expValue
-; colValue
-POP S4
-; end colValue
-; expValue
-; end expValue
-; colValue
+DROP
 SETGLOB 12
-; end colValue
-; expValue
-; end expValue
-; colValue
-NIP
-; end colValue
-; expValue
-PUSH S2
-; end expValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 70
+OVER
 LDREF
-; colValue
-POP S4
-; end colValue
-; expValue
-; end expValue
-; colValue
+POP S3
 SETGLOB 13
-; end colValue
-; expValue
-PUSH S2
-; end expValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 71
+SWAP
 LDREF
-; colValue
-POP S4
-; end colValue
+DROP
 CTOS
-;; decl: old_contract_data
-; expValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 72
 DUP
-; end expValue
-;; decode address
 LDMSGADDR
-; colValue
 POP S2
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 14
-; end colValue
-; expValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 73
 DUP
-; end expValue
 LDDICT
-; colValue
 POP S2
-; end colValue
-; expValue
-; end expValue
-; colValue
 SETGLOB 15
-; end colValue
-; expValue
-DUP
-; end expValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 74
 LDDICT
-; colValue
-POP S2
-; end colValue
-; expValue
-; end expValue
-; colValue
+DROP
 SETGLOB 16
-; end colValue
-; expValue
-; end expValue
-PUSHSLICE x4e6577204163636f756e74
-NEWC
-STSLICE
-ENDC
-; colValue
+.loc ../contracts/tests/TestNewDexAccount.sol, 76
+PUSHREF {
+	.blob x4e6577204163636f756e74
+}
 SETGLOB 17
-; end colValue
-;; transfer()
-;; push identifier send_gas_to
-PUSH S1
+.loc ../contracts/tests/TestNewDexAccount.sol, 78
 NEWC
 STSLICECONST x62_
 STSLICE
-PUSHINT 109
+PUSHINT 111
 STZEROES
-STSLICECONST 0
-STSLICECONST 0
 ENDC
 PUSHINT 128
 SENDRAWMSG
-BLKDROP 4
-; end function onCodeUpgrade
-DROP
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -815,19 +668,20 @@ THROW 0
 
 .macro newFunc
 DROP
-GETGLOB 1
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
 ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-; Decode input parameters
+.loc ../contracts/tests/TestNewDexAccount.sol, 81
 ENDS
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
 CALLREF {
 	CALL $newFunc_internal_macro$
 }
-;; emitting 1 value(s)
-PUSH S1
-EQINT -1
+OVER
 PUSHCONT {
 	PUSH S3
 	CTOS
@@ -838,19 +692,17 @@ PUSHCONT {
 	NEWC
 	STSLICECONST xc
 	STSLICE
-	PUSHINT 96
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xc113206e
-	PUSH S1
-	STREFR
+	PUSHSLICE x00000000000000000000000024509510a_
+	STSLICER
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
-IF
-DROP
+PUSHCONT {
+	DROP
+}
+IFELSE
 IFREF {
 	CALL $c7_to_c4$
 }
@@ -862,136 +714,106 @@ SETGLOB 7
 CALL $newFunc_internal_macro$
 
 .macro newFunc_internal_macro
-; function newFunc
-;; return
-;; push identifier newTestField
+.loc ../contracts/tests/TestNewDexAccount.sol, 82
 GETGLOB 17
-; end function newFunc
+.loc ../contracts/tests/TestNewDexAccount.sol, 0
 
 .macro c7_to_c4
+GETGLOB 17
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
 GETGLOB 2
 NEWC
 STU 256
-GETGLOB 3
-STUR 64
-GETGLOB 6
-STUR 1
+STU 64
+STONE
+STSLICE
+ROLLREV 7
 NEWC
-GETGLOB 14
-GETGLOB 16
-XCHG s2
-STSLICE
-STDICT
-GETGLOB 10
-GETGLOB 11
-GETGLOB 12
-GETGLOB 13
-GETGLOB 15
-GETGLOB 17
-REVERSE 8, 0
-STBREF
-STSLICE
 STSLICE
 STU 32
 STREF
+ROLLREV 4
+NEWC
+STSLICE
+STDICT
 STDICT
 STREF
+STBREFR
+STBREFR
 ENDC
-POP C4
+POPROOT
 
 .macro c4_to_c7
 PUSHROOT
-CTOS        ; c4
-LDU 256      ; pubkey c4
-LDU 64      ; pubkey timestamp c4
-LDU 1       ; pubkey [timestamp] constructor_flag memory
-LDREFRTOS
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
 LDMSGADDR
-PLDDICT
-SETGLOB 16
-SETGLOB 14
-LDMSGADDR
+LDREF
+ENDS
+CTOS
 LDMSGADDR
 LDU 32
 LDREF
+LDREF
+ENDS
+CTOS
+LDMSGADDR
 LDDICT
-PLDREF
+LDDICT
+LDREF
+ENDS
 SETGLOB 17
+SETGLOB 16
 SETGLOB 15
+SETGLOB 14
 SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
-TRUE
-SETGLOB 1   ; pubkey [timestamp] constructor_flag
-SETGLOB 6   ; pubkey [timestamp]
-SETGLOB 3   ; D
+SETGLOB 3
 SETGLOB 2
 
 .macro c4_to_c7_with_init_storage
 PUSHROOT
-CTOS        ; c4
-DUP        ; c4 c4
-SBITS      ; c4 bits
-GTINT 1    ; c4 bits>1
-PUSHCONT {
-	LDU 256      ; pubkey c4
-	LDU 64      ; pubkey timestamp c4
-	LDU 1       ; pubkey [timestamp] constructor_flag memory
-	LDREFRTOS
-	LDMSGADDR
-	PLDDICT
-	SETGLOB 16
-	SETGLOB 14
-	LDMSGADDR
-	LDMSGADDR
-	LDU 32
-	LDREF
-	LDDICT
-	PLDREF
-	SETGLOB 17
-	SETGLOB 15
-	SETGLOB 13
-	SETGLOB 12
-	SETGLOB 11
-	SETGLOB 10
-	TRUE
-	SETGLOB 1   ; pubkey [timestamp] constructor_flag
-	SETGLOB 6   ; pubkey [timestamp]
-	SETGLOB 3   ; D
-	SETGLOB 2
+CTOS
+SBITS
+GTINT 1
+PUSHREFCONT {
+	CALL $c4_to_c7$
 }
 PUSHCONT {
-	PLDDICT   ; D
-	; init root
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 10
-	; init vault
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 11
-	; init current_version
 	PUSHINT 0
 	SETGLOB 12
-	; init platform_code
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 13
-	; init owner
 	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 	SETGLOB 14
-	; init _wallets
 	NEWDICT
 	SETGLOB 15
-	; init _balances
 	NEWDICT
 	SETGLOB 16
-	; init newTestField
-	NEWC
-	ENDC
+	PUSHREF {
+	}
 	SETGLOB 17
-	; set contract pubkey
-	PUSHINT 0
-	SWAP
 	PUSHINT 64
 	DICTUGET
 	THROWIFNOT 61
@@ -999,53 +821,48 @@ PUSHCONT {
 	SETGLOB 2
 	PUSHINT 0 ; timestamp
 	SETGLOB 3
-	PUSHINT 0 ; constructor_flag
-	SETGLOB 6
-	TRUE
-	SETGLOB 1
 }
 IFELSE
 
 .internal-alias :main_internal, 0
 .internal :main_internal
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function: main_internal
-;; param: contract_balance
-;; param: msg_balance
-;; param: int_msg_info
-;; param: msg_body_slice
-PUSHINT 0  ; main_external trans id
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
 PUSH S2
 CTOS
-LDU 4       ; bounced tail
-LDMSGADDR   ; bounced src tail
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
-; beg set default params for responsible func
 GETGLOB 4
-; bounce
 TRUE
 SETINDEXQ 1
-; tons
 PUSHINT 10000000
 SETINDEXQ 2
-; currency
 NULL
 SETINDEXQ 3
-; flag
 PUSHINT 0
 SETINDEXQ 4
 SETGLOB 4
-; end set default params for responsible func
 IFRET
-PUSH S1    ; body
-SEMPTY     ; isEmpty
-IFRET
-PUSH S1 ; body
-LDU 32  ; funcId body'
-PUSH S1 ; funcId body' funcId
-IFNOTRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60 ; funcId body'
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
 SWAP
 CALLREF {
 	CALL $public_function_selector$
@@ -1056,8 +873,12 @@ THROWIF 60
 
 .internal-alias :main_external, -1
 .internal :main_external
-PUSHINT -1 ; main_external trans id
-PUSH S1
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
 }
@@ -1066,40 +887,40 @@ SWAP
 PUSHCONT {
 	PUSHINT 512
 	LDSLICEX ; signatureSlice msgSlice
-	DUP      ; signatureSlice msgSlice msgSlice
-	HASHSU   ; signatureSlice msgSlice hashMsgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
 	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
-	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	SWAP
 	PUSHCONT {
-		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
-		XCHG s3
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
 		SWAP
 	}
 	PUSHCONT {
-		XCHG s2
+		XCHG S2
 		GETGLOB 2
 	}
 	IFELSE
-	CHKSIGNU      ; msgSlice isSigned
+	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40 ; msgSlice
 }
 PUSHCONT {
-	LDU 1      ; havePubkey msgSlice
-	SWAP       ; msgSlice havePubkey
+	LDU 1 ; havePubkey msgSlice
+	SWAP
 	THROWIF 58 ; msgSlice
 }
 IFELSE
-LDU 64                         ; timestamp msgSlice
-SWAP                           ; msgSlice timestamp
-CALL $replay_protection_macro$ ; msgSlice
-LDU 32  ; expireAt msgSlice
-SWAP    ; msgSlice expireAt
-NOW     ; msgSlice expireAt now
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
 GREATER ; msgSlice expireAt>now
 THROWIFNOT 57
-LDU  32 ; funcId body
-SWAP    ; body funcId
+LDU 32 ; funcId body
+SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
@@ -1113,25 +934,18 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-;; emitting 1 value
-DUP
-EQINT -1
+GETGLOB 13
+OVER
 PUSHCONT {
-	GETGLOB 13
+	PUSHSLICE xc0000000000000000000000000e6d44df5
 	NEWC
-	PUSHSLICE xc0000000000000000000000002_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	STSLICECONST xe6d44df5
-	PUSH S1
-	STREFR
+	STSLICE
+	STREF
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
 }
 IF
-DROP
 TRUE
 SETGLOB 7
 
@@ -1139,12 +953,18 @@ SETGLOB 7
 DUP
 PUSHINT 1025233701
 LEQ
-PUSHCONT {
+IFJMPREF {
 	DUP
 	PUSHINT 85855299
 	EQUAL
 	IFJMPREF {
 		CALL $getBalances$
+	}
+	DUP
+	PUSHINT 289559618
+	EQUAL
+	IFJMPREF {
+		CALL $newFunc$
 	}
 	DUP
 	PUSHINT 766070063
@@ -1159,17 +979,10 @@ PUSHCONT {
 		CALL $getVault$
 	}
 }
-IFJMP
 DUP
-PUSHINT 1575389169
+PUSHINT 1725189621
 LEQ
-PUSHCONT {
-	DUP
-	PUSHINT 1091772526
-	EQUAL
-	IFJMPREF {
-		CALL $newFunc$
-	}
+IFJMPREF {
 	DUP
 	PUSHINT 1491672510
 	EQUAL
@@ -1182,12 +995,6 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $getWallets$
 	}
-}
-IFJMP
-DUP
-PUSHINT 1756716863
-LEQ
-PUSHCONT {
 	DUP
 	PUSHINT 1656985116
 	EQUAL
@@ -1200,17 +1007,22 @@ PUSHCONT {
 	IFJMPREF {
 		CALL $platform_code$
 	}
+}
+DUP
+PUSHINT 1950458398
+LEQ
+IFJMPREF {
 	DUP
 	PUSHINT 1756716863
 	EQUAL
 	IFJMPREF {
 		CALL $constructor$
 	}
+	DUP
+	PUSHINT 1950458398
+	EQUAL
+	IFJMPREF {
+		CALL $getRoot$
+	}
 }
-IFJMP
-DUP
-PUSHINT 1950458398
-EQUAL
-IFJMPREF {
-	CALL $getRoot$
-}
+
