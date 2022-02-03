@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 import "./libraries/DexErrors.sol";
 import "./libraries/Gas.sol";
@@ -8,7 +8,7 @@ import "./interfaces/ITokenFactory.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/ITokenRootDeployedCallback.sol";
 
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
 
@@ -65,12 +65,12 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
         send_gas_to = send_gas_to_;
         deploy_value = value_;
 
-        IRootTokenContract(left_root).getDetails{
+        ITokenRoot(left_root).getDetails{
             value: Gas.GET_TOKEN_DETAILS_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             callback: onGetDetails
         }();
-        IRootTokenContract(right_root).getDetails{
+        ITokenRoot(right_root).getDetails{
             value: Gas.GET_TOKEN_DETAILS_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             callback: onGetDetails
@@ -84,7 +84,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
         _onLiquidityTokenNotDeployed();
     }
 
-    function onGetDetails(IRootTokenContract.IRootTokenContractDetails details) public onlyExpectedToken {
+    function onGetDetails(ITokenRoot.ITokenRootDetails details) public onlyExpectedToken {
         pending_messages--;
         if (msg.sender == left_root) {
             left_root_details = simplifyTokenDetails(details);
@@ -151,7 +151,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
     }
 
     function deployEmptyWallet(address token_root, address wallet_owner, address gas_back_address) private pure {
-        IRootTokenContract(token_root).deployEmptyWallet{
+        ITokenRoot(token_root).deployEmptyWallet{
             value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
@@ -163,7 +163,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback {
     }
 
     function simplifyTokenDetails(
-        IRootTokenContract.IRootTokenContractDetails details
+        ITokenRoot.ITokenRootDetails details
     ) private inline pure returns (TokenDetails) {
         return TokenDetails({
             name: details.name,

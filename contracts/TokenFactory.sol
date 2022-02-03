@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 import "./TokenFactoryStorage.sol";
 
@@ -12,7 +12,7 @@ import "./interfaces/ITokenRootDeployedCallback.sol";
 import "./interfaces/IResetGas.sol";
 
 import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/RootTokenContract.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
 
@@ -110,7 +110,7 @@ contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
 
     }
 
-    function onTokenGetDetails(IRootTokenContract.IRootTokenContractDetails details) public view override {
+    function onTokenGetDetails(ITokenRoot.ITokenRootDetails details) public view override {
         TvmBuilder b;
         b.store(details.root_public_key, details.root_owner_address);
         address tfStorage = address(tvm.hash(_buildStorageInitData(msg.sender)));

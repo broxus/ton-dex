@@ -1,6 +1,6 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
-import "../../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "../../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 interface ITokenFactory {
 
@@ -30,7 +30,7 @@ interface ITokenFactory {
     function setRootCode(TvmCell root_code_) external;
     function setWalletCode(TvmCell wallet_code_) external;
 
-    function onTokenGetDetails(IRootTokenContract.IRootTokenContractDetails details) external view;
+    function onTokenGetDetails(ITokenRoot.ITokenRootDetails details) external view;
     function onStorageReadWithDetails(StorageData data, TvmCell meta) external view;
     function onStoragePruneNotify(StorageData data) external view;
     function onStoragePruneReturn(StorageData data) external view;

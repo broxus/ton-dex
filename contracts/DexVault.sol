@@ -1,6 +1,6 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenWallet.sol";
 
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
@@ -14,11 +14,10 @@ import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexAccount.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/IResetGas.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokenWalletDeployedCallback.sol";
 
 
 
-contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCallback {
+contract DexVault is IDexVault, IResetGas, IUpgradable {
 
     uint32 static _nonce;
 
@@ -172,15 +171,13 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_public_key, recipient_address);
 
         TvmCell empty;
-        ITONTokenWallet(vault_wallet).transferToRecipient{
-            value: Gas.TRANSFER_TO_RECIPIENT_VALUE + deploy_wallet_grams,
+        ITokenWallet(vault_wallet).transfer{
+            value: Gas.TRANSFER_TOKENS_VALUE + deploy_wallet_grams,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
-            recipient_public_key,
-            recipient_address,
             amount,
+            recipient_address,
             deploy_wallet_grams,
-            0,
             send_gas_to,
             false,
             empty
@@ -208,15 +205,13 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
 
         emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_public_key, recipient_address);
 
-        ITONTokenWallet(vault_wallet).transferToRecipient{
+        ITokenWallet(vault_wallet).transfer{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED
         }(
-            recipient_public_key,
-            recipient_address,
             amount,
+            recipient_address,
             deploy_wallet_grams,
-            0,
             send_gas_to,
             notify_receiver,
             payload

@@ -1,15 +1,14 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IExpectedWalletAddressCallback.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IBurnableByRootTokenRootContract.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IBurnableByOwnerTokenWallet.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokensReceivedCallback.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenWallet.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/IBurnableByRootTokenRoot.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/IBurnableTokenWallet.sol";
+import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/IAcceptTokensTransferCallback.sol";
 
 import "./libraries/PlatformTypes.sol";
 import "./libraries/DexErrors.sol";
@@ -20,17 +19,19 @@ import "./libraries/OperationTypes.sol";
 import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
 import "./interfaces/IDexPair.sol";
+import "./interfaces/ISuccessCallback.sol";
 import "./interfaces/IDexAccount.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IResetGas.sol";
-import "./interfaces/IAfterInitialize.sol";
 import "./structures/IExchangeResult.sol";
 import "./structures/IWithdrawResult.sol";
+import "./structures/ITokenOperationStructure.sol";
 import "./interfaces/IDexPairOperationCallback.sol";
 
 import "./DexPlatform.sol";
 
-contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCallback, IUpgradableByRequest, IAfterInitialize, IResetGas {
+contract DexPair is IDexPair, IAcceptTokensTransferCallback,
+                    IUpgradableByRequest, IResetGas, ITokenOperationStructure {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Data
@@ -79,7 +80,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     // ...and allow root to get surplus gas
     function resetGas(address receiver) override external view onlyRoot {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED, bounce: false });
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,24 +160,50 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         return builder.toCell();
     }
 
-    function tokensReceivedCallback(
-        address token_wallet,
+    function buildCrossPairExchangePayload(
+        uint64 id,
+        uint128 deploy_wallet_grams,
+        uint128 expected_amount,
+        TokenOperation[] steps
+    ) external pure responsible returns (TvmCell) {
+        require(steps.length > 0);
+        TvmBuilder builder;
+
+        builder.store(OperationTypes.CROSS_PAIR_EXCHANGE);
+        builder.store(id);
+        builder.store(deploy_wallet_grams);
+        builder.store(expected_amount);
+        builder.store(steps[0].root);
+
+        TvmBuilder next_step_builder;
+        next_step_builder.store(steps[steps.length - 1].amount);
+
+        for (uint i = steps.length - 1; i > 0; i--) {
+            TvmBuilder current_step_builder;
+            current_step_builder.store(steps[i - 1].amount, steps[i].root);
+            current_step_builder.store(next_step_builder.toCell());
+            next_step_builder = current_step_builder;
+        }
+
+        builder.store(next_step_builder.toCell());
+
+        return builder.toCell();
+    }
+
+    function onAcceptTokensTransfer(
         address token_root,
         uint128 tokens_amount,
-        uint256 sender_public_key,
         address sender_address,
         address sender_wallet,
         address original_gas_to,
-        uint128 /*updated_balance*/,
         TvmCell payload
     ) override external {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
         TvmSlice payloadSlice = payload.toSlice();
 
         bool need_cancel = !active ||
             payloadSlice.bits() < 200 ||
-            lp_supply == 0 ||
-            (tokens_amount < fee_denominator && token_root != lp_root);
+            lp_supply == 0;
 
         bool notify_success = payloadSlice.refs() >= 1;
         bool notify_cancel = payloadSlice.refs() >= 2;
@@ -194,14 +221,14 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
             (uint8 op, uint64 id, uint128 deploy_wallet_grams) = payloadSlice.decode(uint8, uint64, uint128);
 
-            if (token_root == left_root && token_wallet == left_wallet && msg.sender == left_wallet &&
-                msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + deploy_wallet_grams) {
+            if (token_root == left_root && msg.sender == left_wallet &&
+                msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + deploy_wallet_grams) {
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange left to right
                     uint128 expected_amount = payloadSlice.decode(uint128);
                     (uint128 right_amount, uint128 left_fee) =
                     _expectedExchange(tokens_amount, left_balance, right_balance);
-                    if (right_amount <= right_balance && right_amount >= expected_amount) {
+                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0) {
                         left_balance += tokens_amount;
                         right_balance -= right_amount;
 
@@ -209,19 +236,19 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         if (sender_address.value != 0) {
                             IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
-                                value: 10,
-                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                                value: Gas.OPERATION_CALLBACK_BASE + 10,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
                             }(id, false, IExchangeResult.ExchangeResult(true, tokens_amount, left_fee, right_amount));
                         }
 
                         IDexVault(vault).transfer{
-                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             right_amount,
                             right_root,
                             vault_right_wallet,
-                            sender_public_key,
                             sender_address,
                             deploy_wallet_grams,
                             notify_success,
@@ -232,14 +259,12 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             original_gas_to
                         );
 
-                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                            0,
-                            vault,
+                        ITokenWallet(msg.sender).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                             tokens_amount,
-                            0,
+                            vault,
                             0,
                             original_gas_to,
-                            true,
+                            false,
                             empty
                         );
                     } else {
@@ -257,31 +282,91 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         if (sender_address.value != 0) {
                             IDexPairOperationCallback(sender_address).dexPairDepositLiquiditySuccess{
-                                value: 20,
-                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                                value: Gas.OPERATION_CALLBACK_BASE + 20,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
                             }(id, false, r);
                         }
 
-                        IRootTokenContract(lp_root).deployWallet{
+                        ITokenRoot(lp_root).mint{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             r.step_3_lp_reward,
-                            deploy_wallet_grams,
-                            sender_public_key,
                             sender_address,
-                            original_gas_to
+                            deploy_wallet_grams,
+                            original_gas_to,
+                            notify_success,
+                            success_payload
                         );
 
-                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                            0,
-                            vault,
+                        ITokenWallet(msg.sender).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                             tokens_amount,
-                            0,
+                            vault,
                             0,
                             original_gas_to,
-                            true,
+                            false,
                             empty
+                        );
+                    } else {
+                        need_cancel = true;
+                    }
+                } else if (op == OperationTypes.CROSS_PAIR_EXCHANGE &&
+                           payloadSlice.bits() >= 395 &&
+                           notify_success &&
+                           success_payload.toSlice().bits() >= 128) {
+                    (uint128 expected_amount, address next_token_root) = payloadSlice.decode(uint128, address);
+                    (uint128 right_amount, uint128 left_fee) =
+                        _expectedExchange(tokens_amount, left_balance, right_balance);
+                    if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0 &&
+                        next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root) {
+
+                        left_balance += tokens_amount;
+                        right_balance -= right_amount;
+
+                        emit ExchangeLeftToRight(tokens_amount, left_fee, right_amount);
+
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                                value: Gas.OPERATION_CALLBACK_BASE + 40,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
+                            }(id, false, IExchangeResult.ExchangeResult(true, tokens_amount, left_fee, right_amount));
+                        }
+
+                        ITokenWallet(msg.sender).transfer{
+                            value: Gas.TRANSFER_TOKENS_VALUE,
+                            flag: MsgFlag.SENDER_PAYS_FEES
+                        }(
+                            tokens_amount,
+                            vault,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
+                        );
+
+                        address next_pair = _expectedPairAddress(right_root, next_token_root);
+
+                        IDexPair(next_pair).crossPairExchange{
+                            value: 0,
+                            flag: MsgFlag.ALL_NOT_RESERVED
+                        }(
+                            id,
+
+                            current_version,
+                            left_root,
+                            right_root,
+
+                            right_root,
+                            right_amount,
+
+                            sender_address,
+
+                            original_gas_to,
+                            deploy_wallet_grams,
+
+                            success_payload
                         );
                     } else {
                         need_cancel = true;
@@ -289,14 +374,14 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 } else {
                     need_cancel = true;
                 }
-            } else if (token_root == right_root && token_wallet == right_wallet && msg.sender == right_wallet &&
-                        msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + deploy_wallet_grams) {
+            } else if (token_root == right_root && msg.sender == right_wallet &&
+                        msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + deploy_wallet_grams) {
                 if (op == OperationTypes.EXCHANGE && payloadSlice.bits() >= 128) {
                     // exchange right to left
                     uint128 expected_amount = payloadSlice.decode(uint128);
                     (uint128 left_amount, uint128 right_fee) =
                     _expectedExchange(tokens_amount, right_balance, left_balance);
-                    if (left_amount <= left_balance && left_amount >= expected_amount) {
+                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0) {
                         right_balance += tokens_amount;
                         left_balance -= left_amount;
 
@@ -304,19 +389,19 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         if (sender_address.value != 0) {
                             IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
-                                value: 10,
-                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                                value: Gas.OPERATION_CALLBACK_BASE + 10,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
                             }(id, false, IExchangeResult.ExchangeResult(false, tokens_amount, right_fee, left_amount));
                         }
 
                         IDexVault(vault).transfer{
-                            value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
+                            value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             left_amount,
                             left_root,
                             vault_left_wallet,
-                            sender_public_key,
                             sender_address,
                             deploy_wallet_grams,
                             notify_success,
@@ -327,11 +412,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                             original_gas_to
                         );
 
-                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                            0,
-                            vault,
+                        ITokenWallet(msg.sender).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                             tokens_amount,
-                            0,
+                            vault,
                             0,
                             original_gas_to,
                             true,
@@ -352,31 +435,91 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
                         if (sender_address.value != 0) {
                             IDexPairOperationCallback(sender_address).dexPairDepositLiquiditySuccess{
-                                value: 20,
-                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                                value: Gas.OPERATION_CALLBACK_BASE + 20,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
                             }(id, false, r);
                         }
 
-                        IRootTokenContract(lp_root).deployWallet{
+                        ITokenRoot(lp_root).mint{
                             value: Gas.DEPLOY_MINT_VALUE_BASE + deploy_wallet_grams,
                             flag: MsgFlag.SENDER_PAYS_FEES
                         }(
                             r.step_3_lp_reward,
-                            deploy_wallet_grams,
-                            sender_public_key,
                             sender_address,
-                            original_gas_to
+                            deploy_wallet_grams,
+                            original_gas_to,
+                            notify_success,
+                            success_payload
                         );
 
-                        ITONTokenWallet(token_wallet).transferToRecipient{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                            0,
-                            vault,
+                        ITokenWallet(msg.sender).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                             tokens_amount,
-                            0,
+                            vault,
                             0,
                             original_gas_to,
-                            true,
+                            false,
                             empty
+                        );
+                    } else {
+                        need_cancel = true;
+                    }
+                } else if (op == OperationTypes.CROSS_PAIR_EXCHANGE &&
+                           payloadSlice.bits() >= 395 &&
+                           notify_success &&
+                           success_payload.toSlice().bits() >= 128) {
+                    (uint128 expected_amount, address next_token_root) = payloadSlice.decode(uint128, address);
+                    (uint128 left_amount, uint128 right_fee) =
+                    _expectedExchange(tokens_amount, right_balance, left_balance);
+                    if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0  &&
+                        next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root) {
+
+                        right_balance += tokens_amount;
+                        left_balance -= left_amount;
+
+                        emit ExchangeRightToLeft(tokens_amount, right_fee, left_amount);
+
+                        if (sender_address.value != 0) {
+                            IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                                value: Gas.OPERATION_CALLBACK_BASE + 40,
+                                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                                bounce: false
+                            }(id, false, IExchangeResult.ExchangeResult(false, tokens_amount, right_fee, left_amount));
+                        }
+
+                        ITokenWallet(msg.sender).transfer{
+                            value: Gas.TRANSFER_TOKENS_VALUE,
+                            flag: MsgFlag.SENDER_PAYS_FEES
+                        }(
+                            tokens_amount,
+                            vault,
+                            0,
+                            original_gas_to,
+                            false,
+                            empty
+                        );
+
+                        address next_pair = _expectedPairAddress(left_root, next_token_root);
+
+                        IDexPair(next_pair).crossPairExchange{
+                            value: 0,
+                            flag: MsgFlag.ALL_NOT_RESERVED
+                        }(
+                            id,
+
+                            current_version,
+                            left_root,
+                            right_root,
+
+                            left_root,
+                            left_amount,
+
+                            sender_address,
+
+                            original_gas_to,
+                            deploy_wallet_grams,
+
+                            success_payload
                         );
                     } else {
                         need_cancel = true;
@@ -384,65 +527,61 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 } else {
                     need_cancel = true;
                 }
-            } else if (op == OperationTypes.WITHDRAW_LIQUIDITY && token_root == lp_root &&
-                       token_wallet == lp_wallet && msg.sender == lp_wallet &&
-                       msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE + 2 * deploy_wallet_grams) {
+            } else if (op == OperationTypes.WITHDRAW_LIQUIDITY &&
+                       token_root == lp_root &&
+                       msg.sender == lp_wallet &&
+                       msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2 + 2 * deploy_wallet_grams) {
 
-                uint128 left_back_amount =  math.muldiv(left_balance, tokens_amount, lp_supply);
-                uint128 right_back_amount = math.muldiv(right_balance, tokens_amount, lp_supply);
-
-                left_balance -= left_back_amount;
-                right_balance -= right_back_amount;
-                lp_supply -= tokens_amount;
-
-                emit WithdrawLiquidity(tokens_amount, left_back_amount, right_back_amount);
+                (uint128 left_back_amount, uint128 right_back_amount) = _withdrawLiquidityBase(tokens_amount);
 
                 if (sender_address.value != 0) {
                     IDexPairOperationCallback(sender_address).dexPairWithdrawSuccess{
-                        value: 30,
-                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                        value: Gas.OPERATION_CALLBACK_BASE + 30,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                        bounce: false
                     }(id, false, IWithdrawResult.WithdrawResult(tokens_amount, left_back_amount, right_back_amount));
                 }
 
-                IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
-                    flag: MsgFlag.SENDER_PAYS_FEES
-                }(
-                    left_back_amount,
-                    left_root,
-                    vault_left_wallet,
-                    sender_public_key,
-                    sender_address,
-                    deploy_wallet_grams,
-                    notify_success,
-                    success_payload,
-                    left_root,
-                    right_root,
-                    current_version,
-                    original_gas_to
-                );
+                if(left_back_amount > 0) {
+                    IDexVault(vault).transfer{
+                        value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        left_back_amount,
+                        left_root,
+                        vault_left_wallet,
+                        sender_address,
+                        deploy_wallet_grams,
+                        notify_success,
+                        success_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
 
-                IDexVault(vault).transfer{
-                    value: Gas.VAULT_TRANSFER_BASE_VALUE + deploy_wallet_grams,
-                    flag: MsgFlag.SENDER_PAYS_FEES
-                }(
-                    right_back_amount,
-                    right_root,
-                    vault_right_wallet,
-                    sender_public_key,
-                    sender_address,
-                    deploy_wallet_grams,
-                    notify_success,
-                    success_payload,
-                    left_root,
-                    right_root,
-                    current_version,
-                    original_gas_to
-                );
+                if(right_back_amount > 0) {
+                    IDexVault(vault).transfer{
+                        value: Gas.VAULT_TRANSFER_BASE_VALUE_V2 + deploy_wallet_grams,
+                        flag: MsgFlag.SENDER_PAYS_FEES
+                    }(
+                        right_back_amount,
+                        right_root,
+                        vault_right_wallet,
+                        sender_address,
+                        deploy_wallet_grams,
+                        notify_success,
+                        success_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
 
-                IBurnableByOwnerTokenWallet(lp_wallet).burnByOwner{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
+                IBurnableTokenWallet(lp_wallet).burn{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                     tokens_amount,
-                    0,
                     original_gas_to,
                     address.makeAddrStd(0, 0),
                     empty
@@ -462,15 +601,15 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 }
 
                 IDexPairOperationCallback(sender_address).dexPairOperationCancelled{
-                    value: 40,
-                    flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                    value: Gas.OPERATION_CALLBACK_BASE + 44,
+                    flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                    bounce: false
                 }(id);
             }
 
-            ITONTokenWallet(token_wallet).transfer{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-                sender_wallet,
+            ITokenWallet(msg.sender).transferToWallet{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
                 tokens_amount,
-                0,
+                sender_wallet,
                 original_gas_to,
                 notify_cancel,
                 cancel_payload
@@ -512,7 +651,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         require(lp_supply != 0 || (left_amount > 0 && right_amount > 0), DexErrors.WRONG_LIQUIDITY);
         require((left_amount > 0 && right_amount > 0) || (auto_change && (left_amount + right_amount > 0)),
             DexErrors.AMOUNT_TOO_LOW);
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
         uint128 lp_tokens_amount;
 
@@ -524,8 +663,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             emit DepositLiquidity(left_amount, right_amount, lp_tokens_amount);
 
             IDexPairOperationCallback(account_owner).dexPairDepositLiquiditySuccess{
-                value: 2,
-                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                value: Gas.OPERATION_CALLBACK_BASE + 2,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                bounce: false
             }(call_id, true, DepositLiquidityResult(left_amount, right_amount, lp_tokens_amount, false, false, 0, 0, 0, 0, 0, 0));
         } else {
             DepositLiquidityResult r = _expectedDepositLiquidity(left_amount, right_amount, auto_change);
@@ -585,41 +725,36 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             }
 
             IDexPairOperationCallback(account_owner).dexPairDepositLiquiditySuccess{
-                value: 2,
-                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                value: Gas.OPERATION_CALLBACK_BASE + 2,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                bounce: false
             }(call_id, true, r);
 
         }
 
         lp_supply = lp_supply + lp_tokens_amount;
 
-        IRootTokenContract(lp_root).deployWallet{ value: Gas.DEPLOY_MINT_VALUE_BASE, flag: MsgFlag.SENDER_PAYS_FEES }(
-            lp_tokens_amount,
-            0,                  // deploy_grams == 0, just mint
-            0,                  // wallet_public_key
-            vault,
-            send_gas_to
-        );
-
-        IDexAccount(msg.sender).internalPairTransfer{
-            value: Gas.INTERNAL_PAIR_TRANSFER_VALUE,
+        TvmCell empty;
+        ITokenRoot(lp_root).mint{
+            value: Gas.DEPLOY_MINT_VALUE_BASE + Gas.DEPLOY_EMPTY_WALLET_GRAMS,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             lp_tokens_amount,
-            lp_root,
-            left_root,
-            right_root,
-            send_gas_to
+            account_owner,
+            Gas.DEPLOY_EMPTY_WALLET_GRAMS,
+            send_gas_to,
+            send_gas_to == account_owner,
+            empty
         );
 
-        IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+        ISuccessCallback(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
     }
 
-   function _expectedDepositLiquidity(
+    function _expectedDepositLiquidity(
         uint128 left_amount,
         uint128 right_amount,
         bool auto_change
-    ) private inline view returns (DepositLiquidityResult) {
+    ) private view returns (DepositLiquidityResult) {
         // step 1 (first deposit)
         uint128 step_1_left_deposit = 0;
         uint128 step_1_right_deposit = 0;
@@ -664,11 +799,16 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             current_right_amount = current_right_amount - step_2_spent;
             current_right_balance = current_right_balance + step_2_spent;
 
-            // step 3 (deposit exchanged amounts)
-            step_3_right_deposit = current_right_amount;
-            step_3_left_deposit = step_2_received;
+            if (current_right_amount > 0 && step_2_received > 0) {
+                // step 3 (deposit exchanged amounts)
+                step_3_right_deposit = current_right_amount;
+                step_3_left_deposit = step_2_received;
 
-            step_3_lp_reward = math.muldiv(current_right_amount, current_lp_supply, current_right_balance);
+                step_3_lp_reward = math.muldiv(current_right_amount, current_lp_supply, current_right_balance);
+            } else {
+                step_2_right_to_left = false;
+                step_1_right_deposit = right_amount;
+            }
         } else if (auto_change && current_left_amount > 0) {
             // step 2 (surplus LEFT exchange)
             step_2_left_to_right = true;
@@ -680,11 +820,16 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             current_left_amount = current_left_amount - step_2_spent;
             current_left_balance = current_left_balance + step_2_spent;
 
-            // step 3 (deposit exchanged amounts)
-            step_3_left_deposit = current_left_amount;
-            step_3_right_deposit = step_2_received;
+            if (current_left_amount > 0 && step_2_received > 0) {
+                // step 3 (deposit exchanged amounts)
+                step_3_left_deposit = current_left_amount;
+                step_3_right_deposit = step_2_received;
 
-            step_3_lp_reward = math.muldiv(current_left_amount, current_lp_supply, current_left_balance);
+                step_3_lp_reward = math.muldiv(current_left_amount, current_lp_supply, current_left_balance);
+            } else {
+                step_2_left_to_right = false;
+                step_1_left_deposit = left_amount;
+            }
         }
 
         return DepositLiquidityResult(
@@ -707,6 +852,19 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Withdraw liquidity
 
+    function _withdrawLiquidityBase(uint128 lp_amount) private returns (uint128, uint128) {
+        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
+        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
+
+        left_balance -= left_back_amount;
+        right_balance -= right_back_amount;
+        lp_supply -= lp_amount;
+
+        emit WithdrawLiquidity(lp_amount, left_back_amount, right_back_amount);
+
+        return (left_back_amount, right_back_amount);
+    }
+
     function expectedWithdrawLiquidity(
         uint128 lp_amount
     ) override external view responsible returns (uint128 expected_left_amount, uint128 expected_right_amount) {
@@ -725,41 +883,38 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         address send_gas_to
     ) override external onlyActive onlyAccount(account_owner) {
         require(expected_lp_root == lp_root, DexErrors.NOT_LP_TOKEN_ROOT);
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
-        uint128 left_back_amount =  math.muldiv(left_balance, lp_amount, lp_supply);
-        uint128 right_back_amount = math.muldiv(right_balance, lp_amount, lp_supply);
-
-        left_balance -= left_back_amount;
-        right_balance -= right_back_amount;
-        lp_supply -= lp_amount;
-
-        emit WithdrawLiquidity(lp_amount, left_back_amount, right_back_amount);
+        (uint128 left_back_amount, uint128 right_back_amount) = _withdrawLiquidityBase(lp_amount);
 
         IDexPairOperationCallback(account_owner).dexPairWithdrawSuccess{
-            value: 3,
-            flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+            value: Gas.OPERATION_CALLBACK_BASE + 3,
+            flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+            bounce: false
         }(call_id, true, IWithdrawResult.WithdrawResult(lp_amount, left_back_amount, right_back_amount));
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
-            left_back_amount,
-            left_root,
-            left_root,
-            right_root,
-            send_gas_to
-        );
+        if (left_back_amount > 0) {
+            IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+                left_back_amount,
+                left_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+        }
 
-        IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
-            right_back_amount,
-            right_root,
-            left_root,
-            right_root,
-            send_gas_to
-        );
+        if (right_back_amount > 0) {
+            IDexAccount(msg.sender).internalPairTransfer{ value: Gas.INTERNAL_PAIR_TRANSFER_VALUE, flag: MsgFlag.SENDER_PAYS_FEES }(
+                right_back_amount,
+                right_root,
+                left_root,
+                right_root,
+                send_gas_to
+            );
+        }
 
         TvmCell empty;
-
-        IBurnableByRootTokenRootContract(lp_root).proxyBurn{
+        IBurnableByRootTokenRoot(lp_root).burnTokens{
             value: Gas.BURN_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
@@ -770,7 +925,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             empty
         );
 
-        IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+        ISuccessCallback(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -817,8 +972,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 _expectedExchange(spent_amount, left_balance, right_balance);
             require(right_amount <= right_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(right_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+            require(right_amount > 0, DexErrors.AMOUNT_TOO_LOW);
+            require(left_fee > 0, DexErrors.AMOUNT_TOO_LOW);
 
-            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
             left_balance += spent_amount;
             right_balance -= right_amount;
@@ -826,8 +983,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             emit ExchangeLeftToRight(spent_amount, left_fee, right_amount);
 
             IDexPairOperationCallback(account_owner).dexPairExchangeSuccess{
-                value: 1,
-                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                value: Gas.OPERATION_CALLBACK_BASE + 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                bounce: false
             }(call_id, true, IExchangeResult.ExchangeResult(true, spent_amount, left_fee, right_amount));
 
             IDexAccount(msg.sender).internalPairTransfer{
@@ -841,15 +999,17 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 send_gas_to
             );
 
-            IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+            ISuccessCallback(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
 
         } else if (spent_token_root == right_root && receive_token_root == left_root){
             (uint128 left_amount, uint128 right_fee) =
                 _expectedExchange(spent_amount, right_balance, left_balance);
             require(left_amount <= left_balance, DexErrors.NOT_ENOUGH_FUNDS);
             require(left_amount >= expected_amount, DexErrors.LOW_EXCHANGE_RATE);
+            require(left_amount > 0, DexErrors.AMOUNT_TOO_LOW);
+            require(right_fee > 0, DexErrors.AMOUNT_TOO_LOW);
 
-            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
             right_balance += spent_amount;
             left_balance -= left_amount;
@@ -857,8 +1017,9 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             emit ExchangeRightToLeft(spent_amount, right_fee, left_amount);
 
             IDexPairOperationCallback(account_owner).dexPairExchangeSuccess{
-                value: 1,
-                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS
+                value: Gas.OPERATION_CALLBACK_BASE + 1,
+                flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                bounce: false
             }(call_id, true, IExchangeResult.ExchangeResult(false, spent_amount, right_fee, left_amount));
 
             IDexAccount(msg.sender).internalPairTransfer{
@@ -872,32 +1033,257 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 send_gas_to
             );
 
-            IDexAccount(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
+            ISuccessCallback(msg.sender).successCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(call_id);
 
         } else {
             revert(DexErrors.NOT_TOKEN_ROOT);
         }
     }
 
-    function _expectedExchange(uint128 a_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
-        uint128 a_fee = math.muldiv(a_amount, fee_numerator, fee_denominator);
+    function _expectedExchange(uint128 a_amount, uint128 a_pool, uint128 b_pool) private view returns (uint128, uint128) {
+        uint128 a_fee = math.muldivc(a_amount, fee_numerator, fee_denominator);
 
         uint128 new_a_pool = a_pool + a_amount;
-        uint128 new_b_pool = math.muldiv(a_pool, b_pool, new_a_pool - a_fee);
+        uint128 new_b_pool = math.muldivc(a_pool, b_pool, new_a_pool - a_fee);
         uint128 expected_b_amount = b_pool - new_b_pool;
 
         return (expected_b_amount, a_fee);
     }
 
-    function _expectedSpendAmount(uint128 b_amount, uint128 a_pool, uint128 b_pool) private inline view returns (uint128, uint128) {
+    function _expectedSpendAmount(uint128 b_amount, uint128 a_pool, uint128 b_pool) private view returns (uint128, uint128) {
         uint128 fee_d_minus_n = uint128(fee_denominator - fee_numerator);
 
         uint128 new_b_pool = b_pool - b_amount;
-        uint128 new_a_pool = math.muldiv(a_pool, b_pool, new_b_pool);
-        uint128 expected_a_amount = math.muldiv(new_a_pool - a_pool, fee_denominator, fee_d_minus_n);
-        uint128 a_fee = math.muldiv(expected_a_amount, fee_numerator, fee_denominator);
+        uint128 new_a_pool = math.muldivc(a_pool, b_pool, new_b_pool);
+        uint128 expected_a_amount = math.muldivc(new_a_pool - a_pool, fee_denominator, fee_d_minus_n);
+        uint128 a_fee = math.muldivc(expected_a_amount, fee_numerator, fee_denominator);
 
         return (expected_a_amount, a_fee);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Cross-pair exchange
+
+    function crossPairExchange(
+        uint64 id,
+
+        uint32 /*prev_pair_version*/,
+        address prev_pair_left_root,
+        address prev_pair_right_root,
+
+        address spent_token_root,
+        uint128 spent_amount,
+
+        address sender_address,
+
+        address original_gas_to,
+        uint128 deploy_wallet_grams,
+
+        TvmCell payload
+    ) override external onlyPair(prev_pair_left_root, prev_pair_right_root) onlyActive {
+
+        require(msg.sender != address(this));
+
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
+
+        TvmSlice payloadSlice = payload.toSlice();
+
+        uint128 expected_amount = payloadSlice.decode(uint128);
+        address next_token_root =  payloadSlice.bits() >= 267 ? payloadSlice.decode(address) : address(0);
+
+        bool has_next_payload = payloadSlice.refs() >= 1;
+
+        TvmCell next_payload;
+        if (has_next_payload) {
+            next_payload = payloadSlice.loadRef();
+        }
+
+        if (spent_token_root == left_root) {
+            (uint128 right_amount, uint128 left_fee) =
+                _expectedExchange(spent_amount, left_balance, right_balance);
+
+            if (right_amount <= right_balance && right_amount >= expected_amount && right_amount > 0 && left_fee > 0) {
+
+                left_balance += spent_amount;
+                right_balance -= right_amount;
+
+                emit ExchangeLeftToRight(spent_amount, left_fee, right_amount);
+
+                if (sender_address.value != 0) {
+                    IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                        value: Gas.OPERATION_CALLBACK_BASE + 4,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                        bounce: false
+                    }(id, false, IExchangeResult.ExchangeResult(true, spent_amount, left_fee, right_amount));
+                }
+
+                if (next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root &&
+                    has_next_payload && next_payload.toSlice().bits() >= 128 &&
+                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2) {
+
+                    address next_pair = _expectedPairAddress(right_root, next_token_root);
+
+                    IDexPair(next_pair).crossPairExchange{
+                        value: 0,
+                        flag: MsgFlag.ALL_NOT_RESERVED
+                    }(
+                        id,
+
+                        current_version,
+                        left_root,
+                        right_root,
+
+                        right_root,
+                        right_amount,
+
+                        sender_address,
+
+                        original_gas_to,
+                        deploy_wallet_grams,
+
+                        next_payload
+                    );
+                } else {
+                    IDexVault(vault).transfer{
+                        value: 0,
+                        flag: MsgFlag.ALL_NOT_RESERVED
+                    }(
+                        right_amount,
+                        right_root,
+                        vault_right_wallet,
+                        sender_address,
+                        deploy_wallet_grams,
+                        has_next_payload,
+                        next_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
+            } else {
+                if (sender_address.value != 0) {
+                    IDexPairOperationCallback(sender_address).dexPairOperationCancelled{
+                        value: Gas.OPERATION_CALLBACK_BASE + 44,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                        bounce: false
+                    }(id);
+                }
+
+                TvmBuilder result_builder;
+                result_builder.store(id);
+
+                IDexVault(vault).transfer{
+                    value: 0,
+                    flag: MsgFlag.ALL_NOT_RESERVED
+                }(
+                    spent_amount,
+                    spent_token_root,
+                    vault_left_wallet,
+                    sender_address,
+                    deploy_wallet_grams,
+                    true,
+                    result_builder.toCell(),
+                    left_root,
+                    right_root,
+                    current_version,
+                    original_gas_to
+                );
+            }
+        } else if (spent_token_root == right_root){
+            (uint128 left_amount, uint128 right_fee) =
+                _expectedExchange(spent_amount, right_balance, left_balance);
+
+            if (left_amount <= left_balance && left_amount >= expected_amount && left_amount > 0 && right_fee > 0) {
+                right_balance += spent_amount;
+                left_balance -= left_amount;
+
+                emit ExchangeRightToLeft(spent_amount, right_fee, left_amount);
+
+                if (sender_address.value != 0) {
+                    IDexPairOperationCallback(sender_address).dexPairExchangeSuccess{
+                        value: Gas.OPERATION_CALLBACK_BASE + 4,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                        bounce: false
+                    }(id, false, IExchangeResult.ExchangeResult(false, spent_amount, right_fee, left_amount));
+                }
+
+                if (next_token_root.value != 0 && next_token_root != right_root && next_token_root != left_root &&
+                    has_next_payload && next_payload.toSlice().bits() >= 128 &&
+                    msg.value >= Gas.DIRECT_PAIR_OP_MIN_VALUE_V2) {
+
+                    address next_pair = _expectedPairAddress(left_root, next_token_root);
+
+                    IDexPair(next_pair).crossPairExchange{
+                        value: 0,
+                        flag: MsgFlag.ALL_NOT_RESERVED
+                    }(
+                        id,
+
+                        current_version,
+                        left_root,
+                        right_root,
+
+                        left_root,
+                        left_amount,
+
+                        sender_address,
+
+                        original_gas_to,
+                        deploy_wallet_grams,
+
+                        next_payload
+                    );
+                } else {
+                    IDexVault(vault).transfer{
+                        value: 0,
+                        flag: MsgFlag.ALL_NOT_RESERVED
+                    }(
+                        left_amount,
+                        left_root,
+                        vault_left_wallet,
+                        sender_address,
+                        deploy_wallet_grams,
+                        has_next_payload,
+                        next_payload,
+                        left_root,
+                        right_root,
+                        current_version,
+                        original_gas_to
+                    );
+                }
+            } else {
+                if (sender_address.value != 0) {
+                    IDexPairOperationCallback(sender_address).dexPairOperationCancelled{
+                        value: Gas.OPERATION_CALLBACK_BASE + 44,
+                        flag: MsgFlag.SENDER_PAYS_FEES + MsgFlag.IGNORE_ERRORS,
+                        bounce: false
+                    }(id);
+                }
+
+                TvmBuilder result_builder;
+                result_builder.store(id);
+
+                IDexVault(vault).transfer{
+                    value: 0,
+                    flag: MsgFlag.ALL_NOT_RESERVED
+                }(
+                    spent_amount,
+                    spent_token_root,
+                    vault_right_wallet,
+                    sender_address,
+                    deploy_wallet_grams,
+                    true,
+                    result_builder.toCell(),
+                    left_root,
+                    right_root,
+                    current_version,
+                    original_gas_to
+                );
+            }
+        } else {
+            revert(DexErrors.NOT_TOKEN_ROOT);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -909,7 +1295,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
         uint32 /*account_version*/,
         address send_gas_to
     ) override external onlyAccount(account_owner) {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
         IDexAccount(msg.sender).checkPairCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
             call_id,
             left_root,
@@ -948,32 +1334,21 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     }
 
     modifier onlyAccount(address account_owner) {
-        address expected = address(tvm.hash(_buildInitData(
-                PlatformTypes.Account,
-                _buildAccountParams(account_owner)
-            )));
+        TvmBuilder builder;
+        builder.store(account_owner);
+        address expected = address(tvm.hash(_buildInitData(PlatformTypes.Account, builder.toCell())));
         require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
         _;
     }
 
     modifier onlyPair(address left_root_, address right_root_) {
-        address expected = address(tvm.hash(_buildInitData(
-                PlatformTypes.Pair,
-                _buildPairParams(left_root_, right_root_)
-            )));
-        require(msg.sender == expected, DexErrors.NOT_PAIR);
+        require(msg.sender == _expectedPairAddress(left_root_, right_root_), DexErrors.NOT_PAIR);
         _;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Address calculations
-    function _buildAccountParams(address account_owner) private inline pure returns (TvmCell) {
-        TvmBuilder builder;
-        builder.store(account_owner);
-        return builder.toCell();
-    }
-
-    function _buildPairParams(address left_root_, address right_root_) private inline pure returns (TvmCell) {
+    function _expectedPairAddress(address left_root_, address right_root_) private view returns (address) {
         TvmBuilder builder;
         if (left_root_.value < right_root_.value) {
             builder.store(left_root_);
@@ -982,10 +1357,10 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
             builder.store(right_root_);
             builder.store(left_root_);
         }
-        return builder.toCell();
+        return address(tvm.hash(_buildInitData(PlatformTypes.Pair, builder.toCell())));
     }
 
-    function _buildInitData(uint8 type_id, TvmCell params) private inline view returns (TvmCell) {
+    function _buildInitData(uint8 type_id, TvmCell params) private view returns (TvmCell) {
         return tvm.buildStateInit({
             contr: DexPlatform,
             varInit: {
@@ -1003,8 +1378,8 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
 
     function upgrade(TvmCell code, uint32 new_version, address send_gas_to) override external onlyRoot {
         if (current_version == new_version || !active) {
-            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS, bounce: false });
         } else {
             emit PairCodeUpgraded(new_version);
 
@@ -1095,32 +1470,21 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                         address vault_right_wallet
     */
     function onCodeUpgrade(TvmCell upgrade_data) private {
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
+        tvm.resetStorage();
         TvmSlice s = upgrade_data.toSlice();
-        (address root_, address vault_, uint32 old_version, uint32 new_version, address send_gas_to) =
-        s.decode(address, address, uint32, uint32, address);
+
+        address send_gas_to;
+        uint32 old_version;
+
+        (root, vault, old_version, current_version, send_gas_to) = s.decode(address, address, uint32, uint32, address);
+
+        platform_code = s.loadRef(); // ref 1
+        TvmSlice tokens_data_slice = s.loadRefAsSlice(); // ref 2
+
+        (left_root, right_root) = tokens_data_slice.decode(address, address);
 
         if (old_version == 0) {
-            tvm.resetStorage();
-        }
-
-        root = root_;
-        vault = vault_;
-        current_version = new_version;
-
-        platform_code = s.loadRef();        // ref 1
-        TvmSlice data = s.loadRefAsSlice(); // ref 2
-
-        left_root = data.decode(address);
-        right_root = data.decode(address);
-
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
-    }
-
-    function afterInitialize(address send_gas_to) override external onlyRoot {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
-        if (lp_root.value == 0) {
-
             fee_numerator = 3;
             fee_denominator = 1000;
 
@@ -1131,148 +1495,98 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
                 send_gas_to
             );
         } else {
-            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
+            active = true;
+
+            lp_root = tokens_data_slice.decode(address);
+            TvmSlice token_balances_data_slice = tokens_data_slice.loadRefAsSlice(); // ref 2_1
+            (lp_supply, left_balance, right_balance, fee_numerator, fee_denominator) =
+                token_balances_data_slice.decode(uint128, uint128, uint128, uint16, uint16);
+
+            TvmSlice pair_wallets_data_slice = s.loadRefAsSlice(); // ref 3
+            (lp_wallet, left_wallet, right_wallet) = pair_wallets_data_slice.decode(address, address, address);
+            TvmSlice vault_wallets_data = s.loadRefAsSlice(); // ref 4
+            (vault_left_wallet, vault_right_wallet) = vault_wallets_data.decode(address, address);
+
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS, bounce: false });
+        }
+    }
+
+    function _configureTokenRootWallets(address token_root) private view {
+        ITokenRoot(token_root)
+            .deployWallet {
+                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES,
+                callback: DexPair.onTokenWallet
+            }(address(this), Gas.DEPLOY_EMPTY_WALLET_GRAMS);
+
+        if (token_root != lp_root) {
+            ITokenRoot(token_root).walletOf{
+                value: Gas.SEND_EXPECTED_WALLET_VALUE,
+                flag: MsgFlag.SENDER_PAYS_FEES,
+                callback: DexPair.onVaultTokenWallet
+           }(vault);
+        }
+    }
+
+    function onTokenWallet(address wallet) external {
+        require(msg.sender == left_root || msg.sender == right_root, DexErrors.NOT_ROOT);
+
+        if (msg.sender == lp_root && lp_wallet.value == 0) {
+            lp_wallet = wallet;
+        } else if (msg.sender == left_root && left_wallet.value == 0) {
+            left_wallet = wallet;
+        } else if (msg.sender == right_root && right_wallet.value == 0) {
+            right_wallet = wallet;
+        }
+
+        if (
+            lp_wallet.value != 0 &&
+            left_wallet.value != 0 &&
+            right_wallet.value != 0 &&
+            vault_left_wallet.value != 0 &&
+            vault_right_wallet.value != 0
+        ) {
+            active = true;
+        }
+    }
+
+    function onVaultTokenWallet(address wallet) external {
+        require(msg.sender == left_root || msg.sender == right_root, DexErrors.NOT_ROOT);
+
+        if (msg.sender == left_root && vault_left_wallet.value == 0) {
+            vault_left_wallet = wallet;
+        } else if (msg.sender == right_root && vault_right_wallet.value == 0) {
+            vault_right_wallet = wallet;
+        }
+
+        if (
+            lp_wallet.value != 0 &&
+            left_wallet.value != 0 &&
+            right_wallet.value != 0 &&
+            vault_left_wallet.value != 0 &&
+            vault_right_wallet.value != 0
+        ) {
+            active = true;
         }
     }
 
     function liquidityTokenRootDeployed(address lp_root_, address send_gas_to) override external onlyVault {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
 
         lp_root = lp_root_;
 
-        IRootTokenContract(lp_root)
-            .deployEmptyWallet {
-                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
-                0,                              // wallet_public_key
-                address(this),                  // owner_address
-                send_gas_to                     // gas_back_address
-            );
-
-        IRootTokenContract(lp_root)
-            .sendExpectedWalletAddress{
-                value: Gas.SEND_EXPECTED_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                0,                              // wallet_public_key_
-                address(this) ,                 // owner_address_
-                address(this)                   // to
-            );
-
-        IRootTokenContract(left_root)
-            .deployEmptyWallet {
-                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
-                0,                              // wallet_public_key
-                address(this),                  // owner_address
-                send_gas_to                     // gas_back_address
-            );
-
-        IRootTokenContract(left_root)
-            .sendExpectedWalletAddress{
-                value: Gas.SEND_EXPECTED_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                0,                              // wallet_public_key_
-                address(this) ,                 // owner_address_
-                address(this)                   // to
-            );
-
-        IRootTokenContract(right_root)
-            .deployEmptyWallet {
-                value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                Gas.DEPLOY_EMPTY_WALLET_GRAMS,  // deploy_grams
-                0,                              // wallet_public_key
-                address(this),                  // owner_address
-                send_gas_to                     // gas_back_address
-            );
-
-        IRootTokenContract(right_root)
-            .sendExpectedWalletAddress{
-                value: Gas.SEND_EXPECTED_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                0,                              // wallet_public_key_
-                address(this) ,                 // owner_address_
-                address(this)                   // to
-            );
-
-        IRootTokenContract(left_root)
-            .sendExpectedWalletAddress{
-                value: Gas.SEND_EXPECTED_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                0,                              // wallet_public_key_
-                vault,                 // owner_address_
-                address(this)                   // to
-            );
-
-
-        IRootTokenContract(right_root)
-            .sendExpectedWalletAddress{
-                value: Gas.SEND_EXPECTED_WALLET_VALUE,
-                flag: MsgFlag.SENDER_PAYS_FEES
-            }(
-                0,                              // wallet_public_key_
-                vault,                          // owner_address_
-                address(this)                   // to
-            );
+        _configureTokenRootWallets(lp_root);
+        _configureTokenRootWallets(left_root);
+        _configureTokenRootWallets(right_root);
 
         IDexRoot(root).onPairCreated{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(left_root, right_root, send_gas_to);
     }
 
     function liquidityTokenRootNotDeployed(address /*lp_root_*/, address send_gas_to) override external onlyVault {
-        if (!active) send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.DESTROY_IF_ZERO});
+        if (!active) send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.DESTROY_IF_ZERO, bounce: false});
         else {
-            tvm.rawReserve(address(this).balance - msg.value, 2);
-            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED});
-        }
-    }
-
-    // callback for IRootTokenContract(...).sendExpectedWalletAddress
-    function expectedWalletAddressCallback(
-        address wallet,
-        uint256 wallet_public_key,
-        address owner_address
-    ) override external {
-        require(wallet_public_key == 0);
-
-        bool need_set_callback = false;
-
-        if (owner_address == address(this)) {
-            if (msg.sender == lp_root && lp_wallet.value == 0) {
-                lp_wallet = wallet;
-                need_set_callback = true;
-            } else if (msg.sender == left_root && left_wallet.value == 0) {
-                left_wallet = wallet;
-                need_set_callback = true;
-            } else if (msg.sender == right_root && right_wallet.value == 0) {
-                right_wallet = wallet;
-                need_set_callback = true;
-            }
-        }
-
-        if (owner_address == vault) {
-            if (msg.sender == left_root && vault_left_wallet.value == 0) {
-                vault_left_wallet = wallet;
-            } else if (msg.sender == right_root && vault_right_wallet.value == 0) {
-                vault_right_wallet = wallet;
-            }
-        }
-
-        if (lp_wallet.value != 0 && left_wallet.value != 0 && right_wallet.value != 0 &&
-            vault_left_wallet.value != 0 && vault_right_wallet.value != 0) {
-            active = true;
-        }
-
-        if (need_set_callback) {
-            ITONTokenWallet(wallet).setReceiveCallback{ value: 0, flag: MsgFlag.REMAINING_GAS }(address(this), false);
+            tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
+            send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS, bounce: false});
         }
     }
 
@@ -1281,7 +1595,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     /*
         Solve x*x + p*x - q*x = 0;
     */
-    function _solveQuadraticEquationPQ(uint256 p, uint256 q) private inline pure returns (uint128) {
+    function _solveQuadraticEquationPQ(uint256 p, uint256 q) private pure returns (uint128) {
         uint256 D = math.muldiv(p, p, 4) + q;
         uint256 Dsqrt = _sqrt(D);
         if (Dsqrt > (p/2)) {
@@ -1292,7 +1606,7 @@ contract DexPair is IDexPair, ITokensReceivedCallback, IExpectedWalletAddressCal
     }
 
     // Babylonian method for finding sqrt
-    function _sqrt(uint256 x) private inline pure returns (uint256) {
+    function _sqrt(uint256 x) private pure returns (uint256) {
         if (x == 0) return 0;
         else if (x <= 3) return 1;
         uint256 z = (x + 1) / 2;

@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 interface IDexAccountOwner {
     function dexAccountOnSuccess(uint64 nonce) external;

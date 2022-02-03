@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 interface IDexVault {
 
@@ -13,7 +13,6 @@ interface IDexVault {
         address vault_token_wallet,
         uint128 amount,
         address account_owner,
-        uint256 recipient_public_key,
         address recipient_address
     );
 
@@ -22,7 +21,6 @@ interface IDexVault {
         uint128 amount,
         address pair_left_root,
         address pair_right_root,
-        uint256 recipient_public_key,
         address recipient_address
     );
 
@@ -52,7 +50,6 @@ interface IDexVault {
         uint128 amount,
         address token_root,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         address account_owner,
@@ -64,7 +61,6 @@ interface IDexVault {
         uint128 amount,
         address token_root,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         bool    notify_receiver,

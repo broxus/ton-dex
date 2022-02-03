@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 import "./ISuccessCallback.sol";
 
@@ -58,7 +58,6 @@ interface IDexAccount is ISuccessCallback {
     function withdraw(
         uint128 amount,
         address token_root,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         address send_gas_to

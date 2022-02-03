@@ -1,6 +1,6 @@
 {
 	"ABI version": 2,
-	"version": "2.1",
+	"version": "2.2",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
@@ -146,16 +146,26 @@
 			]
 		},
 		{
-			"name": "tokensReceivedCallback",
+			"name": "buildCrossPairExchangePayload",
 			"inputs": [
-				{"name":"token_wallet","type":"address"},
+				{"name":"answerId","type":"uint32"},
+				{"name":"id","type":"uint64"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"expected_amount","type":"uint128"},
+				{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"steps","type":"tuple[]"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "onAcceptTokensTransfer",
+			"inputs": [
 				{"name":"token_root","type":"address"},
 				{"name":"tokens_amount","type":"uint128"},
-				{"name":"sender_public_key","type":"uint256"},
 				{"name":"sender_address","type":"address"},
 				{"name":"sender_wallet","type":"address"},
 				{"name":"original_gas_to","type":"address"},
-				{"name":"value7","type":"uint128"},
 				{"name":"payload","type":"cell"}
 			],
 			"outputs": [
@@ -252,6 +262,23 @@
 			]
 		},
 		{
+			"name": "crossPairExchange",
+			"inputs": [
+				{"name":"id","type":"uint64"},
+				{"name":"value1","type":"uint32"},
+				{"name":"prev_pair_left_root","type":"address"},
+				{"name":"prev_pair_right_root","type":"address"},
+				{"name":"spent_token_root","type":"address"},
+				{"name":"spent_amount","type":"uint128"},
+				{"name":"sender_address","type":"address"},
+				{"name":"original_gas_to","type":"address"},
+				{"name":"deploy_wallet_grams","type":"uint128"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "checkPair",
 			"inputs": [
 				{"name":"call_id","type":"uint64"},
@@ -273,9 +300,17 @@
 			]
 		},
 		{
-			"name": "afterInitialize",
+			"name": "onTokenWallet",
 			"inputs": [
-				{"name":"send_gas_to","type":"address"}
+				{"name":"wallet","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onVaultTokenWallet",
+			"inputs": [
+				{"name":"wallet","type":"address"}
 			],
 			"outputs": [
 			]
@@ -294,16 +329,6 @@
 			"inputs": [
 				{"name":"value0","type":"address"},
 				{"name":"send_gas_to","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "expectedWalletAddressCallback",
-			"inputs": [
-				{"name":"wallet","type":"address"},
-				{"name":"wallet_public_key","type":"uint256"},
-				{"name":"owner_address","type":"address"}
 			],
 			"outputs": [
 			]

@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.56.0;
 
 pragma AbiHeader time;
 pragma AbiHeader expire;
@@ -12,7 +12,6 @@ import "./libraries/MsgFlag.sol";
 import "./DexPlatform.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/IUpgradableByRequest.sol";
-import "./interfaces/IAfterInitialize.sol";
 import "./interfaces/IDexRoot.sol";
 import "./interfaces/IResetGas.sol";
 
@@ -311,25 +310,16 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        DexPlatform platform = new DexPlatform{
+        new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Account, _buildAccountParams(account_owner)),
-            value: Gas.PLATFORM_DEPLOY_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
-        }();
-        platform.setPlatformCode{
-            value: Gas.SET_PLATFORM_CODE_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
-        }(platform_code);
-        platform.initialize{
-            value: Gas.ACCOUNT_INITIALIZE_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED
         }(
             account_code,
             account_version,
             vault,
             send_gas_to
         );
-        send_gas_to.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function deployPair(address left_root, address right_root, address send_gas_to) override external onlyActive {
@@ -340,25 +330,16 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
         tvm.rawReserve(math.max(Gas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        address platform = new DexPlatform{
+        new DexPlatform{
             stateInit: _buildInitData(PlatformTypes.Pair, _buildPairParams(left_root, right_root)),
-            value: Gas.PLATFORM_DEPLOY_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
-        }();
-        DexPlatform(platform).setPlatformCode{
-            value: Gas.SET_PLATFORM_CODE_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
-        }(platform_code);
-        DexPlatform(platform).initialize{
-            value: Gas.PAIR_INITIALIZE_VALUE,
-            flag: MsgFlag.SENDER_PAYS_FEES
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED
         }(
             pair_code,
             pair_version,
             vault,
             send_gas_to
         );
-        IAfterInitialize(platform).afterInitialize{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(send_gas_to);
     }
 
     function onPairCreated(
