@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.56.0;
+pragma ton-solidity >= 0.57.0;
 
 import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenWallet.sol";
 
@@ -14,7 +14,6 @@ import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexAccount.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/IResetGas.sol";
-
 
 
 contract DexVault is IDexVault, IResetGas, IUpgradable {
@@ -152,14 +151,11 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
         IDexPair(pair).liquidityTokenRootNotDeployed{value: 0, flag: MsgFlag.ALL_NOT_RESERVED}(lp_root, send_gas_to);
     }
 
-    function notifyWalletDeployed(address token_root) public override {}
-
     function withdraw(
         uint64 call_id,
         uint128 amount,
         address /* token_root */,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         address account_owner,
@@ -168,7 +164,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
     ) external override onlyAccount(account_owner) {
         tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_public_key, recipient_address);
+        emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_address);
 
         TvmCell empty;
         ITokenWallet(vault_wallet).transfer{
@@ -191,7 +187,6 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
         uint128 amount,
         address /* token_root */,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         bool    notify_receiver,
@@ -203,7 +198,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
     ) external override onlyPair(left_root, right_root) {
         tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_public_key, recipient_address);
+        emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_address);
 
         ITokenWallet(vault_wallet).transfer{
             value: 0,
@@ -223,7 +218,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
         address pair,
         address left_root,
         address right_root
-    ) private inline view returns (TvmCell) {
+    ) private view returns (TvmCell) {
         return tvm.buildStateInit({
             contr: DexVaultLpTokenPending,
             varInit: {
@@ -238,7 +233,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
         });
     }
 
-    function _buildInitData(uint8 type_id, TvmCell params) private inline view returns (TvmCell) {
+    function _buildInitData(uint8 type_id, TvmCell params) private view returns (TvmCell) {
         return tvm.buildStateInit({
             contr: DexPlatform,
             varInit: {
@@ -251,13 +246,13 @@ contract DexVault is IDexVault, IResetGas, IUpgradable {
         });
     }
 
-    function _buildAccountParams(address account_owner) private inline pure returns (TvmCell) {
+    function _buildAccountParams(address account_owner) private pure returns (TvmCell) {
         TvmBuilder builder;
         builder.store(account_owner);
         return builder.toCell();
     }
 
-    function _buildPairParams(address left_root, address right_root) private inline pure returns (TvmCell) {
+    function _buildPairParams(address left_root, address right_root) private pure returns (TvmCell) {
         TvmBuilder builder;
         if (left_root.value < right_root.value) {
             builder.store(left_root);

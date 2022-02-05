@@ -1,4 +1,4 @@
-.version sol 0.56.0
+.version sol 0.57.1
 
 .macro constructor
 DROP
@@ -3175,7 +3175,7 @@ THROWIFNOT 121
 DEPTH
 ADDCONST -2
 PICK
-PUSHINT 3000000000
+PUSHINT 4000000000
 GEQ
 THROWIFNOT 103
 .loc ../contracts/DexAccount.sol, 464

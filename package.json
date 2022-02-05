@@ -13,13 +13,13 @@
     "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
     "folder-hash": "^4.0.1",
-    "locklift": "^1.2.9",
     "mocha": "^8.2.1",
     "mocha-logger": "^1.0.7",
     "ton-client-js": "^0.28.1",
-    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#275d48ef4e7d9964dc33b0bed79bb0c5dc9e1540"
+    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#9720279528091b730ccc47a3b39d18de67a79d57"
   },
   "devDependencies": {
-    "@broxus/contracts": "^1.0.3"
+    "@broxus/contracts": "^1.0.4",
+    "locklift": "^1.4.5"
   }
 }

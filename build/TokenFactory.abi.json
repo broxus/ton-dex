@@ -1,34 +1,18 @@
 {
 	"ABI version": 2,
-	"version": "2.1",
+	"version": "2.2",
 	"header": ["time"],
 	"functions": [
 		{
 			"name": "constructor",
 			"inputs": [
-				{"name":"storage_code_","type":"cell"},
-				{"name":"initial_owner","type":"address"}
+				{"name":"_owner","type":"address"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "transferOwner",
-			"inputs": [
-				{"name":"new_owner","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "acceptOwner",
-			"inputs": [
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "getOwner",
+			"name": "owner",
 			"inputs": [
 				{"name":"answerId","type":"uint32"}
 			],
@@ -37,7 +21,71 @@
 			]
 		},
 		{
-			"name": "getPendingOwner",
+			"name": "pendingOwner",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "rootCode",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "walletCode",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "walletPlatformCode",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
+			]
+		},
+		{
+			"name": "createToken",
+			"inputs": [
+				{"name":"callId","type":"uint32"},
+				{"name":"name","type":"bytes"},
+				{"name":"symbol","type":"bytes"},
+				{"name":"decimals","type":"uint8"},
+				{"name":"initialSupplyTo","type":"address"},
+				{"name":"initialSupply","type":"uint128"},
+				{"name":"deployWalletValue","type":"uint128"},
+				{"name":"mintDisabled","type":"bool"},
+				{"name":"burnByRootDisabled","type":"bool"},
+				{"name":"burnPaused","type":"bool"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferOwner",
+			"inputs": [
+				{"name":"answerId","type":"uint32"},
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+				{"name":"value0","type":"address"}
+			]
+		},
+		{
+			"name": "acceptOwner",
 			"inputs": [
 				{"name":"answerId","type":"uint32"}
 			],
@@ -48,7 +96,7 @@
 		{
 			"name": "setRootCode",
 			"inputs": [
-				{"name":"root_code_","type":"cell"}
+				{"name":"_rootCode","type":"cell"}
 			],
 			"outputs": [
 			]
@@ -56,53 +104,15 @@
 		{
 			"name": "setWalletCode",
 			"inputs": [
-				{"name":"wallet_code_","type":"cell"}
+				{"name":"_walletCode","type":"cell"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "Token",
+			"name": "setWalletPlatformCode",
 			"inputs": [
-				{"name":"answer_id","type":"uint32"},
-				{"name":"root_public_key","type":"uint256"},
-				{"name":"root_owner_address","type":"address"},
-				{"name":"name","type":"bytes"},
-				{"name":"symbol","type":"bytes"},
-				{"name":"decimals","type":"uint8"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onTokenGetDetails",
-			"inputs": [
-				{"components":[{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"total_supply","type":"uint128"}],"name":"details","type":"tuple"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onStorageReadWithDetails",
-			"inputs": [
-				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"data","type":"tuple"},
-				{"name":"meta","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onStoragePruneNotify",
-			"inputs": [
-				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"data","type":"tuple"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onStoragePruneReturn",
-			"inputs": [
-				{"components":[{"name":"answer_id","type":"uint32"},{"name":"pending_token","type":"address"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"sender","type":"address"}],"name":"data","type":"tuple"}
+				{"name":"_walletPlatformCode","type":"cell"}
 			],
 			"outputs": [
 			]
@@ -114,67 +124,10 @@
 			],
 			"outputs": [
 			]
-		},
-		{
-			"name": "resetGas",
-			"inputs": [
-				{"name":"receiver","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "resetTargetGas",
-			"inputs": [
-				{"name":"target","type":"address"},
-				{"name":"receiver","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "root_code",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"root_code","type":"cell"}
-			]
-		},
-		{
-			"name": "wallet_code",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"wallet_code","type":"cell"}
-			]
-		},
-		{
-			"name": "storage_code",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"storage_code","type":"cell"}
-			]
-		},
-		{
-			"name": "owner",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"owner","type":"address"}
-			]
-		},
-		{
-			"name": "pending_owner",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"pending_owner","type":"address"}
-			]
 		}
 	],
 	"data": [
-		{"key":1,"name":"_nonce","type":"uint32"}
+		{"key":1,"name":"randomNonce_","type":"uint32"}
 	],
 	"events": [
 	],
@@ -182,11 +135,11 @@
 		{"name":"_pubkey","type":"uint256"},
 		{"name":"_timestamp","type":"uint64"},
 		{"name":"_constructorFlag","type":"bool"},
-		{"name":"_nonce","type":"uint32"},
-		{"name":"root_code","type":"cell"},
-		{"name":"wallet_code","type":"cell"},
-		{"name":"storage_code","type":"cell"},
-		{"name":"owner","type":"address"},
-		{"name":"pending_owner","type":"address"}
+		{"name":"randomNonce_","type":"uint32"},
+		{"name":"owner_","type":"address"},
+		{"name":"pendingOwner_","type":"address"},
+		{"name":"rootCode_","type":"cell"},
+		{"name":"walletCode_","type":"cell"},
+		{"name":"walletPlatformCode_","type":"cell"}
 	]
 }

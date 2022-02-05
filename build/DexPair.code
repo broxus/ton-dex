@@ -1,4 +1,4 @@
-.version sol 0.56.0
+.version sol 0.57.1
 
 .macro constructor
 DROP
@@ -3322,9 +3322,7 @@ PUSHCONT {
 	BLKSWAP 2, 3
 	MAX
 	FALSE
-	DUP
-	PUSHINT 0
-	BLKPUSH 5, 0
+	BLKPUSH 7, 0
 	TUPLE 11
 	NIP
 	.loc ../contracts/DexPair.sol, 0
@@ -3753,9 +3751,7 @@ PUSHCONT {
 	BLKPUSH 2, 6
 	PUSH S2
 	FALSE
-	DUP
-	PUSHINT 0
-	BLKPUSH 5, 0
+	BLKPUSH 7, 0
 	TUPLE 11
 }
 IFELSE
@@ -3938,10 +3934,7 @@ ADD
 UFITS 128
 .loc ../contracts/DexPair.sol, 778
 FALSE
-DUP
-.loc ../contracts/DexPair.sol, 780
-PUSHINT 0
-BLKPUSH 5, 0
+BLKPUSH 7, 0
 .loc ../contracts/DexPair.sol, 788
 GETGLOB 27
 GETGLOB 26

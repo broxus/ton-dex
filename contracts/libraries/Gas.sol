@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.56.0;
+pragma ton-solidity >= 0.57.0;
 
 library Gas {
 
@@ -13,8 +13,9 @@ library Gas {
     uint128 constant DEPLOY_ACCOUNT_MIN_VALUE       = 2 ton;
     uint128 constant DEPLOY_PAIR_MIN_VALUE          = 5 ton;
 
-    uint128 constant TOKEN_FACTORY_FEE              = 1 ton;
-    uint128 constant DEPLOY_TOKEN_ROOT_MIN_VALUE    = 1 ton;
+    uint128 constant CREATE_TOKEN_VALUE             = 3 ton;
+    uint128 constant TRANSFER_ROOT_OWNERSHIP_VALUE  = 0.5 ton;
+    uint128 constant DEPLOY_TOKEN_ROOT_VALUE        = 2 ton;
     uint128 constant GET_TOKEN_DETAILS_VALUE        = 0.5 ton;
 
     uint128 constant PLATFORM_DEPLOY_VALUE          = 0.1 ton;
@@ -50,7 +51,7 @@ library Gas {
     uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 ton;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 ton;
 
-    uint128 constant ADD_PAIR_MIN_VALUE             = 3 ton;
+    uint128 constant ADD_PAIR_MIN_VALUE             = 4 ton;
 
     uint128 constant OPERATION_CALLBACK_BASE        = 0.01 ton;
 

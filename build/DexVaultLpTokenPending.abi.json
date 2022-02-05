@@ -1,6 +1,6 @@
 {
 	"ABI version": 2,
-	"version": "2.1",
+	"version": "2.2",
 	"header": ["time"],
 	"functions": [
 		{
@@ -21,15 +21,15 @@
 			]
 		},
 		{
-			"name": "onGetDetails",
+			"name": "onSymbol",
 			"inputs": [
-				{"components":[{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"},{"name":"root_public_key","type":"uint256"},{"name":"root_owner_address","type":"address"},{"name":"total_supply","type":"uint128"}],"name":"details","type":"tuple"}
+				{"name":"symbol","type":"string"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "notifyTokenRootDeployed",
+			"name": "onTokenRootDeployed",
 			"inputs": [
 				{"name":"value0","type":"uint32"},
 				{"name":"token_root","type":"address"}
@@ -38,10 +38,20 @@
 			]
 		},
 		{
-			"name": "notifyTokenRootNotDeployed",
+			"name": "onTransferTokenRootOwnership",
 			"inputs": [
-				{"name":"value0","type":"uint32"},
-				{"name":"value1","type":"address"}
+				{"name":"oldOwner","type":"address"},
+				{"name":"newOwner","type":"address"},
+				{"name":"value2","type":"address"},
+				{"name":"value3","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onDeployWallet",
+			"inputs": [
+				{"name":"value0","type":"address"}
 			],
 			"outputs": [
 			]
@@ -74,9 +84,9 @@
 		{"name":"send_gas_to","type":"address"},
 		{"name":"need_to_terminate","type":"bool"},
 		{"name":"pending_messages","type":"uint8"},
-		{"components":[{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"}],"name":"left_root_details","type":"tuple"},
-		{"name":"left_root_details_received","type":"bool"},
-		{"components":[{"name":"name","type":"bytes"},{"name":"symbol","type":"bytes"},{"name":"decimals","type":"uint8"}],"name":"right_root_details","type":"tuple"},
-		{"name":"right_root_details_received","type":"bool"}
+		{"name":"left_root_symbol","type":"string"},
+		{"name":"left_root_symbol_received","type":"bool"},
+		{"name":"right_root_symbol","type":"string"},
+		{"name":"right_root_symbol_received","type":"bool"}
 	]
 }
