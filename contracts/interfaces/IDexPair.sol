@@ -61,12 +61,7 @@ interface IDexPair is IDepositLiquidityResult {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // INTERNAL
 
-    function checkPair(
-        uint64 call_id,
-        address account_owner,
-        uint32 account_version,
-        address send_gas_to
-    ) external;
+    function checkPair(address account_owner, uint32 account_version) external;
 
     function liquidityTokenRootDeployed(address lp_root, address send_gas_to) external;
     function liquidityTokenRootNotDeployed(address lp_root, address send_gas_to) external;

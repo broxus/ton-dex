@@ -1,8 +1,21 @@
 pragma ton-solidity >= 0.57.0;
 
 import "./ISuccessCallback.sol";
+import "../structures/ITokenOperationStructure.sol";
 
-interface IDexAccount is ISuccessCallback {
+interface IDexAccount is ISuccessCallback, ITokenOperationStructure {
+
+    struct WithdrawalParams {
+        uint64  call_id;
+        address recipient_address;
+        uint128 deploy_wallet_grams;
+    }
+
+    struct Operation {
+        TokenOperation[] token_operations;
+        address send_gas_to;
+        address expected_callback_sender;
+    }
 
     event AddPair(address left_root, address right_root, address pair);
 
@@ -43,8 +56,6 @@ interface IDexAccount is ISuccessCallback {
     event CodeUpgradeRequested();
     event GarbageCollected();
 
-    function getNonce() external view responsible returns (uint64);
-
     function getRoot() external view responsible returns (address);
 
     function getOwner() external view responsible returns (address);
@@ -56,6 +67,7 @@ interface IDexAccount is ISuccessCallback {
     function getWalletData(address token_root) external view responsible returns (address wallet, uint128 balance);
 
     function withdraw(
+        uint64  call_id,
         uint128 amount,
         address token_root,
         address recipient_address,
@@ -64,6 +76,7 @@ interface IDexAccount is ISuccessCallback {
     ) external;
 
     function transfer(
+        uint64  call_id,
         uint128 amount,
         address token_root,
         address to_dex_account,
@@ -72,6 +85,7 @@ interface IDexAccount is ISuccessCallback {
     ) external;
 
     function exchange(
+        uint64  call_id,
         uint128 spent_amount,
         address spent_token_root,
         address receive_token_root,
@@ -80,6 +94,7 @@ interface IDexAccount is ISuccessCallback {
     ) external;
 
     function withdrawLiquidity(
+        uint64  call_id,
         uint128 lp_amount,
         address lp_root,
         address left_root,
@@ -88,6 +103,7 @@ interface IDexAccount is ISuccessCallback {
     ) external;
 
     function depositLiquidity(
+        uint64  call_id,
         address left_root,
         uint128 left_amount,
         address right_root,
@@ -99,19 +115,16 @@ interface IDexAccount is ISuccessCallback {
 
     function addPair(
         address left_root,
-        address right_root,
-        address send_gas_to
+        address right_root
     ) external;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // INTERNAL
 
     function checkPairCallback(
-        uint64 original_call_id,
         address left_root,
         address right_root,
-        address lp_root,
-        address send_gas_to
+        address lp_root
     ) external;
 
     function internalAccountTransfer(

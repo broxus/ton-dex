@@ -33,4 +33,5 @@ library DexErrors {
     uint16 constant WRONG_LIQUIDITY                  = 127;
     uint16 constant WRONG_RECIPIENT                  = 128;
     uint16 constant WRONG_PAIR_VERSION               = 129;
+    uint16 constant OPERATION_ALREADY_IN_PROGRESS    = 130;
 }

@@ -281,10 +281,8 @@
 		{
 			"name": "checkPair",
 			"inputs": [
-				{"name":"call_id","type":"uint64"},
 				{"name":"account_owner","type":"address"},
-				{"name":"value2","type":"uint32"},
-				{"name":"send_gas_to","type":"address"}
+				{"name":"value1","type":"uint32"}
 			],
 			"outputs": [
 			]

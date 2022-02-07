@@ -82,15 +82,6 @@
 			]
 		},
 		{
-			"name": "getNonce",
-			"inputs": [
-				{"name":"answerId","type":"uint32"}
-			],
-			"outputs": [
-				{"name":"value0","type":"uint64"}
-			]
-		},
-		{
 			"name": "onAcceptTokensTransfer",
 			"inputs": [
 				{"name":"token_root","type":"address"},
@@ -106,6 +97,7 @@
 		{
 			"name": "withdraw",
 			"inputs": [
+				{"name":"call_id","type":"uint64"},
 				{"name":"amount","type":"uint128"},
 				{"name":"token_root","type":"address"},
 				{"name":"recipient_address","type":"address"},
@@ -118,9 +110,10 @@
 		{
 			"name": "transfer",
 			"inputs": [
+				{"name":"call_id","type":"uint64"},
 				{"name":"amount","type":"uint128"},
 				{"name":"token_root","type":"address"},
-				{"name":"to_dex_account","type":"address"},
+				{"name":"recipient","type":"address"},
 				{"name":"willing_to_deploy","type":"bool"},
 				{"name":"send_gas_to","type":"address"}
 			],
@@ -155,6 +148,7 @@
 		{
 			"name": "exchange",
 			"inputs": [
+				{"name":"call_id","type":"uint64"},
 				{"name":"spent_amount","type":"uint128"},
 				{"name":"spent_token_root","type":"address"},
 				{"name":"receive_token_root","type":"address"},
@@ -167,6 +161,7 @@
 		{
 			"name": "depositLiquidity",
 			"inputs": [
+				{"name":"call_id","type":"uint64"},
 				{"name":"left_root","type":"address"},
 				{"name":"left_amount","type":"uint128"},
 				{"name":"right_root","type":"address"},
@@ -181,6 +176,7 @@
 		{
 			"name": "withdrawLiquidity",
 			"inputs": [
+				{"name":"call_id","type":"uint64"},
 				{"name":"lp_amount","type":"uint128"},
 				{"name":"lp_root","type":"address"},
 				{"name":"left_root","type":"address"},
@@ -194,8 +190,7 @@
 			"name": "addPair",
 			"inputs": [
 				{"name":"left_root","type":"address"},
-				{"name":"right_root","type":"address"},
-				{"name":"send_gas_to","type":"address"}
+				{"name":"right_root","type":"address"}
 			],
 			"outputs": [
 			]
@@ -203,11 +198,9 @@
 		{
 			"name": "checkPairCallback",
 			"inputs": [
-				{"name":"original_call_id","type":"uint64"},
 				{"name":"left_root","type":"address"},
 				{"name":"right_root","type":"address"},
-				{"name":"lp_root","type":"address"},
-				{"name":"send_gas_to","type":"address"}
+				{"name":"lp_root","type":"address"}
 			],
 			"outputs": [
 			]
@@ -250,13 +243,6 @@
 			"name": "successCallback",
 			"inputs": [
 				{"name":"call_id","type":"uint64"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "gc",
-			"inputs": [
 			],
 			"outputs": [
 			]
@@ -424,13 +410,10 @@
 		{"name":"current_version","type":"uint32"},
 		{"name":"platform_code","type":"cell"},
 		{"name":"owner","type":"address"},
-		{"name":"_nonce","type":"uint64"},
 		{"name":"_wallets","type":"map(address,address)"},
 		{"name":"_balances","type":"map(address,uint128)"},
+		{"components":[{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"token_operations","type":"tuple[]"},{"name":"send_gas_to","type":"address"},{"name":"expected_callback_sender","type":"address"}],"name":"_tmp_operations","type":"map(uint64,tuple)"},
 		{"name":"_tmp_deploying_wallets","type":"map(address,address)"},
-		{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"_tmp_operations","type":"map(uint64,tuple[])"},
-		{"name":"_tmp_send_gas_to","type":"map(uint64,address)"},
-		{"name":"_tmp_expected_callback_sender","type":"map(uint64,address)"},
 		{"components":[{"name":"call_id","type":"uint64"},{"name":"recipient_address","type":"address"},{"name":"deploy_wallet_grams","type":"uint128"}],"name":"_tmp_withdrawals","type":"map(address,tuple)"}
 	]
 }

@@ -1289,19 +1289,16 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Account operations
 
-    function checkPair(
-        uint64 call_id,
-        address account_owner,
-        uint32 /*account_version*/,
-        address send_gas_to
-    ) override external onlyAccount(account_owner) {
+    function checkPair(address account_owner, uint32 /*account_version*/)
+        override
+        external
+        onlyAccount(account_owner)
+    {
         tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 0);
         IDexAccount(msg.sender).checkPairCallback{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(
-            call_id,
             left_root,
             right_root,
-            lp_root,
-            send_gas_to
+            lp_root
         );
     }
 
@@ -1606,16 +1603,45 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
     }
 
     // Babylonian method for finding sqrt
-    function _sqrt(uint256 x) private pure returns (uint256) {
+    function _sqrt(uint256 x) internal pure returns (uint256) {
         if (x == 0) return 0;
-        else if (x <= 3) return 1;
-        uint256 z = (x + 1) / 2;
-        uint256 y = x;
-        while (z < y)
-        {
-            y = z;
-            z = (x / z + z) / 2;
+        uint256 xx = x;
+        uint256 r = 1;
+        if (xx >= 0x100000000000000000000000000000000) {
+            xx >>= 128;
+            r <<= 64;
         }
-        return y;
+        if (xx >= 0x10000000000000000) {
+            xx >>= 64;
+            r <<= 32;
+        }
+        if (xx >= 0x100000000) {
+            xx >>= 32;
+            r <<= 16;
+        }
+        if (xx >= 0x10000) {
+            xx >>= 16;
+            r <<= 8;
+        }
+        if (xx >= 0x100) {
+            xx >>= 8;
+            r <<= 4;
+        }
+        if (xx >= 0x10) {
+            xx >>= 4;
+            r <<= 2;
+        }
+        if (xx >= 0x8) {
+            r <<= 1;
+        }
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        r = (r + x / r) >> 1;
+        uint256 r1 = x / r;
+        return (r < r1 ? r : r1);
     }
 }
