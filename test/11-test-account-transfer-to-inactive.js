@@ -35,11 +35,11 @@ describe('Check Dex Account transfer to Dex Account which not exist', async func
     keyPairs = await locklift.keys.getKeyPairs();
     dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
     fooRoot = migration.load(
-      await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
+      await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH),
       'FooRoot'
     );
     barRoot = migration.load(
-      await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
+      await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH),
       'BarRoot'
     );
     DexAccount = await locklift.factory.getContract('DexAccount');

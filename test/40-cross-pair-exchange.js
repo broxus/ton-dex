@@ -144,23 +144,22 @@ describe('Check direct DexPairFooBar operations', async function () {
         logger.log('Account#3: ' + Account3.address);
 
         for (const tokenId of options.route) {
-            const root = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+            const root = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
             migration.load(root, Constants.tokens[tokenId].symbol + 'Root');
             tokenRoots[tokenId] = root;
             logger.log(`${Constants.tokens[tokenId].symbol}TokenRoot: ${root.address}`);
 
-            const dexWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-            const accountWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+            const dexWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+            const accountWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
             if (migration.exists(Constants.tokens[tokenId].symbol + 'Wallet3')) {
                 migration.load(accountWallet, Constants.tokens[tokenId].symbol + 'Wallet3');
                 logger.log(`${Constants.tokens[tokenId].symbol}Wallet#3: ${accountWallet.address}`);
             } else {
                 const expectedAccountWallet = await root.call({
-                    method: 'getWalletAddress', params: {
-                        _answer_id: 0,
-                        wallet_public_key_: `0x0`,
-                        owner_address_: Account3.address
+                    method: 'walletOf',
+                    params: {
+                        walletOwner: Account3.address
                     }
                 });
                 accountWallet.setAddress(expectedAccountWallet);

@@ -7,7 +7,7 @@ const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8e
 const DEX_OWNER_ADDRESS = '';
 const DEX_OWNER_WALLET_TYPE = 'SafeMultisigWallet';
 
-const NewCodeContract = 'DexPairV4';
+const NewCodeContract = 'DexPair';
 
 const afterRun = async (tx) => {
     await new Promise(resolve => setTimeout(resolve, 1000));

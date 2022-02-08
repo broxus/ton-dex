@@ -59,8 +59,8 @@ contract TokenFactory is ITokenFactory, IUpgradable {
 
     function createToken(
         uint32 callId,
-        bytes name,
-        bytes symbol,
+        string name,
+        string symbol,
         uint8 decimals,
         address initialSupplyTo,
         uint128 initialSupply,
@@ -101,6 +101,8 @@ contract TokenFactory is ITokenFactory, IUpgradable {
             burnPaused,
             remainingGasTo
         );
+
+        emit TokenCreated(tokenRoot);
 
         ITokenRootDeployedCallback(msg.sender).onTokenRootDeployed{
             value: 0,

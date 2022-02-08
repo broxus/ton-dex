@@ -161,14 +161,14 @@ describe('DexAccount interact with DexPair', async function () {
 
         DexRoot = await locklift.factory.getContract('DexRoot');
         DexPairFooBar = await locklift.factory.getContract(options.contract_name);
-        FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+        FooRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount('Wallet');
         DexAccount2 = await locklift.factory.getContract('DexAccount');
-        FooBarLpWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPair' + left_token.symbol + right_token.symbol);
@@ -186,10 +186,9 @@ describe('DexAccount interact with DexPair', async function () {
             logger.log(`${left_token.symbol}${right_token.symbol}LpWallet#2: ${FooBarLpWallet2.address}`);
         } else {
             const expected = await FooBarLpRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account2.address
                 }
             });
             FooBarLpWallet2.setAddress(expected);
@@ -202,10 +201,9 @@ describe('DexAccount interact with DexPair', async function () {
             logger.log(`${right_token.symbol}Wallet#2: ${BarWallet2.address}`);
         } else {
             const expected = await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account2.address
                 }
             });
             BarWallet2.setAddress(expected);
@@ -218,10 +216,9 @@ describe('DexAccount interact with DexPair', async function () {
             logger.log(`${left_token.symbol}Wallet#2: ${FooWallet2.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account2.address
                 }
             });
             FooWallet2.setAddress(expected);

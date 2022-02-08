@@ -19,8 +19,8 @@ async function main() {
 
   const pairs_to_update = [
     {
-      left: migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'),
-      right: migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot')
+      left: migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), 'FooRoot'),
+      right: migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), 'BarRoot')
     }
   ]
   await Promise.all(pairs_to_update.map(async (pair) => {

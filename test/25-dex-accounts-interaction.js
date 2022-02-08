@@ -113,21 +113,21 @@ describe('Check DEX accounts interaction', async function () {
 
         DexRoot = await locklift.factory.getContract('DexRoot');
         DexPairFooBar = await locklift.factory.getContract(options.pair_contract_name);
-        FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount('Wallet');
         Account2.afterRun = afterRun;
         Account3 = await locklift.factory.getAccount('Wallet');
         Account3.afterRun = afterRun;
         DexAccount2 = await locklift.factory.getContract(options.account_contract_name);
         DexAccount3 = await locklift.factory.getContract(options.account_contract_name);
-        FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPairFooBar');
@@ -150,10 +150,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`BarWallet#3: ${BarWallet3.address}`);
         } else {
             const expected = await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             BarWallet3.setAddress(expected);
@@ -166,10 +165,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`FooWallet#3: ${FooWallet3.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             FooWallet3.setAddress(expected);
@@ -182,10 +180,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`FooBarLpWallet#3: ${FooBarLpWallet3.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             FooWallet3.setAddress(expected);

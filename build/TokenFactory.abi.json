@@ -60,8 +60,8 @@
 			"name": "createToken",
 			"inputs": [
 				{"name":"callId","type":"uint32"},
-				{"name":"name","type":"bytes"},
-				{"name":"symbol","type":"bytes"},
+				{"name":"name","type":"string"},
+				{"name":"symbol","type":"string"},
 				{"name":"decimals","type":"uint8"},
 				{"name":"initialSupplyTo","type":"address"},
 				{"name":"initialSupply","type":"uint128"},
@@ -130,6 +130,14 @@
 		{"key":1,"name":"randomNonce_","type":"uint32"}
 	],
 	"events": [
+		{
+			"name": "TokenCreated",
+			"inputs": [
+				{"name":"tokenRoot","type":"address"}
+			],
+			"outputs": [
+			]
+		}
 	],
 	"fields": [
 		{"name":"_pubkey","type":"uint256"},

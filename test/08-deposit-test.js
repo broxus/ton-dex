@@ -18,9 +18,9 @@ describe('Check Dex Deposits', async function () {
     account2 = migration.load(await locklift.factory.getAccount('Wallet'), 'Account2');
     dexAccount2 = migration.load(DexAccount, 'DexAccount2');
     tokenFoo = migration.load(
-      await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot'
+      await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), 'FooRoot'
     );
-    const TokenFooAccount1Wallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const TokenFooAccount1Wallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     fooWallet2 = migration.load(TokenFooAccount1Wallet, 'FooWallet2');
     fooWallet2Balance = (await fooWallet2.call({method: 'balance'})).toNumber();
   })

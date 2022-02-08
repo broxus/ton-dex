@@ -3,10 +3,13 @@ pragma ton-solidity >= 0.57.0;
 import "../../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 interface ITokenFactory {
+
+    event TokenCreated(address tokenRoot);
+
     function createToken(
         uint32 callId,
-        bytes name,
-        bytes symbol,
+        string name,
+        string symbol,
         uint8 decimals,
         address initialSupplyTo,
         uint128 initialSupply,

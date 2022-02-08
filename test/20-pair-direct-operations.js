@@ -167,20 +167,20 @@ describe('Check direct DexPairFooBar operations', async function () {
         DexRoot = await locklift.factory.getContract('DexRoot');
         DexVault = await locklift.factory.getContract('DexVault');
         DexPairFooBar = await locklift.factory.getContract(options.contract_name);
-        FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
         Account3 = await locklift.factory.getAccount('Wallet');
         Account3.afterRun = afterRun;
-        FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexVault, 'DexVault');
@@ -202,10 +202,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             logger.log(`BarWallet#3: ${BarWallet3.address}`);
         } else {
             const expected = await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             logger.log(`BarWallet#3: ${expected} (not deployed)`);
@@ -215,10 +214,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             logger.log(`FooBarLpWallet3#3: ${FooBarLpWallet3.address}`);
         } else {
             const expected = await FooBarLpRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             logger.log(`FooBarLpWallet#3: ${expected} (not deployed)`);
@@ -299,10 +297,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             logTx(tx);
 
             BarWallet3.setAddress(await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             }));
 
@@ -577,10 +574,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             logTx(tx);
 
             FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             }));
 
@@ -650,10 +646,9 @@ describe('Check direct DexPairFooBar operations', async function () {
             logTx(tx);
 
             FooBarLpWallet3.setAddress(await FooBarLpRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             }));
 

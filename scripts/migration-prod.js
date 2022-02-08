@@ -31,8 +31,8 @@ async function main() {
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
   const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
 
-  const RootToken = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-  const TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  const RootToken = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+  const TokenWalletUpgradeable = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
   const tokenFactory = await locklift.giver.deployContract({
     contract: TokenFactory,
@@ -61,7 +61,7 @@ async function main() {
   tx = await account.runTarget({
     contract: tokenFactory,
     method: 'setWalletCode',
-    params: {wallet_code_: TONTokenWallet.code},
+    params: {wallet_code_: TokenWalletUpgradeable.code},
     keyPair
   })
   displayTx(tx);

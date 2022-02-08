@@ -10,6 +10,8 @@
   "author": "aleksandr-hramcov <aleksandr.hramcov@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@tonclient/core": "^1.30.0",
+    "@tonclient/lib-node": "^1.30.0",
     "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
     "folder-hash": "^4.0.1",
@@ -20,6 +22,6 @@
   },
   "devDependencies": {
     "@broxus/contracts": "^1.0.4",
-    "locklift": "^1.4.5"
+    "locklift": "^1.5.1"
   }
 }

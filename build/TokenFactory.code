@@ -672,6 +672,15 @@ ENDC
 PUSHINT 1
 SENDRAWMSG
 .loc ../contracts/TokenFactory.sol, 105
+DUP
+PUSHSLICE xc00000000000000000000000001530c4fd
+NEWC
+STSLICE
+STSLICE
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/TokenFactory.sol, 107
 SWAP
 GETGLOB 9
 FALSE
@@ -703,7 +712,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 112
+.loc ../contracts/TokenFactory.sol, 114
 LDU 32
 GETGLOB 4
 ROT
@@ -795,9 +804,9 @@ GETGLOB 11
 SDEQ
 AND
 THROWIFNOT 100
-.loc ../contracts/TokenFactory.sol, 113
-SETGLOB 12
 .loc ../contracts/TokenFactory.sol, 115
+SETGLOB 12
+.loc ../contracts/TokenFactory.sol, 117
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -816,7 +825,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 118
+.loc ../contracts/TokenFactory.sol, 120
 LDU 32
 GETGLOB 4
 ROT
@@ -889,7 +898,7 @@ CALLREF {
 THROW 0
 
 .macro acceptOwner_internal_macro
-.loc ../contracts/TokenFactory.sol, 119
+.loc ../contracts/TokenFactory.sol, 121
 GETGLOB 9
 PARSEMSGADDR
 INDEX 3
@@ -900,15 +909,15 @@ GETGLOB 12
 SDEQ
 AND
 THROWIFNOT 101
-.loc ../contracts/TokenFactory.sol, 121
+.loc ../contracts/TokenFactory.sol, 123
 GETGLOB 12
 SETGLOB 11
-.loc ../contracts/TokenFactory.sol, 122
+.loc ../contracts/TokenFactory.sol, 124
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 12
-.loc ../contracts/TokenFactory.sol, 124
+.loc ../contracts/TokenFactory.sol, 126
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -927,7 +936,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 127
+.loc ../contracts/TokenFactory.sol, 129
 LDREF
 ENDS
 .loc ../contracts/TokenFactory.sol, 0
@@ -956,9 +965,9 @@ GETGLOB 11
 SDEQ
 AND
 THROWIFNOT 100
-.loc ../contracts/TokenFactory.sol, 128
+.loc ../contracts/TokenFactory.sol, 130
 SETGLOB 13
-.loc ../contracts/TokenFactory.sol, 129
+.loc ../contracts/TokenFactory.sol, 131
 GETGLOB 9
 NEWC
 STSLICECONST x62_
@@ -981,7 +990,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 132
+.loc ../contracts/TokenFactory.sol, 134
 LDREF
 ENDS
 .loc ../contracts/TokenFactory.sol, 0
@@ -1010,9 +1019,9 @@ GETGLOB 11
 SDEQ
 AND
 THROWIFNOT 100
-.loc ../contracts/TokenFactory.sol, 133
+.loc ../contracts/TokenFactory.sol, 135
 SETGLOB 14
-.loc ../contracts/TokenFactory.sol, 134
+.loc ../contracts/TokenFactory.sol, 136
 GETGLOB 9
 NEWC
 STSLICECONST x62_
@@ -1035,7 +1044,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 137
+.loc ../contracts/TokenFactory.sol, 139
 LDREF
 ENDS
 .loc ../contracts/TokenFactory.sol, 0
@@ -1064,9 +1073,9 @@ GETGLOB 11
 SDEQ
 AND
 THROWIFNOT 100
-.loc ../contracts/TokenFactory.sol, 138
+.loc ../contracts/TokenFactory.sol, 140
 SETGLOB 15
-.loc ../contracts/TokenFactory.sol, 139
+.loc ../contracts/TokenFactory.sol, 141
 GETGLOB 9
 NEWC
 STSLICECONST x62_
@@ -1089,7 +1098,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/TokenFactory.sol, 142
+.loc ../contracts/TokenFactory.sol, 144
 LDREF
 ENDS
 .loc ../contracts/TokenFactory.sol, 0
@@ -1118,7 +1127,7 @@ GETGLOB 11
 SDEQ
 AND
 THROWIFNOT 100
-.loc ../contracts/TokenFactory.sol, 143
+.loc ../contracts/TokenFactory.sol, 145
 GETPARAM 7
 FIRST
 DEPTH
@@ -1128,30 +1137,30 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/TokenFactory.sol, 147
+.loc ../contracts/TokenFactory.sol, 149
 GETGLOB 13
 NEWC
 STREF
-.loc ../contracts/TokenFactory.sol, 148
+.loc ../contracts/TokenFactory.sol, 150
 GETGLOB 14
 SWAP
 STREF
-.loc ../contracts/TokenFactory.sol, 149
+.loc ../contracts/TokenFactory.sol, 151
 GETGLOB 15
 SWAP
 STREF
-.loc ../contracts/TokenFactory.sol, 150
+.loc ../contracts/TokenFactory.sol, 152
 GETGLOB 11
 SWAP
 STSLICE
-.loc ../contracts/TokenFactory.sol, 151
+.loc ../contracts/TokenFactory.sol, 153
 GETGLOB 12
 SWAP
 STSLICE
-.loc ../contracts/TokenFactory.sol, 153
+.loc ../contracts/TokenFactory.sol, 155
 OVER
 SETCODE
-.loc ../contracts/TokenFactory.sol, 154
+.loc ../contracts/TokenFactory.sol, 156
 SWAP
 CTOS
 DUP
@@ -1166,7 +1175,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/TokenFactory.sol, 156
+.loc ../contracts/TokenFactory.sol, 158
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
@@ -1384,16 +1393,16 @@ PUSHINT 520172177
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 48158372
-	EQUAL
-	IFJMPREF {
-		CALL $createToken$
-	}
-	DUP
 	PUSHINT 253571260
 	EQUAL
 	IFJMPREF {
 		CALL $pendingOwner$
+	}
+	DUP
+	PUSHINT 281549437
+	EQUAL
+	IFJMPREF {
+		CALL $createToken$
 	}
 	DUP
 	PUSHINT 388172858

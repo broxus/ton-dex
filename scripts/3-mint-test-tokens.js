@@ -1,4 +1,4 @@
-const {Migration, TOKEN_CONTRACTS_PATH, Constants} = require(process.cwd()+'/scripts/utils');
+const {Migration, TOKEN_CONTRACTS_PATH, Constants, EMPTY_TVM_CELL} = require(process.cwd()+'/scripts/utils');
 const { Command } = require('commander');
 const program = new Command();
 const BigNumber = require('bignumber.js');
@@ -55,29 +55,33 @@ async function main() {
     const amount = new BigNumber(mint.amount).shiftedBy(token.decimals);
 
     const tokenRoot = migration.load(
-        await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), token.symbol + 'Root'
+        await locklift.factory.getContract(
+            token.upgradeable ? 'TokenRootUpgradeable' : 'TokenRoot',
+            TOKEN_CONTRACTS_PATH
+        ), token.symbol + 'Root'
     );
 
     await rootOwner.runTarget({
       contract: tokenRoot,
-      method: 'deployWallet',
+      method: 'mint',
       params: {
-        tokens: amount,
-        deploy_grams: locklift.utils.convertCrystal(1, 'nano'),
-        wallet_public_key_: 0,
-        owner_address_: account.address,
-        gas_back_address: rootOwner.address
+        amount: amount,
+        recipient: account.address,
+        deployWalletValue: locklift.utils.convertCrystal(0.2, 'nano'),
+        remainingGasTo: rootOwner.address,
+        notify: false,
+        payload: EMPTY_TVM_CELL
       },
-      value: locklift.utils.convertCrystal(2, 'nano'),
+      value: locklift.utils.convertCrystal(0.5, 'nano'),
       keyPair
     });
+
     const tokenWalletAddress = await tokenRoot.call({
-      method: 'getWalletAddress', params: {
-        wallet_public_key_: 0,
-        owner_address_: account.address
+      method: 'walletOf', params: {
+        walletOwner: account.address
       }
     });
-    const tokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const tokenWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     tokenWallet.setAddress(tokenWalletAddress);
     const alias = token.symbol + 'Wallet' + mint.account;
     migration.store(tokenWallet, alias);
