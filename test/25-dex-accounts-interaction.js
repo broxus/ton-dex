@@ -49,13 +49,13 @@ let IS_FOO_LEFT;
 let keyPairs;
 
 async function dexBalances() {
-    const foo = await FooVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const foo = await FooVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     });
-    const bar = await BarVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const bar = await BarVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     });
-    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     });
     return {foo, bar, lp};
@@ -63,15 +63,15 @@ async function dexBalances() {
 
 async function account3balances() {
     let foo;
-    await FooWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooWallet3.call({method: 'balance', params: {}}).then(n => {
         foo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let bar;
-    await BarWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await BarWallet3.call({method: 'balance', params: {}}).then(n => {
         bar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let lp;
-    await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet3.call({method: 'balance', params: {}}).then(n => {
         lp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
@@ -80,15 +80,12 @@ async function account3balances() {
 
 async function dexAccountBalances(account) {
     const foo = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: FooRoot.address
     }})).balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
     const bar = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: BarRoot.address
     }})).balance).shiftedBy(-Constants.tokens.bar.decimals).toString();
     const lp = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: FooBarLpRoot.address
     }})).balance).shiftedBy(-Constants.LP_DECIMALS).toString();
 
@@ -141,7 +138,7 @@ describe('Check DEX accounts interaction', async function () {
         migration.load(Account3, 'Account3');
         migration.load(DexAccount2, 'DexAccount2');
 
-        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
 
@@ -231,8 +228,7 @@ describe('Check DEX accounts interaction', async function () {
             const dexAccount3 = await DexRoot.call({
                 method: 'getExpectedAccountAddress',
                 params: {
-                    account_owner: Account3.address,
-                    _answer_id: 0
+                    account_owner: Account3.address
                 }
             });
 
@@ -456,8 +452,7 @@ describe('Check DEX accounts interaction', async function () {
             const dexAccount3 = await DexRoot.call({
                 method: 'getExpectedAccountAddress',
                 params: {
-                    account_owner: Account3.address,
-                    _answer_id: 0
+                    account_owner: Account3.address
                 }
             });
             DexAccount3.setAddress(dexAccount3);

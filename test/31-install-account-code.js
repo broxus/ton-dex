@@ -38,7 +38,7 @@ describe('Test DexAccount contract upgrade', async function () {
     })
     describe('Install DexAccount code', async function () {
         it('Check code version', async function () {
-            const startVersion = await dexRoot.call({method: 'getAccountVersion', params: { _answer_id: 0 }});
+            const startVersion = await dexRoot.call({method: 'getAccountVersion', params: {}});
             logger.log(`Start DexAccount code version: ${startVersion}`);
 
             logger.log(`Installing new DexAccount contract in DexRoot: ${dexRoot.address}`);
@@ -50,7 +50,7 @@ describe('Test DexAccount contract upgrade', async function () {
                 keyPair
             });
 
-            const endVersion = await dexRoot.call({method: 'getAccountVersion', params: { _answer_id: 0 }});
+            const endVersion = await dexRoot.call({method: 'getAccountVersion', params: {}});
             logger.log(`End DexAccount code version: ${endVersion}`);
 
             expect(new BigNumber(startVersion).plus(1).toString())

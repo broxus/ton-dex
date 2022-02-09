@@ -42,7 +42,7 @@ async function dexBalances() {
     const balances = {};
 
     for (const r of options.route) {
-        balances[r] = await dexWallets[r].call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+        balances[r] = await dexWallets[r].call({method: 'balance', params: {}}).then(n => {
             return new BigNumber(n).shiftedBy(-Constants.tokens[r].decimals).toString();
         });
     }
@@ -54,7 +54,7 @@ async function account3balances() {
     const balances = {};
 
     for (const r of options.route) {
-        await accountWallets[r].call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+        await accountWallets[r].call({method: 'balance', params: {}}).then(n => {
             balances[r] = new BigNumber(n).shiftedBy(-Constants.tokens[r].decimals).toString();
         }).catch(e => {/*ignored*/});
     }
@@ -80,8 +80,8 @@ async function dexPairInfo(left, right) {
     } else {
         migration.load(Pair, `DexPair${tokenRight.symbol}${tokenLeft.symbol}`);
     }
-    const pairRoots = await Pair.call({method: 'getTokenRoots', params: {_answer_id: 0}});
-    const balances = await Pair.call({method: 'getBalances', params: {_answer_id: 0}});
+    const pairRoots = await Pair.call({method: 'getTokenRoots', params: {}});
+    const balances = await Pair.call({method: 'getBalances', params: {}});
     let left_balance, right_balance;
     if (pairRoots.left === tokenRoots[left].address) {
         left_balance = new BigNumber(balances.left_balance).shiftedBy(-tokenLeft.decimals).toString();

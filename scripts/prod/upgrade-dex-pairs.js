@@ -36,7 +36,7 @@ async function main() {
   if (NewCodeContract) {
       const NextVersionContract = await locklift.factory.getContract(NewCodeContract);
       console.log(`Installing new DexPair contract in DexRoot: ${dexRoot.address}`);
-      const startVersion = await dexRoot.call({method: 'getPairVersion', params: { _answer_id: 0 }});
+      const startVersion = await dexRoot.call({method: 'getPairVersion', params: {}});
       console.log(`Start version = ${startVersion}`);
 
       await dexOwner.runTarget({
@@ -49,7 +49,7 @@ async function main() {
 
       await new Promise(resolve => setTimeout(resolve, 120000));
 
-      const endVersion = await dexRoot.call({method: 'getPairVersion', params: { _answer_id: 0 }});
+      const endVersion = await dexRoot.call({method: 'getPairVersion', params: {}});
       console.log(`End version = ${endVersion}`);
   }
 

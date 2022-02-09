@@ -84,33 +84,30 @@ function logExpectedDeposit(expected) {
 async function dexAccountBalances(account) {
     const foo = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: FooRoot.address
         }
     })).balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
     const bar = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: BarRoot.address
         }
     })).balance).shiftedBy(-Constants.tokens.bar.decimals).toString();
     const lp = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: FooBarLpRoot.address
         }
     })).balance).shiftedBy(-Constants.LP_DECIMALS).toString();
 
     let walletFoo = '0';
-    await FooWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooWallet2.call({method: 'balance', params: {}}).then(n => {
         walletFoo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let walletBar = '0';
-    await BarWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await BarWallet2.call({method: 'balance', params: {}}).then(n => {
         walletBar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let walletLp = '0';
-    await FooBarLpWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet2.call({method: 'balance', params: {}}).then(n => {
         walletLp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
 
@@ -118,8 +115,8 @@ async function dexAccountBalances(account) {
 }
 
 async function dexPairInfo() {
-    const balances = await DexPairFooBar.call({method: 'getBalances', params: {_answer_id: 0}});
-    const total_supply = await FooBarLpRoot.call({method: 'getTotalSupply', params: {'_answer_id': 0}});
+    const balances = await DexPairFooBar.call({method: 'getBalances', params: {}});
+    const total_supply = await FooBarLpRoot.call({method: 'totalSupply', params: {}});
     let foo, bar;
     if (IS_FOO_LEFT) {
         foo = new BigNumber(balances.left_balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
@@ -174,7 +171,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
         Account2.afterRun = afterRun;
 
-        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         if (migration.exists('FooBarLpWallet2')) {

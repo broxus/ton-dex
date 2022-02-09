@@ -66,12 +66,12 @@ describe('Check for correct deployment', async function () {
         .equal(DexPair.code, 'Wrong Pair code in DexRoot');
     });
     it('Check Vault address', async function () {
-      expect(await dexRoot.call({method: 'getVault', params: {_answer_id: 0}}))
+      expect(await dexRoot.call({method: 'getVault', params: {}}))
         .to
         .equal(dexVault.address, 'Wrong DexVault address in DexRoot');
     });
     it('Check is Dex Active', async function () {
-      expect(await dexRoot.call({method: 'isActive', params: {_answer_id: 0}}))
+      expect(await dexRoot.call({method: 'isActive', params: {}}))
         .to
         .equal(true, 'DexRoot is not Active');
     });

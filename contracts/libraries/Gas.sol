@@ -51,7 +51,7 @@ library Gas {
     uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 ton;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 ton;
 
-    uint128 constant ADD_PAIR_MIN_VALUE             = 4 ton;
+    uint128 constant ADD_PAIR_MIN_VALUE             = 3 ton;
 
     uint128 constant OPERATION_CALLBACK_BASE        = 0.01 ton;
 

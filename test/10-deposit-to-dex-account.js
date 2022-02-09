@@ -133,13 +133,12 @@ describe('Check Deposit to Dex Account', async function () {
         logger.log(`# Make ${tokenData.symbol} deposit`);
         await accountN.runTarget({
           contract: deposit.accountWallet,
-          method: 'transfer',
+          method: 'transferToWallet',
           params: {
-            to: deposit.dexAccountWallet.address,
-            tokens: new BigNumber(deposit.amount).shiftedBy(tokenData.decimals).toString(),
-            grams: 0,
-            send_gas_to: accountN.address,
-            notify_receiver: true,
+            amount: new BigNumber(deposit.amount).shiftedBy(tokenData.decimals).toString(),
+            recipientTokenWallet: deposit.dexAccountWallet.address,
+            remainingGasTo: accountN.address,
+            notify: true,
             payload: EMPTY_TVM_CELL
           },
           value: locklift.utils.convertCrystal('0.5', 'nano'),

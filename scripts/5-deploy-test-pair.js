@@ -42,7 +42,7 @@ async function main() {
         TOKEN_CONTRACTS_PATH
     ), pair.right + 'Root');
 
-    await account2.runTarget({
+    const tx = await account2.runTarget({
       contract: dexRoot,
       method: 'deployPair',
       params: {
@@ -53,6 +53,8 @@ async function main() {
       value: locklift.utils.convertCrystal(10, 'nano'),
       keyPair: keyPairs[1]
     });
+
+    console.log(`Transaction: ${tx.transaction.id}`);
 
     await afterRun();
 

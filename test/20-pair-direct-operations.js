@@ -48,13 +48,13 @@ let IS_FOO_LEFT;
 let keyPairs;
 
 async function dexBalances() {
-    const foo = await FooVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const foo = await FooVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     });
-    const bar = await BarVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const bar = await BarVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     });
-    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     });
     return {foo, bar, lp};
@@ -62,15 +62,15 @@ async function dexBalances() {
 
 async function account3balances() {
     let foo;
-    await FooWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooWallet3.call({method: 'balance', params: {}}).then(n => {
         foo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let bar;
-    await BarWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await BarWallet3.call({method: 'balance', params: {}}).then(n => {
         bar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let lp;
-    await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet3.call({method: 'balance', params: {}}).then(n => {
         lp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
@@ -78,8 +78,8 @@ async function account3balances() {
 }
 
 async function dexPairInfo() {
-    const balances = await DexPairFooBar.call({method: 'getBalances', params: {_answer_id: 0}});
-    const total_supply = await FooBarLpRoot.call({method: 'getTotalSupply', params: {'_answer_id': 0}});
+    const balances = await DexPairFooBar.call({method: 'getBalances', params: {}});
+    const total_supply = await FooBarLpRoot.call({method: 'totalSupply', params: {}});
     let foo, bar;
     if (IS_FOO_LEFT) {
         foo = new BigNumber(balances.left_balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
@@ -221,7 +221,7 @@ describe('Check direct DexPairFooBar operations', async function () {
             });
             logger.log(`FooBarLpWallet#3: ${expected} (not deployed)`);
         }
-        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         logger.log(`Vault wallets: 

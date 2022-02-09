@@ -1526,7 +1526,7 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
     }
 
     function onTokenWallet(address wallet) external {
-        require(msg.sender == left_root || msg.sender == right_root, DexErrors.NOT_ROOT);
+        require(msg.sender == left_root || msg.sender == right_root || msg.sender == lp_root, DexErrors.NOT_ROOT);
 
         if (msg.sender == lp_root && lp_wallet.value == 0) {
             lp_wallet = wallet;
