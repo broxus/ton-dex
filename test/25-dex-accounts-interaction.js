@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, Constants, afterRun} = require(process.cwd() + '/scripts/utils');
+const {Migration, Constants, afterRun, TOKEN_CONTRACTS_PATH, getRandomNonce} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 const { Command } = require('commander');
 const program = new Command();
@@ -23,8 +23,6 @@ const options = program.opts();
 
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
 options.account_contract_name = options.account_contract_name || 'DexAccount';
-
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot;
 let DexPairFooBar;
@@ -266,9 +264,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.foo.decimals).toString(),
                     token_root: FooRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: false,
                     send_gas_to: Account2.address
                 },
@@ -308,9 +307,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: true,
                     send_gas_to: Account2.address
                 },
@@ -355,9 +355,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: false,
                     send_gas_to: Account2.address
                 },
@@ -405,15 +406,13 @@ describe('Check DEX accounts interaction', async function () {
 
             tx = await Account3.runTarget({
                 contract: BarWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexAccount3.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
+                    recipient: DexAccount3.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: EMPTY_TVM_CELL
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
@@ -468,6 +467,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount3,
                 method: 'withdraw',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(TOKENS_TO_WITHDRAW).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
                     recipient_public_key: 0,

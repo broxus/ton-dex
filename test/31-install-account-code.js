@@ -21,7 +21,7 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-options.contract_name = options.contract_name || 'DexPairV2';
+options.contract_name = options.contract_name || 'DexAccountV2';
 
 describe('Test DexAccount contract upgrade', async function () {
     this.timeout(Constants.TESTS_TIMEOUT);

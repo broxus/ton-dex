@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils');
+const {Migration, afterRun, Constants, TOKEN_CONTRACTS_PATH} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const { Command } = require('commander');
@@ -22,11 +22,9 @@ const options = program.opts();
 options.amount = options.amount ? +options.amount : 100;
 options.route = options.route ? JSON.parse(options.route) : ['foo', 'tst', 'bar'];
 options.wrong_pair = options.wrong_pair ? JSON.parse(options.wrong_pair) : [];
-options.contract_name = options.contract_name || 'DexPairV2';
+options.contract_name = options.contract_name || 'DexPair';
 
 console.log(options);
-
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot
 let DexVault;
@@ -269,15 +267,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             await Account3.runTarget({
                 contract: accountWallets[options.route[0]],
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: firstPair.address,
-                    tokens: new BigNumber(options.amount).shiftedBy(Constants.tokens[options.route[0]].decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(options.amount).shiftedBy(Constants.tokens[options.route[0]].decimals).toString(),
+                    recipient: firstPair.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal(options.route.length + 3, 'nano'),

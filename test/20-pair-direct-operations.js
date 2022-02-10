@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils');
+const {Migration, afterRun, Constants, TOKEN_CONTRACTS_PATH} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 const { Command } = require('commander');
 const program = new Command();
@@ -21,8 +21,6 @@ program.parse(process.argv);
 const options = program.opts();
 
 options.contract_name = options.contract_name || 'DexPair';
-
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot
 let DexVault;
@@ -279,15 +277,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('3', 'nano'),
@@ -355,15 +351,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: BarWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.bar.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.bar.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -422,15 +416,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: BarWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: expected.expected_amount,
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: expected.expected_amount,
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -490,15 +482,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: AMOUNT,
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: AMOUNT,
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.6', 'nano'),
@@ -556,15 +546,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: 1000,
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: 1000,
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -628,15 +616,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.foo.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.foo.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -700,15 +686,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: BarWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -767,15 +751,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooBarLpWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: 1000,
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: 1000,
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -840,15 +822,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooBarLpWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(accountStart.lp).shiftedBy(Constants.LP_DECIMALS).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(accountStart.lp).shiftedBy(Constants.LP_DECIMALS).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -907,15 +887,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: EMPTY_TVM_CELL
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),
@@ -963,15 +941,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('1', 'nano'),
@@ -1019,15 +995,13 @@ describe('Check direct DexPairFooBar operations', async function () {
 
             tx = await Account3.runTarget({
                 contract: FooWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexPairFooBar.address,
-                    tokens: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
+                    recipient: DexPairFooBar.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: payload
                 },
                 value: locklift.utils.convertCrystal('2.3', 'nano'),

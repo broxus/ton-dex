@@ -105,6 +105,9 @@
 		{"name":"owner","type":"address"},
 		{"name":"_wallets","type":"map(address,address)"},
 		{"name":"_balances","type":"map(address,uint128)"},
+		{"components":[{"components":[{"name":"amount","type":"uint128"},{"name":"root","type":"address"}],"name":"token_operations","type":"tuple[]"},{"name":"send_gas_to","type":"address"},{"name":"expected_callback_sender","type":"address"}],"name":"_tmp_operations","type":"map(uint64,tuple)"},
+		{"name":"_tmp_deploying_wallets","type":"map(address,address)"},
+		{"components":[{"name":"call_id","type":"uint64"},{"name":"recipient_address","type":"address"},{"name":"deploy_wallet_grams","type":"uint128"}],"name":"_tmp_withdrawals","type":"map(address,tuple)"},
 		{"name":"newTestField","type":"string"}
 	]
 }

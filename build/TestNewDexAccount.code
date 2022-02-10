@@ -10,7 +10,7 @@ IFREF {
 GETGLOB 6
 THROWIF 51
 ENDS
-.loc ../contracts/tests/TestNewDexAccount.sol, 28
+.loc ../contracts/tests/TestNewDexAccount.sol, 49
 THROW 100
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 
@@ -23,7 +23,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 30
+.loc ../contracts/tests/TestNewDexAccount.sol, 51
 LDU 32
 GETGLOB 4
 ROT
@@ -95,7 +95,7 @@ IFREF {
 THROW 0
 
 .macro getRoot_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 31
+.loc ../contracts/tests/TestNewDexAccount.sol, 52
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -116,7 +116,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 34
+.loc ../contracts/tests/TestNewDexAccount.sol, 55
 LDU 32
 GETGLOB 4
 ROT
@@ -188,7 +188,7 @@ IFREF {
 THROW 0
 
 .macro getOwner_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 35
+.loc ../contracts/tests/TestNewDexAccount.sol, 56
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -209,7 +209,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 38
+.loc ../contracts/tests/TestNewDexAccount.sol, 59
 LDU 32
 GETGLOB 4
 ROT
@@ -274,7 +274,7 @@ IFREF {
 THROW 0
 
 .macro getVersion_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 39
+.loc ../contracts/tests/TestNewDexAccount.sol, 60
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -295,7 +295,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 42
+.loc ../contracts/tests/TestNewDexAccount.sol, 63
 LDU 32
 GETGLOB 4
 ROT
@@ -367,7 +367,7 @@ IFREF {
 THROW 0
 
 .macro getVault_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 43
+.loc ../contracts/tests/TestNewDexAccount.sol, 64
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -388,7 +388,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 46
+.loc ../contracts/tests/TestNewDexAccount.sol, 67
 LDU 32
 GETGLOB 4
 ROT
@@ -470,7 +470,7 @@ IFREF {
 THROW 0
 
 .macro getWalletData_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 47
+.loc ../contracts/tests/TestNewDexAccount.sol, 68
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -528,7 +528,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 53
+.loc ../contracts/tests/TestNewDexAccount.sol, 74
 ENDS
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 CALLREF {
@@ -562,7 +562,7 @@ IFREF {
 THROW 0
 
 .macro getWallets_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 54
+.loc ../contracts/tests/TestNewDexAccount.sol, 75
 GETGLOB 15
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 
@@ -575,7 +575,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 57
+.loc ../contracts/tests/TestNewDexAccount.sol, 78
 ENDS
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 CALLREF {
@@ -609,17 +609,17 @@ IFREF {
 THROW 0
 
 .macro getBalances_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 58
+.loc ../contracts/tests/TestNewDexAccount.sol, 79
 GETGLOB 16
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-.loc ../contracts/tests/TestNewDexAccount.sol, 62
+.loc ../contracts/tests/TestNewDexAccount.sol, 83
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/tests/TestNewDexAccount.sol, 63
+.loc ../contracts/tests/TestNewDexAccount.sol, 84
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -641,12 +641,18 @@ NEWDICT
 SETGLOB 15
 NEWDICT
 SETGLOB 16
+NEWDICT
+SETGLOB 17
+NEWDICT
+SETGLOB 18
+NEWDICT
+SETGLOB 19
 PUSHREF {
 }
-SETGLOB 17
-.loc ../contracts/tests/TestNewDexAccount.sol, 64
+SETGLOB 20
+.loc ../contracts/tests/TestNewDexAccount.sol, 85
 CTOS
-.loc ../contracts/tests/TestNewDexAccount.sol, 67
+.loc ../contracts/tests/TestNewDexAccount.sol, 88
 DUP
 LDMSGADDR
 LDMSGADDR
@@ -659,36 +665,54 @@ SETGLOB 10
 SETGLOB 11
 DROP
 SETGLOB 12
-.loc ../contracts/tests/TestNewDexAccount.sol, 70
+.loc ../contracts/tests/TestNewDexAccount.sol, 91
 OVER
 LDREF
 POP S3
 SETGLOB 13
-.loc ../contracts/tests/TestNewDexAccount.sol, 71
+.loc ../contracts/tests/TestNewDexAccount.sol, 92
+OVER
+LDREFRTOS
 SWAP
-LDREF
-DROP
-CTOS
-.loc ../contracts/tests/TestNewDexAccount.sol, 72
+POP S3
+.loc ../contracts/tests/TestNewDexAccount.sol, 93
 DUP
 LDMSGADDR
 POP S2
 SETGLOB 14
-.loc ../contracts/tests/TestNewDexAccount.sol, 73
+.loc ../contracts/tests/TestNewDexAccount.sol, 94
 DUP
 LDDICT
 POP S2
 SETGLOB 15
-.loc ../contracts/tests/TestNewDexAccount.sol, 74
+.loc ../contracts/tests/TestNewDexAccount.sol, 95
 LDDICT
 DROP
 SETGLOB 16
-.loc ../contracts/tests/TestNewDexAccount.sol, 76
+.loc ../contracts/tests/TestNewDexAccount.sol, 97
+SWAP
+LDREFRTOS
+NIP
+.loc ../contracts/tests/TestNewDexAccount.sol, 98
+DUP
+LDDICT
+POP S2
+SETGLOB 17
+.loc ../contracts/tests/TestNewDexAccount.sol, 99
+DUP
+LDDICT
+POP S2
+SETGLOB 18
+.loc ../contracts/tests/TestNewDexAccount.sol, 100
+LDDICT
+DROP
+SETGLOB 19
+.loc ../contracts/tests/TestNewDexAccount.sol, 102
 PUSHREF {
 	.blob x4e6577204163636f756e74
 }
-SETGLOB 17
-.loc ../contracts/tests/TestNewDexAccount.sol, 78
+SETGLOB 20
+.loc ../contracts/tests/TestNewDexAccount.sol, 104
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -713,7 +737,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexAccount.sol, 81
+.loc ../contracts/tests/TestNewDexAccount.sol, 107
 ENDS
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 CALLREF {
@@ -751,8 +775,8 @@ THROW 0
 CALL $newFunc_internal_macro$
 
 .macro newFunc_internal_macro
-.loc ../contracts/tests/TestNewDexAccount.sol, 82
-GETGLOB 17
+.loc ../contracts/tests/TestNewDexAccount.sol, 108
+GETGLOB 20
 .loc ../contracts/tests/TestNewDexAccount.sol, 0
 
 .macro c4_to_c7
@@ -775,8 +799,17 @@ CTOS
 LDMSGADDR
 LDDICT
 LDDICT
+LDDICT
 LDREF
 ENDS
+CTOS
+LDDICT
+LDDICT
+LDREF
+ENDS
+SETGLOB 20
+SETGLOB 19
+SETGLOB 18
 SETGLOB 17
 SETGLOB 16
 SETGLOB 15
@@ -809,9 +842,12 @@ PUSHCONT {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	NEWDICT
-	DUP
+	BLKPUSH 4, 0
 	PUSHREF {
 	}
+	SETGLOB 20
+	SETGLOB 19
+	SETGLOB 18
 	SETGLOB 17
 	SETGLOB 16
 	SETGLOB 15
@@ -833,6 +869,9 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
+GETGLOB 20
+GETGLOB 19
+GETGLOB 18
 GETGLOB 17
 GETGLOB 16
 GETGLOB 15
@@ -848,17 +887,23 @@ STU 256
 STU 64
 STONE
 STSLICE
-ROLLREV 7
+ROLLREV 10
 NEWC
 STSLICE
 STU 32
 STREF
-ROLLREV 4
+ROLLREV 7
 NEWC
 STSLICE
 STDICT
 STDICT
+STDICT
+ROLLREV 3
+NEWC
+STDICT
+STDICT
 STREF
+STBREFR
 STBREFR
 STBREFR
 ENDC
