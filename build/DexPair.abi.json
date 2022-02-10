@@ -148,7 +148,6 @@
 		{
 			"name": "buildCrossPairExchangePayload",
 			"inputs": [
-				{"name":"answerId","type":"uint32"},
 				{"name":"id","type":"uint64"},
 				{"name":"deploy_wallet_grams","type":"uint128"},
 				{"name":"expected_amount","type":"uint128"},

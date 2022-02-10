@@ -165,7 +165,7 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
         uint128 deploy_wallet_grams,
         uint128 expected_amount,
         TokenOperation[] steps
-    ) external pure responsible returns (TvmCell) {
+    ) external pure returns (TvmCell) {
         require(steps.length > 0);
         TvmBuilder builder;
 

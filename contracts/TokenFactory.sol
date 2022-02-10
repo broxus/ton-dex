@@ -114,7 +114,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
     function transferOwner(address newOwner) external responsible onlyOwner returns(address) {
         pendingOwner_ = newOwner;
 
-        return {value: 0, flag: MsgFlag.REMAINING_GAS } pendingOwner_;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pendingOwner_;
     }
 
     function acceptOwner() external responsible returns(address) {
@@ -123,7 +123,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         owner_ = pendingOwner_;
         pendingOwner_ = address(0);
 
-        return {value: 0, flag: MsgFlag.REMAINING_GAS } owner_;
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner_;
     }
 
     function setRootCode(TvmCell _rootCode) public onlyOwner {
