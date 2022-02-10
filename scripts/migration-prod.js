@@ -202,7 +202,7 @@ async function main() {
   await account.runTarget({
     contract: tokenFactory,
     method: 'transferOwner',
-    params: {newOwner: newOwner},
+    params: {newOwner: newOwner, answerId: '0'},
     value: locklift.utils.convertCrystal(1, 'nano'),
     keyPair: keyPair
   });
