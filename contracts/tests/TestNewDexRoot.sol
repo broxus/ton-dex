@@ -5,8 +5,8 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../libraries/DexErrors.sol";
-import "../libraries/Gas.sol";
-import "../libraries/MsgFlag.sol";
+import "../libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 // This is just for test purposes, this is not a real contract!
 contract NewDexRoot {
@@ -50,7 +50,7 @@ contract NewDexRoot {
     }
 
     function setActive(bool new_active) external {
-        tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.ROOT_INITIAL_BALANCE, 2);
         if (new_active && has_platform_code && vault.value != 0 && account_version > 0 && pair_version > 0) {
             active = true;
         } else {

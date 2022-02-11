@@ -1,8 +1,8 @@
 pragma ton-solidity >= 0.57.0;
 
 import "../libraries/DexErrors.sol";
-import "../libraries/Gas.sol";
-import "../libraries/MsgFlag.sol";
+import "../libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 // This is just for test purposes, this is not a real contract!
 contract NewDexVault {

@@ -5,8 +5,8 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../libraries/DexErrors.sol";
-import "../libraries/Gas.sol";
-import "../libraries/MsgFlag.sol";
+import "../libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "../interfaces/IDexPair.sol";
 import "../structures/ITokenOperationStructure.sol";
@@ -94,7 +94,7 @@ contract TestNewDexPair is ITokenOperationStructure {
     }
 
     function onCodeUpgrade(TvmCell data) private {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.PAIR_INITIAL_BALANCE, 2);
         tvm.resetStorage();
         TvmSlice s = data.toSlice();
 

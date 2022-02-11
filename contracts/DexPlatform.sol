@@ -5,7 +5,7 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "./libraries/DexErrors.sol";
-import "./libraries/MsgFlag.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 contract DexPlatform {
 

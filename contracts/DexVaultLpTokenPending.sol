@@ -1,17 +1,17 @@
 pragma ton-solidity >= 0.57.0;
 
 import "./libraries/DexErrors.sol";
-import "./libraries/Gas.sol";
-import "./libraries/MsgFlag.sol";
+import "./libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./interfaces/ITokenFactory.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/ITokenRootDeployedCallback.sol";
 
-import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITransferableOwnership.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITransferTokenRootOwnershipCallback.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/contracts/structures/ICallbackParamsStructure.sol";
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITransferableOwnership.sol";
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITransferTokenRootOwnershipCallback.sol";
+import "ton-eth-bridge-token-contracts/contracts/structures/ICallbackParamsStructure.sol";
 
 
 contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRootOwnershipCallback {
@@ -64,12 +64,12 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRoo
         deploy_value = value_;
 
         ITokenRoot(left_root).symbol{
-            value: Gas.GET_TOKEN_DETAILS_VALUE,
+            value: DexGas.GET_TOKEN_DETAILS_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             callback: onSymbol
         }();
         ITokenRoot(right_root).symbol{
-            value: Gas.GET_TOKEN_DETAILS_VALUE,
+            value: DexGas.GET_TOKEN_DETAILS_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             callback: onSymbol
         }();
@@ -111,7 +111,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRoo
         mapping(address => ICallbackParamsStructure.CallbackParams) callbacks;
         callbacks[address(this)] = ICallbackParamsStructure.CallbackParams(0, empty);
         ITransferableOwnership(token_root).transferOwnership{
-            value: Gas.TRANSFER_ROOT_OWNERSHIP_VALUE,
+            value: DexGas.TRANSFER_ROOT_OWNERSHIP_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(pair, address(this), callbacks);
     }
@@ -153,7 +153,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRoo
     function deployLpToken(bytes symbol, uint8 decimals) private {
         pending_messages++;
         ITokenFactory(token_factory).createToken{
-            value: Gas.CREATE_TOKEN_VALUE,
+            value: DexGas.CREATE_TOKEN_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             0,
@@ -173,12 +173,12 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRoo
     function deployEmptyWallet(address token_root, address wallet_owner) private {
         pending_messages++;
         ITokenRoot(token_root).deployWallet{
-            value: Gas.DEPLOY_EMPTY_WALLET_VALUE,
+            value: DexGas.DEPLOY_EMPTY_WALLET_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES,
             callback: DexVaultLpTokenPending.onDeployWallet
         }(
             wallet_owner,                  /*owner_address*/
-            Gas.DEPLOY_EMPTY_WALLET_GRAMS  /*deploy_grams*/
+            DexGas.DEPLOY_EMPTY_WALLET_GRAMS  /*deploy_grams*/
         );
     }
 

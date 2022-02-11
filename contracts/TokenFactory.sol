@@ -1,14 +1,14 @@
 pragma ton-solidity >= 0.57.0;
 
-import "./libraries/Gas.sol";
+import "./libraries/DexGas.sol";
 import "./libraries/TokenFactoryErrors.sol";
-import "./libraries/MsgFlag.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/ITokenFactory.sol";
 import "./interfaces/ITokenRootDeployedCallback.sol";
 
-import "../node_modules/ton-eth-bridge-token-contracts/contracts/TokenRootUpgradeable.sol";
+import "ton-eth-bridge-token-contracts/contracts/TokenRootUpgradeable.sol";
 
 
 contract TokenFactory is ITokenFactory, IUpgradable {
@@ -28,7 +28,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         tvm.accept();
         owner_ = _owner;
 
-        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
+        tvm.rawReserve(DexGas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
         owner_.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
     }
 
@@ -70,7 +70,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
         bool burnPaused,
         address remainingGasTo
     ) public override {
-        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
+        tvm.rawReserve(DexGas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
 
         TvmCell initData = tvm.buildStateInit({
             contr: TokenRootUpgradeable,
@@ -90,7 +90,7 @@ contract TokenFactory is ITokenFactory, IUpgradable {
 
         address tokenRoot = new TokenRootUpgradeable {
             stateInit: initData,
-            value: Gas.DEPLOY_TOKEN_ROOT_VALUE,
+            value: DexGas.DEPLOY_TOKEN_ROOT_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
             initialSupplyTo,
