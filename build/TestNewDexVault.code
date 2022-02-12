@@ -10,21 +10,23 @@ IFREF {
 GETGLOB 6
 THROWIF 51
 ENDS
-.loc ../contracts/tests/TestNewDexVault.sol, 24
+.loc ../contracts/tests/TestNewDexVault.sol, 23
 THROW 100
 .loc ../contracts/tests/TestNewDexVault.sol, 0
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-.loc ../contracts/tests/TestNewDexVault.sol, 27
+.loc ../contracts/tests/TestNewDexVault.sol, 26
 PUSHINT 0
 SETGLOB 10
 PUSHREF {
 }
 SETGLOB 11
-PUSHINT 0
-SETGLOB 12
 PUSHREF {
+}
+SETGLOB 12
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 13
 PUSHREFSLICE {
@@ -39,54 +41,47 @@ PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 16
-PUSHREFSLICE {
-	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-}
-SETGLOB 17
 PUSHREF {
 }
-SETGLOB 18
-.loc ../contracts/tests/TestNewDexVault.sol, 28
+SETGLOB 17
+.loc ../contracts/tests/TestNewDexVault.sol, 27
 CTOS
-.loc ../contracts/tests/TestNewDexVault.sol, 29
+.loc ../contracts/tests/TestNewDexVault.sol, 28
 DUP
 LDMSGADDR
 LDMSGADDR
 POP S3
 SWAP
-SETGLOB 14
-SETGLOB 17
-.loc ../contracts/tests/TestNewDexVault.sol, 31
+SETGLOB 13
+SETGLOB 16
+.loc ../contracts/tests/TestNewDexVault.sol, 30
 DUP
 LDREF
 POP S2
-.loc ../contracts/tests/TestNewDexVault.sol, 32
+.loc ../contracts/tests/TestNewDexVault.sol, 31
 CTOS
 LDMSGADDR
 LDMSGADDR
 DROP
 SWAP
+SETGLOB 14
 SETGLOB 15
-SETGLOB 16
-.loc ../contracts/tests/TestNewDexVault.sol, 34
+.loc ../contracts/tests/TestNewDexVault.sol, 33
 DUP
 LDREF
 POP S2
 SETGLOB 11
-.loc ../contracts/tests/TestNewDexVault.sol, 35
+.loc ../contracts/tests/TestNewDexVault.sol, 34
 LDREF
 DROP
-SETGLOB 13
-.loc ../contracts/tests/TestNewDexVault.sol, 37
-TRUE
 SETGLOB 12
-.loc ../contracts/tests/TestNewDexVault.sol, 39
+.loc ../contracts/tests/TestNewDexVault.sol, 36
 PUSHREF {
 	.blob x4e6577205661756c74
 }
-SETGLOB 18
-.loc ../contracts/tests/TestNewDexVault.sol, 41
-GETGLOB 15
+SETGLOB 17
+.loc ../contracts/tests/TestNewDexVault.sol, 38
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -111,7 +106,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/tests/TestNewDexVault.sol, 44
+.loc ../contracts/tests/TestNewDexVault.sol, 41
 ENDS
 .loc ../contracts/tests/TestNewDexVault.sol, 0
 CALLREF {
@@ -149,8 +144,8 @@ THROW 0
 CALL $newFunc_internal_macro$
 
 .macro newFunc_internal_macro
-.loc ../contracts/tests/TestNewDexVault.sol, 45
-GETGLOB 18
+.loc ../contracts/tests/TestNewDexVault.sol, 42
+GETGLOB 17
 .loc ../contracts/tests/TestNewDexVault.sol, 0
 
 .macro c4_to_c7
@@ -162,7 +157,6 @@ LDU 1 ; ctor flag
 NIP
 LDU 32
 LDREF
-LDI 1
 LDREF
 LDMSGADDR
 LDREF
@@ -179,7 +173,6 @@ CTOS
 LDMSGADDR
 LDREF
 ENDS
-SETGLOB 18
 SETGLOB 17
 SETGLOB 16
 SETGLOB 15
@@ -214,16 +207,13 @@ PUSHCONT {
 	IFELSE
 	PUSHREF {
 	}
-	PUSHINT 0
-	PUSHREF {
-	}
+	DUP
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	BLKPUSH 3, 0
 	PUSHREF {
 	}
-	SETGLOB 18
 	SETGLOB 17
 	SETGLOB 16
 	SETGLOB 15
@@ -245,7 +235,6 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
-GETGLOB 18
 GETGLOB 17
 GETGLOB 16
 GETGLOB 15
@@ -262,7 +251,6 @@ STU 64
 STONE
 STU 32
 STREF
-STI 1
 STREF
 STSLICE
 ROLLREV 4
@@ -388,7 +376,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 13
+GETGLOB 12
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000ba6fedbf
@@ -408,7 +396,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 14
+GETGLOB 13
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000b7295e20
@@ -428,7 +416,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 15
+GETGLOB 14
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000df0bcfde
@@ -448,7 +436,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 16
+GETGLOB 15
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000be875120
@@ -468,7 +456,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 17
+GETGLOB 16
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000fa58c34a

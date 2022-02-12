@@ -9,7 +9,6 @@ contract NewDexVault {
     uint32 static _nonce;
 
     TvmCell public platform_code;
-    bool has_platform_code;
 
     TvmCell public lp_token_pending_code;
 
@@ -33,8 +32,6 @@ contract NewDexVault {
 
         platform_code = s.loadRef();
         lp_token_pending_code = s.loadRef();
-
-        has_platform_code = true;
 
         newTestField = "New Vault";
 

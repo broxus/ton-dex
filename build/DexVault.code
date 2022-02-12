@@ -26,21 +26,30 @@ ENDS
 CTOS
 LDMSGADDR
 ENDS
-.loc ../contracts/DexVault.sol, 64
+.loc ../contracts/DexVault.sol, 47
 ACCEPT
-.loc ../contracts/DexVault.sol, 65
+.loc ../contracts/DexVault.sol, 48
+SWAP
+SETGLOB 13
+.loc ../contracts/DexVault.sol, 49
 SWAP
 SETGLOB 14
-.loc ../contracts/DexVault.sol, 66
-SWAP
-SETGLOB 15
-.loc ../contracts/DexVault.sol, 67
-SETGLOB 17
+.loc ../contracts/DexVault.sol, 50
+SETGLOB 16
 .loc ../contracts/DexVault.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
 THROW 0
+
+.globl	_dexRoot_internal
+.type	_dexRoot_internal, @function
+CALL $_dexRoot_internal_macro$
+
+.macro _dexRoot_internal_macro
+.loc ../contracts/DexVault.sol, 54
+GETGLOB 13
+.loc ../contracts/DexVault.sol, 0
 
 .macro transferOwner
 DROP
@@ -51,7 +60,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 71
+.loc ../contracts/DexVault.sol, 57
 OVER
 PUSHCONT {
 	LDREF
@@ -76,18 +85,18 @@ THROW 0
 CALL $transferOwner_internal_macro$
 
 .macro transferOwner_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 72
+.loc ../contracts/DexVault.sol, 58
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 73
+.loc ../contracts/DexVault.sol, 59
 DUP
-GETGLOB 15
+GETGLOB 14
 PUSHREFSLICE {
 	.blob xc0000000000000000000000001
 }
@@ -105,10 +114,10 @@ STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 74
-SETGLOB 16
-.loc ../contracts/DexVault.sol, 75
-GETGLOB 15
+.loc ../contracts/DexVault.sol, 60
+SETGLOB 15
+.loc ../contracts/DexVault.sol, 61
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -128,7 +137,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 78
+.loc ../contracts/DexVault.sol, 64
 ENDS
 .loc ../contracts/DexVault.sol, 0
 CALLREF {
@@ -145,18 +154,18 @@ THROW 0
 CALL $acceptOwner_internal_macro$
 
 .macro acceptOwner_internal_macro
-.loc ../contracts/DexVault.sol, 79
+.loc ../contracts/DexVault.sol, 65
 GETGLOB 9
-GETGLOB 16
+GETGLOB 15
 SDEQ
 THROWIFNOT 102
-.loc ../contracts/DexVault.sol, 80
+.loc ../contracts/DexVault.sol, 66
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 81
-GETGLOB 16
+.loc ../contracts/DexVault.sol, 67
 GETGLOB 15
+GETGLOB 14
 PUSHREFSLICE {
 	.blob xc0000000000000000000000001
 }
@@ -174,16 +183,16 @@ STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 82
-GETGLOB 16
-SETGLOB 15
-.loc ../contracts/DexVault.sol, 83
+.loc ../contracts/DexVault.sol, 68
+GETGLOB 15
+SETGLOB 14
+.loc ../contracts/DexVault.sol, 69
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
-SETGLOB 16
-.loc ../contracts/DexVault.sol, 84
-GETGLOB 15
+SETGLOB 15
+.loc ../contracts/DexVault.sol, 70
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -203,7 +212,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 87
+.loc ../contracts/DexVault.sol, 73
 LDU 32
 GETGLOB 4
 ROT
@@ -275,7 +284,7 @@ IFREF {
 THROW 0
 
 .macro getOwner_internal_macro
-.loc ../contracts/DexVault.sol, 88
+.loc ../contracts/DexVault.sol, 74
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -284,7 +293,7 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-GETGLOB 15
+GETGLOB 14
 .loc ../contracts/DexVault.sol, 0
 
 .macro getPendingOwner
@@ -296,7 +305,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 91
+.loc ../contracts/DexVault.sol, 77
 LDU 32
 GETGLOB 4
 ROT
@@ -368,7 +377,7 @@ IFREF {
 THROW 0
 
 .macro getPendingOwner_internal_macro
-.loc ../contracts/DexVault.sol, 92
+.loc ../contracts/DexVault.sol, 78
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -377,7 +386,7 @@ SETINDEXQ 1
 PUSHINT 64
 SETINDEXQ 4
 SETGLOB 4
-GETGLOB 16
+GETGLOB 15
 .loc ../contracts/DexVault.sol, 0
 
 .macro setTokenFactory
@@ -389,7 +398,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 95
+.loc ../contracts/DexVault.sol, 81
 OVER
 PUSHCONT {
 	LDREF
@@ -414,18 +423,18 @@ THROW 0
 CALL $setTokenFactory_internal_macro$
 
 .macro setTokenFactory_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 96
+.loc ../contracts/DexVault.sol, 82
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 97
+.loc ../contracts/DexVault.sol, 83
 DUP
-GETGLOB 17
+GETGLOB 16
 PUSHREFSLICE {
 	.blob xc0000000000000000000000001
 }
@@ -443,10 +452,10 @@ STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 98
-SETGLOB 17
-.loc ../contracts/DexVault.sol, 99
-GETGLOB 15
+.loc ../contracts/DexVault.sol, 84
+SETGLOB 16
+.loc ../contracts/DexVault.sol, 85
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -466,7 +475,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 102
+.loc ../contracts/DexVault.sol, 88
 LDREF
 ENDS
 .loc ../contracts/DexVault.sol, 0
@@ -480,22 +489,24 @@ CALLREF {
 THROW 0
 
 .macro installPlatformOnce_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 103
-GETGLOB 12
-THROWIF 108
-.loc ../contracts/DexVault.sol, 104
+.loc ../contracts/DexVault.sol, 89
+GETGLOB 10
+CTOS
+SEMPTY
+THROWIFNOT 108
+.loc ../contracts/DexVault.sol, 90
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 105
-SETGLOB 11
-.loc ../contracts/DexVault.sol, 106
-GETGLOB 15
+.loc ../contracts/DexVault.sol, 91
+SETGLOB 10
+.loc ../contracts/DexVault.sol, 92
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -515,7 +526,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 109
+.loc ../contracts/DexVault.sol, 95
 LDREF
 ENDS
 .loc ../contracts/DexVault.sol, 0
@@ -533,19 +544,19 @@ THROW 0
 CALL $installOrUpdateLpTokenPendingCode_internal_macro$
 
 .macro installOrUpdateLpTokenPendingCode_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 110
+.loc ../contracts/DexVault.sol, 96
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 111
-SETGLOB 13
-.loc ../contracts/DexVault.sol, 112
-GETGLOB 15
+.loc ../contracts/DexVault.sol, 97
+SETGLOB 12
+.loc ../contracts/DexVault.sol, 98
+GETGLOB 14
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -565,7 +576,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 116
+.loc ../contracts/DexVault.sol, 102
 OVER
 PUSHCONT {
 	LDREF
@@ -602,27 +613,16 @@ THROW 0
 CALL $addLiquidityToken_internal_macro$
 
 .macro addLiquidityToken_internal_macro
-.loc ../contracts/DexVault.sol, 116
-PUSHINT 2
-OVER2
-.loc ../contracts/DexVault.sol, 49
-CALLREF {
-	CALL $_buildPairParams_internal_macro$
-}
-CALLREF {
-	CALL $_buildInitData_internal_macro$
-}
-HASHCU
-NEWC
-STSLICECONST x801_
-STU 256
-ENDC
-CTOS
-.loc ../contracts/DexVault.sol, 53
+.loc ../contracts/DexVault.sol, 102
 GETGLOB 9
+OVER2
+.loc ../contracts/abstract/DexContractBase.sol, 27
+CALLREF {
+	CALL $_expectedPairAddress_internal_macro$
+}
 SDEQ
 THROWIFNOT 106
-.loc ../contracts/DexVault.sol, 122
+.loc ../contracts/DexVault.sol, 108
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -634,11 +634,11 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 123
+.loc ../contracts/DexVault.sol, 109
 DEPTH
 ADDCONST -2
 PICK
-GETGLOB 17
+GETGLOB 16
 NOW
 BLKSWAP 3, 4
 CALLREF {
@@ -703,7 +703,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 130
+.loc ../contracts/DexVault.sol, 116
 OVER
 PUSHCONT {
 	LDU 32
@@ -748,11 +748,11 @@ THROW 0
 CALL $onLiquidityTokenDeployed_internal_macro$
 
 .macro onLiquidityTokenDeployed_internal_macro
-.loc ../contracts/DexVault.sol, 130
+.loc ../contracts/DexVault.sol, 116
 ROLL 5
 PUSH S5
 BLKSWAP 2, 4
-.loc ../contracts/DexVault.sol, 58
+.loc ../contracts/DexVault.sol, 41
 CALLREF {
 	CALL $_buildLpTokenPendingInitData_internal_macro$
 }
@@ -762,11 +762,11 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-.loc ../contracts/DexVault.sol, 59
+.loc ../contracts/DexVault.sol, 42
 GETGLOB 9
 SDEQ
 THROWIFNOT 124
-.loc ../contracts/DexVault.sol, 138
+.loc ../contracts/DexVault.sol, 124
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -778,7 +778,7 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 139
+.loc ../contracts/DexVault.sol, 125
 XCHG S2
 NEWC
 STSLICECONST x62_
@@ -808,7 +808,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 142
+.loc ../contracts/DexVault.sol, 128
 OVER
 PUSHCONT {
 	LDU 32
@@ -853,11 +853,11 @@ THROW 0
 CALL $onLiquidityTokenNotDeployed_internal_macro$
 
 .macro onLiquidityTokenNotDeployed_internal_macro
-.loc ../contracts/DexVault.sol, 142
+.loc ../contracts/DexVault.sol, 128
 ROLL 5
 PUSH S5
 BLKSWAP 2, 4
-.loc ../contracts/DexVault.sol, 58
+.loc ../contracts/DexVault.sol, 41
 CALLREF {
 	CALL $_buildLpTokenPendingInitData_internal_macro$
 }
@@ -867,11 +867,11 @@ STSLICECONST x801_
 STU 256
 ENDC
 CTOS
-.loc ../contracts/DexVault.sol, 59
+.loc ../contracts/DexVault.sol, 42
 GETGLOB 9
 SDEQ
 THROWIFNOT 124
-.loc ../contracts/DexVault.sol, 150
+.loc ../contracts/DexVault.sol, 136
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -883,7 +883,7 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 151
+.loc ../contracts/DexVault.sol, 137
 XCHG S2
 NEWC
 STSLICECONST x62_
@@ -913,20 +913,19 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 154
+.loc ../contracts/DexVault.sol, 140
 OVER
 PUSHCONT {
 	LDU 64
-	LDU 128
 	LDREF
 	ENDS
 	CTOS
 }
 PUSHCONT {
 	LDU 64
-	LDU 128
 }
 IFELSE
+LDU 128
 LDMSGADDR
 LDREF
 ENDS
@@ -958,27 +957,16 @@ CALLREF {
 THROW 0
 
 .macro withdraw_internal_macro
-.loc ../contracts/DexVault.sol, 154
-PUSHINT 1
-PUSH S3
-.loc ../contracts/DexVault.sol, 40
-CALLREF {
-	CALL $_buildAccountParams_internal_macro$
-}
-CALLREF {
-	CALL $_buildInitData_internal_macro$
-}
-HASHCU
-NEWC
-STSLICECONST x801_
-STU 256
-ENDC
-CTOS
-.loc ../contracts/DexVault.sol, 44
+.loc ../contracts/DexVault.sol, 140
 GETGLOB 9
+PUSH S3
+.loc ../contracts/abstract/DexContractBase.sol, 22
+CALLREF {
+	CALL $_expectedAccountAddress_internal_macro$
+}
 SDEQ
 THROWIFNOT 105
-.loc ../contracts/DexVault.sol, 165
+.loc ../contracts/DexVault.sol, 151
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -990,7 +978,7 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 167
+.loc ../contracts/DexVault.sol, 153
 PUSH S4
 ROLL 3
 PUSH2 S8, S6
@@ -1016,10 +1004,10 @@ STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 169
+.loc ../contracts/DexVault.sol, 155
 PUSHREF {
 }
-.loc ../contracts/DexVault.sol, 170
+.loc ../contracts/DexVault.sol, 156
 FALSE
 ROT
 PUSH S4
@@ -1053,7 +1041,7 @@ STBREFR
 ENDC
 PUSHINT 1
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 182
+.loc ../contracts/DexVault.sol, 168
 DROP2
 GETGLOB 9
 NEWC
@@ -1076,18 +1064,15 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 186
+.loc ../contracts/DexVault.sol, 172
 OVER
 PUSHCONT {
-	LDU 128
 	LDREF
 	ENDS
 	CTOS
 }
-PUSHCONT {
-	LDU 128
-}
-IFELSE
+IF
+LDU 128
 LDMSGADDR
 LDREF
 ENDS
@@ -1125,27 +1110,16 @@ CALLREF {
 THROW 0
 
 .macro transfer_internal_macro
-.loc ../contracts/DexVault.sol, 186
-PUSHINT 2
-BLKPUSH 2, 4
-.loc ../contracts/DexVault.sol, 49
-CALLREF {
-	CALL $_buildPairParams_internal_macro$
-}
-CALLREF {
-	CALL $_buildInitData_internal_macro$
-}
-HASHCU
-NEWC
-STSLICECONST x801_
-STU 256
-ENDC
-CTOS
-.loc ../contracts/DexVault.sol, 53
+.loc ../contracts/DexVault.sol, 172
 GETGLOB 9
+BLKPUSH 2, 4
+.loc ../contracts/abstract/DexContractBase.sol, 27
+CALLREF {
+	CALL $_expectedPairAddress_internal_macro$
+}
 SDEQ
 THROWIFNOT 106
-.loc ../contracts/DexVault.sol, 199
+.loc ../contracts/DexVault.sol, 185
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -1157,7 +1131,7 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 201
+.loc ../contracts/DexVault.sol, 187
 PUSH S7
 BLKSWAP 2, 3
 SWAP
@@ -1188,7 +1162,7 @@ STBREFR
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 203
+.loc ../contracts/DexVault.sol, 189
 ROLLREV 3
 BLKSWAP 2, 6
 REVERSE 8, 1
@@ -1221,7 +1195,7 @@ DROP2
 CALL $_buildLpTokenPendingInitData_internal_macro$
 
 .macro _buildLpTokenPendingInitData_internal_macro
-.loc ../contracts/DexVault.sol, 222
+.loc ../contracts/DexVault.sol, 208
 PUSHINT 0
 NEWC
 STU 256
@@ -1259,105 +1233,13 @@ DICTUSET
 NEWC
 STDICT
 ENDC
-GETGLOB 13
+GETGLOB 12
 NEWC
 STSLICECONST x2_
 STOPTREF
 STOPTREF
 STZERO
 ENDC
-.loc ../contracts/DexVault.sol, 0
-
-.globl	_buildInitData_internal
-.type	_buildInitData_internal, @function
-CALL $_buildInitData_internal_macro$
-
-.macro _buildInitData_internal_macro
-.loc ../contracts/DexVault.sol, 237
-PUSHINT 0
-NEWC
-STU 256
-PUSHINT 0
-NEWDICT
-PUSHINT 64
-DICTUSETB
-GETGLOB 14
-PUSHINT 1
-ROT
-PUSHINT 64
-DICTUSET
-ROT
-NEWC
-STU 8
-PUSHINT 2
-ROT
-PUSHINT 64
-DICTUSETB
-SWAP
-PUSHINT 3
-ROT
-PUSHINT 64
-DICTUSETREF
-NEWC
-STDICT
-ENDC
-GETGLOB 11
-NEWC
-STSLICECONST x2_
-STOPTREF
-STOPTREF
-STZERO
-ENDC
-.loc ../contracts/DexVault.sol, 0
-
-.globl	_buildAccountParams_internal
-.type	_buildAccountParams_internal, @function
-CALL $_buildAccountParams_internal_macro$
-
-.macro _buildAccountParams_internal_macro
-.loc ../contracts/DexVault.sol, 251
-NEWC
-STSLICE
-.loc ../contracts/DexVault.sol, 252
-ENDC
-.loc ../contracts/DexVault.sol, 0
-
-.globl	_buildPairParams_internal
-.type	_buildPairParams_internal, @function
-CALL $_buildPairParams_internal_macro$
-
-.macro _buildPairParams_internal_macro
-.loc ../contracts/DexVault.sol, 256
-NEWC
-.loc ../contracts/DexVault.sol, 257
-PUSH S2
-PARSEMSGADDR
-INDEX 3
-PLDU 256
-PUSH S2
-PARSEMSGADDR
-INDEX 3
-PLDU 256
-LESS
-PUSHCONT {
-	.loc ../contracts/DexVault.sol, 258
-	PUXC S2, S-1
-	STSLICE
-	.loc ../contracts/DexVault.sol, 259
-	PUXC S1, S-1
-}
-PUSHCONT {
-	.loc ../contracts/DexVault.sol, 261
-	PUXC S1, S-1
-	STSLICE
-	.loc ../contracts/DexVault.sol, 262
-	PUXC S2, S-1
-}
-IFELSE
-STSLICE
-.loc ../contracts/DexVault.sol, 264
-ENDC
-BLKDROP2 2, 1
 .loc ../contracts/DexVault.sol, 0
 
 .macro upgrade
@@ -1369,7 +1251,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 267
+.loc ../contracts/DexVault.sol, 222
 LDREF
 ENDS
 .loc ../contracts/DexVault.sol, 0
@@ -1387,62 +1269,62 @@ THROW 0
 CALL $upgrade_internal_macro$
 
 .macro upgrade_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 268
+.loc ../contracts/DexVault.sol, 223
 DEPTH
 ADDCONST -2
 PICK
 PUSHINT 5000000000
 GREATER
 THROWIFNOT 103
-.loc ../contracts/DexVault.sol, 269
+.loc ../contracts/DexVault.sol, 224
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 271
+.loc ../contracts/DexVault.sol, 226
 PUSHREF {
 	.blob xc0000000000000000000000000766c0548
 }
 PUSHINT 0
 SENDRAWMSG
-.loc ../contracts/DexVault.sol, 273
+.loc ../contracts/DexVault.sol, 228
 NEWC
-.loc ../contracts/DexVault.sol, 276
-GETGLOB 15
-NEWC
-STSLICE
-.loc ../contracts/DexVault.sol, 277
-GETGLOB 16
-SWAP
-STSLICE
-.loc ../contracts/DexVault.sol, 279
+.loc ../contracts/DexVault.sol, 231
 GETGLOB 14
-PUSH S2
+NEWC
 STSLICE
-POP S2
-.loc ../contracts/DexVault.sol, 280
-GETGLOB 17
-PUSH S2
-STSLICE
-POP S2
-.loc ../contracts/DexVault.sol, 282
-STBREFR
-.loc ../contracts/DexVault.sol, 284
-GETGLOB 11
+.loc ../contracts/DexVault.sol, 232
+GETGLOB 15
 SWAP
-STREF
-.loc ../contracts/DexVault.sol, 285
+STSLICE
+.loc ../contracts/DexVault.sol, 234
 GETGLOB 13
+PUSH S2
+STSLICE
+POP S2
+.loc ../contracts/DexVault.sol, 235
+GETGLOB 16
+PUSH S2
+STSLICE
+POP S2
+.loc ../contracts/DexVault.sol, 237
+STBREFR
+.loc ../contracts/DexVault.sol, 239
+GETGLOB 10
 SWAP
 STREF
-.loc ../contracts/DexVault.sol, 287
+.loc ../contracts/DexVault.sol, 240
+GETGLOB 12
+SWAP
+STREF
+.loc ../contracts/DexVault.sol, 242
 OVER
 SETCODE
-.loc ../contracts/DexVault.sol, 288
+.loc ../contracts/DexVault.sol, 243
 SWAP
 CTOS
 DUP
@@ -1457,7 +1339,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/DexVault.sol, 290
+.loc ../contracts/DexVault.sol, 245
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
@@ -1483,7 +1365,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 295
+.loc ../contracts/DexVault.sol, 250
 OVER
 PUSHCONT {
 	LDREF
@@ -1503,16 +1385,16 @@ IFREF {
 THROW 0
 
 .macro resetGas_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 296
+.loc ../contracts/DexVault.sol, 251
 PUSHINT 1000000000
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 297
+.loc ../contracts/DexVault.sol, 252
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -1532,7 +1414,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/DexVault.sol, 300
+.loc ../contracts/DexVault.sol, 255
 OVER
 PUSHCONT {
 	LDREF
@@ -1556,12 +1438,12 @@ IFREF {
 THROW 0
 
 .macro resetTargetGas_internal_macro
-.loc ../contracts/DexVault.sol, 35
+.loc ../contracts/DexVault.sol, 36
 GETGLOB 9
-GETGLOB 15
+GETGLOB 14
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/DexVault.sol, 301
+.loc ../contracts/DexVault.sol, 256
 PUSHINT 1000000000
 GETPARAM 7
 FIRST
@@ -1573,7 +1455,7 @@ UFITS 128
 MAX
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/DexVault.sol, 302
+.loc ../contracts/DexVault.sol, 257
 SWAP
 NEWC
 STSLICECONST x62_
@@ -1590,6 +1472,144 @@ PUSHINT 128
 SENDRAWMSG
 .loc ../contracts/DexVault.sol, 0
 
+.globl	_expectedAccountAddress_internal
+.type	_expectedAccountAddress_internal, @function
+CALL $_expectedAccountAddress_internal_macro$
+
+.macro _expectedAccountAddress_internal_macro
+.loc ../contracts/abstract/DexContractBase.sol, 32
+PUSHINT 1
+SWAP
+CALLREF {
+	CALL $_buildAccountParams_internal_macro$
+}
+CALLREF {
+	CALL $_buildInitData_internal_macro$
+}
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/abstract/DexContractBase.sol, 0
+
+.globl	_expectedPairAddress_internal
+.type	_expectedPairAddress_internal, @function
+CALL $_expectedPairAddress_internal_macro$
+
+.macro _expectedPairAddress_internal_macro
+.loc ../contracts/abstract/DexContractBase.sol, 39
+PUSHINT 2
+ROTREV
+CALLREF {
+	CALL $_buildPairParams_internal_macro$
+}
+CALLREF {
+	CALL $_buildInitData_internal_macro$
+}
+HASHCU
+NEWC
+STSLICECONST x801_
+STU 256
+ENDC
+CTOS
+.loc ../contracts/abstract/DexContractBase.sol, 0
+
+.globl	_buildAccountParams_internal
+.type	_buildAccountParams_internal, @function
+CALL $_buildAccountParams_internal_macro$
+
+.macro _buildAccountParams_internal_macro
+.loc ../contracts/abstract/DexContractBase.sol, 47
+NEWC
+STSLICE
+.loc ../contracts/abstract/DexContractBase.sol, 48
+ENDC
+.loc ../contracts/abstract/DexContractBase.sol, 0
+
+.globl	_buildPairParams_internal
+.type	_buildPairParams_internal, @function
+CALL $_buildPairParams_internal_macro$
+
+.macro _buildPairParams_internal_macro
+.loc ../contracts/abstract/DexContractBase.sol, 52
+NEWC
+.loc ../contracts/abstract/DexContractBase.sol, 53
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+PUSH S2
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+LESS
+PUSHCONT {
+	.loc ../contracts/abstract/DexContractBase.sol, 54
+	PUXC S2, S-1
+	STSLICE
+	.loc ../contracts/abstract/DexContractBase.sol, 55
+	PUXC S1, S-1
+}
+PUSHCONT {
+	.loc ../contracts/abstract/DexContractBase.sol, 57
+	PUXC S1, S-1
+	STSLICE
+	.loc ../contracts/abstract/DexContractBase.sol, 58
+	PUXC S2, S-1
+}
+IFELSE
+STSLICE
+.loc ../contracts/abstract/DexContractBase.sol, 60
+ENDC
+BLKDROP2 2, 1
+.loc ../contracts/abstract/DexContractBase.sol, 0
+
+.globl	_buildInitData_internal
+.type	_buildInitData_internal, @function
+CALL $_buildInitData_internal_macro$
+
+.macro _buildInitData_internal_macro
+.loc ../contracts/abstract/DexContractBase.sol, 64
+PUSHINT 0
+NEWC
+STU 256
+PUSHINT 0
+NEWDICT
+PUSHINT 64
+DICTUSETB
+CALLREF {
+	CALL $_dexRoot_internal_macro$
+}
+PUSHINT 1
+ROT
+PUSHINT 64
+DICTUSET
+ROT
+NEWC
+STU 8
+PUSHINT 2
+ROT
+PUSHINT 64
+DICTUSETB
+SWAP
+PUSHINT 3
+ROT
+PUSHINT 64
+DICTUSETREF
+NEWC
+STDICT
+ENDC
+GETGLOB 10
+NEWC
+STSLICECONST x2_
+STOPTREF
+STOPTREF
+STZERO
+ENDC
+.loc ../contracts/abstract/DexContractBase.sol, 0
+
 .macro c4_to_c7
 PUSHROOT
 CTOS
@@ -1597,10 +1617,9 @@ LDU 256 ; pubkey c4
 LDU 64 ; pubkey timestamp c4
 LDU 1 ; ctor flag
 NIP
+LDREF
 LDU 32
 LDREF
-LDI 1
-LDREF
 LDMSGADDR
 LDREF
 ENDS
@@ -1615,7 +1634,6 @@ ENDS
 CTOS
 LDMSGADDR
 ENDS
-SETGLOB 17
 SETGLOB 16
 SETGLOB 15
 SETGLOB 14
@@ -1636,8 +1654,10 @@ PUSHCONT {
 	PUSHROOT
 	CTOS
 	PLDDICT ; D
+	PUSHREF {
+	}
 	PUSHINT 1
-	OVER
+	PUSH S2
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1649,14 +1669,10 @@ PUSHCONT {
 	IFELSE
 	PUSHREF {
 	}
-	PUSHINT 0
-	PUSHREF {
-	}
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	BLKPUSH 3, 0
-	SETGLOB 17
 	SETGLOB 16
 	SETGLOB 15
 	SETGLOB 14
@@ -1677,7 +1693,6 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
-GETGLOB 17
 GETGLOB 16
 GETGLOB 15
 GETGLOB 14
@@ -1691,9 +1706,8 @@ NEWC
 STU 256
 STU 64
 STONE
-STU 32
 STREF
-STI 1
+STU 32
 STREF
 STSLICE
 ROLLREV 3
@@ -1793,15 +1807,36 @@ PUSHCONT {
 	LDSLICEX ; signatureSlice msgSlice
 	DUP
 	HASHSU ; signatureSlice msgSlice hashMsgSlice
-	ROT
-	GETGLOB 2
+	SWAP
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP
+	PUSHCONT {
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG S2
+		GETGLOB 2
+	}
+	IFELSE
 	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40
 }
-IF
+PUSHCONT {
+	LDU 1 ; havePubkey msgSlice
+	SWAP
+	THROWIF 58
+}
+IFELSE
 LDU 64 ; timestamp msgSlice
 SWAP
 CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
 LDU 32 ; funcId body
 SWAP
 CALLREF {
@@ -1815,7 +1850,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 11
+GETGLOB 10
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000e6d44df5
@@ -1835,7 +1870,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 13
+GETGLOB 12
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000ba6fedbf
@@ -1855,7 +1890,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 14
+GETGLOB 13
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000b7295e20
@@ -1875,7 +1910,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 15
+GETGLOB 14
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000df0bcfde
@@ -1895,7 +1930,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 16
+GETGLOB 15
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000be875120
@@ -1915,7 +1950,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 17
+GETGLOB 16
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000fa58c34a

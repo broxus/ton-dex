@@ -1,6 +1,6 @@
 pragma ton-solidity >= 0.57.0;
 
-import "../../node_modules/ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 interface ITokenFactory {
 

@@ -29,8 +29,9 @@ import "./structures/ITokenOperationStructure.sol";
 import "./interfaces/IDexPairOperationCallback.sol";
 
 import "./DexPlatform.sol";
+import "./abstract/DexContractBase.sol";
 
-contract DexPair is IDexPair, IAcceptTokensTransferCallback,
+contract DexPair is DexContractBase, IDexPair, IAcceptTokensTransferCallback,
                     IUpgradableByRequest, IResetGas, ITokenOperationStructure {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +41,6 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
     address root;
     address vault;
     uint32 current_version;
-    TvmCell public platform_code;
 
     // Params:
     address left_root;
@@ -70,6 +70,10 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
 
     // Cant be deployed directly
     constructor() public { revert(); }
+
+    function _dexRoot() override internal view returns(address) {
+        return root;
+    }
 
     // Prevent manual transfers
     receive() external pure { revert(); }
@@ -1328,46 +1332,6 @@ contract DexPair is IDexPair, IAcceptTokensTransferCallback,
     modifier onlyVault() {
         require(msg.sender == vault, DexErrors.NOT_VAULT);
         _;
-    }
-
-    modifier onlyAccount(address account_owner) {
-        TvmBuilder builder;
-        builder.store(account_owner);
-        address expected = address(tvm.hash(_buildInitData(DexPlatformTypes.Account, builder.toCell())));
-        require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
-        _;
-    }
-
-    modifier onlyPair(address left_root_, address right_root_) {
-        require(msg.sender == _expectedPairAddress(left_root_, right_root_), DexErrors.NOT_PAIR);
-        _;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Address calculations
-    function _expectedPairAddress(address left_root_, address right_root_) private view returns (address) {
-        TvmBuilder builder;
-        if (left_root_.value < right_root_.value) {
-            builder.store(left_root_);
-            builder.store(right_root_);
-        } else {
-            builder.store(right_root_);
-            builder.store(left_root_);
-        }
-        return address(tvm.hash(_buildInitData(DexPlatformTypes.Pair, builder.toCell())));
-    }
-
-    function _buildInitData(uint8 type_id, TvmCell params) private view returns (TvmCell) {
-        return tvm.buildStateInit({
-            contr: DexPlatform,
-            varInit: {
-                root: root,
-                type_id: type_id,
-                params: params
-            },
-            pubkey: 0,
-            code: platform_code
-        });
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////

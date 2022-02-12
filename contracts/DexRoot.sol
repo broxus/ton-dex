@@ -4,10 +4,12 @@ pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
+import "./abstract/DexContractBase.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
+
 import "./libraries/DexPlatformTypes.sol";
 import "./libraries/DexErrors.sol";
 import "./libraries/DexGas.sol";
-import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./DexPlatform.sol";
 import "./interfaces/IUpgradable.sol";
@@ -15,12 +17,10 @@ import "./interfaces/IUpgradableByRequest.sol";
 import "./interfaces/IDexRoot.sol";
 import "./interfaces/IResetGas.sol";
 
-contract DexRoot is IDexRoot, IResetGas, IUpgradable {
+contract DexRoot is DexContractBase, IDexRoot, IResetGas, IUpgradable {
 
     uint32 static _nonce;
 
-    TvmCell public platform_code;
-    bool has_platform_code;
     TvmCell public account_code;
     uint32 account_version;
     TvmCell public pair_code;
@@ -40,14 +40,17 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
+    function _dexRoot() override internal view returns(address) {
+        return address(this);
+    }
+
     // Install
 
     function installPlatformOnce(TvmCell code) external onlyOwner {
         // can be installed only once
-        require(!has_platform_code, DexErrors.PLATFORM_CODE_NON_EMPTY);
+        require(platform_code.toSlice().empty(), DexErrors.PLATFORM_CODE_NON_EMPTY);
         tvm.rawReserve(DexGas.ROOT_INITIAL_BALANCE, 2);
         platform_code = code;
-        has_platform_code = true;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
@@ -97,7 +100,7 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     function setActive(bool new_active) external onlyOwner {
         tvm.rawReserve(DexGas.ROOT_INITIAL_BALANCE, 2);
-        if (new_active && has_platform_code && vault.value != 0 && account_version > 0 && pair_version > 0) {
+        if (new_active && !platform_code.toSlice().empty() && vault.value != 0 && account_version > 0 && pair_version > 0) {
             active = true;
         } else {
             active = false;
@@ -172,10 +175,10 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         require(msg.value >= DexGas.UPGRADE_ACCOUNT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(DexGas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         emit RequestedForceAccountUpgrade(account_owner);
-        IUpgradableByRequest(address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Account,
-            _buildAccountParams(account_owner)
-        )))).upgrade{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(account_code, account_version, send_gas_to);
+        IUpgradableByRequest(_expectedAccountAddress(account_owner)).upgrade{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        }(account_code, account_version, send_gas_to);
     }
 
     function upgradePair(
@@ -186,11 +189,10 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
         require(msg.value >= DexGas.UPGRADE_PAIR_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
         tvm.rawReserve(math.max(DexGas.ROOT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         emit RequestedPairUpgrade(left_root, right_root);
-        IUpgradableByRequest(address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Pair,
-            _buildPairParams(left_root, right_root)
-        ))))
-        .upgrade{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(pair_code, pair_version, send_gas_to);
+        IUpgradableByRequest(_expectedPairAddress(left_root, right_root)).upgrade{
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        }(pair_code, pair_version, send_gas_to);
     }
 
     // Reset balance to ROOT_INITIAL_BALANCE
@@ -233,73 +235,12 @@ contract DexRoot is IDexRoot, IResetGas, IUpgradable {
 
     // Expected address functions
 
-    modifier onlyPlatform(uint8 type_id, TvmCell params) {
-        address expected = address(tvm.hash(_buildInitData(type_id, params)));
-        require(msg.sender == expected, DexErrors.NOT_PLATFORM);
-        _;
-    }
-
-    modifier onlyAccount(address account_owner) {
-        address expected = address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Account,
-            _buildAccountParams(account_owner)
-        )));
-        require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
-        _;
-    }
-
-    modifier onlyPair(address left_root, address right_root) {
-        address expected = address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Pair,
-            _buildPairParams(left_root, right_root)
-        )));
-        require(msg.sender == expected, DexErrors.NOT_PAIR);
-        _;
-    }
-
     function getExpectedAccountAddress(address account_owner) override external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Account,
-            _buildAccountParams(account_owner)
-        )));
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedAccountAddress(account_owner);
     }
 
     function getExpectedPairAddress(address left_root, address right_root) override external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } address(tvm.hash(_buildInitData(
-            DexPlatformTypes.Pair,
-            _buildPairParams(left_root, right_root)
-        )));
-    }
-
-    function _buildAccountParams(address account_owner) private inline pure returns (TvmCell) {
-        TvmBuilder builder;
-        builder.store(account_owner);
-        return builder.toCell();
-    }
-
-    function _buildPairParams(address left_root, address right_root) private inline pure returns (TvmCell) {
-        TvmBuilder builder;
-        if (left_root.value < right_root.value) {
-            builder.store(left_root);
-            builder.store(right_root);
-        } else {
-            builder.store(right_root);
-            builder.store(left_root);
-        }
-        return builder.toCell();
-    }
-
-    function _buildInitData(uint8 type_id, TvmCell params) private inline view returns (TvmCell) {
-        return tvm.buildStateInit({
-            contr: DexPlatform,
-            varInit: {
-                root: address(this),
-                type_id: type_id,
-                params: params
-            },
-            pubkey: 0,
-            code: platform_code
-        });
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } _expectedPairAddress(left_root, right_root);
     }
 
     // Deploy child contracts

@@ -78,7 +78,6 @@
 		{"name":"_constructorFlag","type":"bool"},
 		{"name":"_nonce","type":"uint32"},
 		{"name":"platform_code","type":"cell"},
-		{"name":"has_platform_code","type":"bool"},
 		{"name":"lp_token_pending_code","type":"cell"},
 		{"name":"root","type":"address"},
 		{"name":"owner","type":"address"},

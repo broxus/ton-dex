@@ -13,6 +13,10 @@ const options = program.opts();
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
 options.account_contract_name = options.account_contract_name || 'DexAccount';
 
+let tx;
+const displayTx = (_tx) => {
+  console.log(`txId: ${_tx.transaction.id}`);
+};
 
 async function main() {
   const migration = new Migration();
@@ -58,60 +62,67 @@ async function main() {
   console.log(`DexVault address: ${dexVault.address}`);
 
   console.log(`DexVault: installing Platform code...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexVault,
     method: 'installPlatformOnce',
     params: {code: DexPlatform.code},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexVault: installing VaultLpTokenPending code...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexVault,
     method: 'installOrUpdateLpTokenPendingCode',
     params: {code: DexVaultLpTokenPending.code},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexRoot: installing vault address...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexRoot,
     method: 'setVaultOnce',
     params: {new_vault: dexVault.address},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexRoot: installing Platform code...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexRoot,
     method: 'installPlatformOnce',
     params: {code: DexPlatform.code},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexRoot: installing DexAccount code...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexRoot,
     method: 'installOrUpdateAccountCode',
     params: {code: DexAccount.code},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexRoot: installing DexPair code...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexRoot,
     method: 'installOrUpdatePairCode',
     params: {code: DexPair.code},
     keyPair
   });
+  displayTx(tx);
 
   console.log(`DexRoot: set Dex is active...`);
-  await account.runTarget({
+  tx = await account.runTarget({
     contract: dexRoot,
     method: 'setActive',
     params: {new_active: true},
     keyPair
   });
+  displayTx(tx);
 
   migration.store(dexRoot, 'DexRoot');
   migration.store(dexVault, 'DexVault');
