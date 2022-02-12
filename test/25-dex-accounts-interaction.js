@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, Constants, afterRun} = require(process.cwd() + '/scripts/utils');
+const {Migration, Constants, afterRun, TOKEN_CONTRACTS_PATH, getRandomNonce} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 const { Command } = require('commander');
 const program = new Command();
@@ -24,8 +24,6 @@ const options = program.opts();
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
 options.account_contract_name = options.account_contract_name || 'DexAccount';
 
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
-
 let DexRoot;
 let DexPairFooBar;
 let FooVaultWallet;
@@ -49,13 +47,13 @@ let IS_FOO_LEFT;
 let keyPairs;
 
 async function dexBalances() {
-    const foo = await FooVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const foo = await FooVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     });
-    const bar = await BarVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const bar = await BarVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     });
-    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    const lp = await FooBarLpVaultWallet.call({method: 'balance', params: {}}).then(n => {
         return new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     });
     return {foo, bar, lp};
@@ -63,15 +61,15 @@ async function dexBalances() {
 
 async function account3balances() {
     let foo;
-    await FooWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooWallet3.call({method: 'balance', params: {}}).then(n => {
         foo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let bar;
-    await BarWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await BarWallet3.call({method: 'balance', params: {}}).then(n => {
         bar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let lp;
-    await FooBarLpWallet3.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet3.call({method: 'balance', params: {}}).then(n => {
         lp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
     const ton = await locklift.utils.convertCrystal((await locklift.ton.getBalance(Account3.address)), 'ton').toNumber();
@@ -80,15 +78,12 @@ async function account3balances() {
 
 async function dexAccountBalances(account) {
     const foo = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: FooRoot.address
     }})).balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
     const bar = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: BarRoot.address
     }})).balance).shiftedBy(-Constants.tokens.bar.decimals).toString();
     const lp = new BigNumber((await account.call({method: 'getWalletData', params: {
-        _answer_id: 0,
         token_root: FooBarLpRoot.address
     }})).balance).shiftedBy(-Constants.LP_DECIMALS).toString();
 
@@ -113,21 +108,21 @@ describe('Check DEX accounts interaction', async function () {
 
         DexRoot = await locklift.factory.getContract('DexRoot');
         DexPairFooBar = await locklift.factory.getContract(options.pair_contract_name);
-        FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount('Wallet');
         Account2.afterRun = afterRun;
         Account3 = await locklift.factory.getAccount('Wallet');
         Account3.afterRun = afterRun;
         DexAccount2 = await locklift.factory.getContract(options.account_contract_name);
         DexAccount3 = await locklift.factory.getContract(options.account_contract_name);
-        FooWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooBarLpWallet3 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet3 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPairFooBar');
@@ -141,7 +136,7 @@ describe('Check DEX accounts interaction', async function () {
         migration.load(Account3, 'Account3');
         migration.load(DexAccount2, 'DexAccount2');
 
-        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = DexPairFooBar.call({method: 'getTokenRoots', params: {}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
 
@@ -150,10 +145,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`BarWallet#3: ${BarWallet3.address}`);
         } else {
             const expected = await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             BarWallet3.setAddress(expected);
@@ -166,10 +160,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`FooWallet#3: ${FooWallet3.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             FooWallet3.setAddress(expected);
@@ -182,10 +175,9 @@ describe('Check DEX accounts interaction', async function () {
             logger.log(`FooBarLpWallet#3: ${FooBarLpWallet3.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account3.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account3.address
                 }
             });
             FooWallet3.setAddress(expected);
@@ -234,8 +226,7 @@ describe('Check DEX accounts interaction', async function () {
             const dexAccount3 = await DexRoot.call({
                 method: 'getExpectedAccountAddress',
                 params: {
-                    account_owner: Account3.address,
-                    _answer_id: 0
+                    account_owner: Account3.address
                 }
             });
 
@@ -273,9 +264,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.foo.decimals).toString(),
                     token_root: FooRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: false,
                     send_gas_to: Account2.address
                 },
@@ -315,9 +307,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: true,
                     send_gas_to: Account2.address
                 },
@@ -362,9 +355,10 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount2,
                 method: 'transfer',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(AMOUNT_TO_TRANSFER).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
-                    to_dex_account: DexAccount3.address,
+                    recipient: Account3.address,
                     willing_to_deploy: false,
                     send_gas_to: Account2.address
                 },
@@ -412,15 +406,13 @@ describe('Check DEX accounts interaction', async function () {
 
             tx = await Account3.runTarget({
                 contract: BarWallet3,
-                method: 'transferToRecipient',
+                method: 'transfer',
                 params: {
-                    recipient_public_key: 0,
-                    recipient_address: DexAccount3.address,
-                    tokens: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
-                    deploy_grams: 0,
-                    transfer_grams: 0,
-                    send_gas_to: Account3.address,
-                    notify_receiver: true,
+                    amount: new BigNumber(TOKENS_TO_DEPOSIT).shiftedBy(Constants.tokens.bar.decimals).toString(),
+                    recipient: DexAccount3.address,
+                    deployWalletValue: 0,
+                    remainingGasTo: Account3.address,
+                    notify: true,
                     payload: EMPTY_TVM_CELL
                 },
                 value: locklift.utils.convertCrystal('1.1', 'nano'),
@@ -459,8 +451,7 @@ describe('Check DEX accounts interaction', async function () {
             const dexAccount3 = await DexRoot.call({
                 method: 'getExpectedAccountAddress',
                 params: {
-                    account_owner: Account3.address,
-                    _answer_id: 0
+                    account_owner: Account3.address
                 }
             });
             DexAccount3.setAddress(dexAccount3);
@@ -476,6 +467,7 @@ describe('Check DEX accounts interaction', async function () {
                 contract: DexAccount3,
                 method: 'withdraw',
                 params: {
+                    call_id: getRandomNonce(),
                     amount: new BigNumber(TOKENS_TO_WITHDRAW).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     token_root: BarRoot.address,
                     recipient_public_key: 0,

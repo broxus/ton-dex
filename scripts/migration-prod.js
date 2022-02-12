@@ -29,19 +29,18 @@ async function main() {
 
   // ============ TOKEN FACTORY ============
   const TokenFactory = await locklift.factory.getContract('TokenFactory');
-  const TokenFactoryStorage = await locklift.factory.getContract('TokenFactoryStorage');
 
-  const RootToken = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-  const TONTokenWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  const TokenRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+  const TokenWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+  const TokenWalletPlatform = await locklift.factory.getContract('TokenWalletPlatform', TOKEN_CONTRACTS_PATH);
 
   const tokenFactory = await locklift.giver.deployContract({
     contract: TokenFactory,
     constructorParams: {
-      storage_code_: TokenFactoryStorage.code,
-      initial_owner: account.address
+      _owner: account.address
     },
     initParams: {
-      _nonce: getRandomNonce(),
+      randomNonce_: getRandomNonce(),
     },
     keyPair,
   }, locklift.utils.convertCrystal(2, 'nano'));
@@ -52,7 +51,7 @@ async function main() {
   let tx = await account.runTarget({
     contract: tokenFactory,
     method: 'setRootCode',
-    params: {root_code_: RootToken.code},
+    params: {_rootCode: TokenRoot.code},
     keyPair
   })
   displayTx(tx);
@@ -61,7 +60,15 @@ async function main() {
   tx = await account.runTarget({
     contract: tokenFactory,
     method: 'setWalletCode',
-    params: {wallet_code_: TONTokenWallet.code},
+    params: {_walletCode: TokenWallet.code},
+    keyPair
+  })
+  displayTx(tx);
+
+  tx = await account.runTarget({
+    contract: tokenFactory,
+    method: 'setWalletPlatformCode',
+    params: {_walletPlatformCode: TokenWalletPlatform.code},
     keyPair
   })
   displayTx(tx);
@@ -195,7 +202,7 @@ async function main() {
   await account.runTarget({
     contract: tokenFactory,
     method: 'transferOwner',
-    params: {new_owner: newOwner},
+    params: {newOwner: newOwner, answerId: '0'},
     value: locklift.utils.convertCrystal(1, 'nano'),
     keyPair: keyPair
   });

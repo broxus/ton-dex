@@ -90,8 +90,8 @@ describe('Test Dex Pair contract upgrade', async function () {
     targetVersion = new BigNumber(await dexRoot.call({method: 'getPairVersion'})).toNumber();
 
 
-    tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), tokenLeft.symbol + 'Root');
-    tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), tokenRight.symbol + 'Root');
+    tokenFoo = migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), tokenLeft.symbol + 'Root');
+    tokenBar = migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), tokenRight.symbol + 'Root');
 
     const [keyPair] = await locklift.keys.getKeyPairs();
 

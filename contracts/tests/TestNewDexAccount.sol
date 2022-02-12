@@ -1,19 +1,32 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../libraries/DexErrors.sol";
-import "../libraries/Gas.sol";
-import "../libraries/MsgFlag.sol";
+import "../libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
+import "../structures/ITokenOperationStructure.sol";
 
 // This is just for test purposes, this is not a real contract!
-contract TestNewDexAccount {
+contract TestNewDexAccount is ITokenOperationStructure {
     address root;
     address vault;
     uint32 current_version;
     TvmCell public platform_code;
+
+    struct WithdrawalParams {
+        uint64  call_id;
+        address recipient_address;
+        uint128 deploy_wallet_grams;
+    }
+
+    struct Operation {
+        TokenOperation[] token_operations;
+        address send_gas_to;
+        address expected_callback_sender;
+    }
 
     // Params:
     address owner;
@@ -22,6 +35,14 @@ contract TestNewDexAccount {
     mapping(address => address) _wallets;
     // root -> balance
     mapping(address => uint128) _balances;
+
+    // Operations temporary data:
+    // call_id -> Operation[]
+    mapping(uint64 => Operation) _tmp_operations;
+    // token_root -> send_gas_to
+    mapping(address => address) _tmp_deploying_wallets;
+    // token_root -> (call_id, recipient_address, deploy_wallet_grams)
+    mapping(address => WithdrawalParams) _tmp_withdrawals;
 
     string newTestField;
 
@@ -59,7 +80,7 @@ contract TestNewDexAccount {
     }
 
     function onCodeUpgrade(TvmCell data) private {
-        tvm.rawReserve(Gas.PAIR_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.PAIR_INITIAL_BALANCE, 2);
         tvm.resetStorage();
         TvmSlice s = data.toSlice();
         uint32 old_version;
@@ -68,10 +89,15 @@ contract TestNewDexAccount {
         s.decode(address, address, uint32, uint32, address);
 
         platform_code = s.loadRef();
-        TvmSlice old_contract_data = s.loadRef().toSlice();
+        TvmSlice old_contract_data = s.loadRefAsSlice();
         owner = old_contract_data.decode(address);
         _wallets = old_contract_data.decode(mapping(address => address));
         _balances = old_contract_data.decode(mapping(address => uint128));
+
+        TvmSlice old_contract_tmp_data = s.loadRefAsSlice();
+        _tmp_operations = old_contract_tmp_data.decode(mapping(uint64 => Operation));
+        _tmp_deploying_wallets = old_contract_tmp_data.decode(mapping(address => address));
+        _tmp_withdrawals = old_contract_tmp_data.decode(mapping(address => WithdrawalParams));
 
         newTestField = "New Account";
 

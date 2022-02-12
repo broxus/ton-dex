@@ -1,41 +1,22 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
-import "../../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITokenRoot.sol";
 
 interface ITokenFactory {
 
-    struct StorageData {
-        uint32 answer_id;
-        address pending_token;
-        uint256 root_public_key;
-        address root_owner_address;
-        bytes name;
-        bytes symbol;
-        uint8 decimals;
-        address sender;
-    }
+    event TokenCreated(address tokenRoot);
 
-    function Token(
-        uint32 answer_id,
-        uint256 root_public_key,
-        address root_owner_address,
-        bytes name,
-        bytes symbol,
-        uint8 decimals
+    function createToken(
+        uint32 callId,
+        string name,
+        string symbol,
+        uint8 decimals,
+        address initialSupplyTo,
+        uint128 initialSupply,
+        uint128 deployWalletValue,
+        bool mintDisabled,
+        bool burnByRootDisabled,
+        bool burnPaused,
+        address remainingGasTo
     ) external;
-
-    function transferOwner(address new_owner) external;
-    function acceptOwner() external;
-
-    function setRootCode(TvmCell root_code_) external;
-    function setWalletCode(TvmCell wallet_code_) external;
-
-    function onTokenGetDetails(IRootTokenContract.IRootTokenContractDetails details) external view;
-    function onStorageReadWithDetails(StorageData data, TvmCell meta) external view;
-    function onStoragePruneNotify(StorageData data) external view;
-    function onStoragePruneReturn(StorageData data) external view;
-
-
-
-
 }

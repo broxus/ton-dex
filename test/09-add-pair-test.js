@@ -80,17 +80,17 @@ describe('Check DexAccount add Pair', async function () {
   }
   describe('Add new DexPair to DexAccount', async function () {
     before('Adding new pair', async function () {
-      await account.runTarget({
+      let tx = await account.runTarget({
         contract: dexAccount,
         method: 'addPair',
         params: {
           left_root,
-          right_root,
-          send_gas_to: account.address
+          right_root
         },
-        value: locklift.utils.convertCrystal(4, 'nano'),
+        value: locklift.utils.convertCrystal(3.1, 'nano'),
         keyPair: keyPairs[options.account - 1]
       });
+      logger.log(`txId: ${tx.transaction.id}`);
       await afterRun();
       await logGas();
     });

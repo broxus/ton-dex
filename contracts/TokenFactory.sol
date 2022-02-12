@@ -1,200 +1,144 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
-import "./TokenFactoryStorage.sol";
-
-import "./libraries/Gas.sol";
+import "./libraries/DexGas.sol";
 import "./libraries/TokenFactoryErrors.sol";
-import "./libraries/MsgFlag.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/ITokenFactory.sol";
 import "./interfaces/ITokenRootDeployedCallback.sol";
-import "./interfaces/IResetGas.sol";
 
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/RootTokenContract.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/IRootTokenContract.sol";
+import "ton-eth-bridge-token-contracts/contracts/TokenRootUpgradeable.sol";
 
-contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
 
-    uint32 static _nonce;
+contract TokenFactory is ITokenFactory, IUpgradable {
 
-    TvmCell public root_code;
-    TvmCell public wallet_code;
+    uint32 static randomNonce_;
 
-    TvmCell public storage_code;
+    address owner_;
+    address pendingOwner_;
 
-    address public owner;
-    address public pending_owner;
+    TvmCell rootCode_;
+    TvmCell walletCode_;
+    TvmCell walletPlatformCode_;
 
-    constructor(TvmCell storage_code_, address initial_owner) public {
+    constructor(address _owner) public {
+        require(_owner.value != 0);
+
         tvm.accept();
-        storage_code = storage_code_;
-        owner = initial_owner;
+        owner_ = _owner;
+
+        tvm.rawReserve(DexGas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
+        owner_.transfer({value: 0, flag: MsgFlag.ALL_NOT_RESERVED + MsgFlag.IGNORE_ERRORS });
     }
 
     modifier onlyOwner {
-        require(msg.sender == owner, TokenFactoryErrors.NOT_MY_OWNER);
+        require(msg.sender.value != 0 && msg.sender == owner_, TokenFactoryErrors.NOT_MY_OWNER);
         _;
     }
 
-    modifier isEmpty(TvmCell code) {
-        require(code.depth() == 0, TokenFactoryErrors.IMAGE_ALREADY_SET);
-        tvm.accept();
-        _;
+    function owner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner_;
     }
 
-    function transferOwner(address new_owner) public override onlyOwner {
-        pending_owner = new_owner;
-        returnChange();
+    function pendingOwner() external view responsible returns (address) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pendingOwner_;
     }
 
-    function acceptOwner() public override {
-        require(msg.sender == pending_owner, TokenFactoryErrors.NOT_PENDING_OWNER);
-        owner = pending_owner;
-        pending_owner = address(0);
-        returnChange();
+    function rootCode() external view responsible returns (TvmCell) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } rootCode_;
     }
 
-    function getOwner() external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner;
+    function walletCode() external view responsible returns (TvmCell) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } walletCode_;
     }
 
-    function getPendingOwner() external view responsible returns (address) {
-        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pending_owner;
+    function walletPlatformCode() external view responsible returns (TvmCell) {
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } walletPlatformCode_;
     }
 
-    function setRootCode(TvmCell root_code_) public override onlyOwner {
-        root_code = root_code_;
-        returnChange();
-    }
-
-    function setWalletCode(TvmCell wallet_code_) public override onlyOwner {
-        wallet_code = wallet_code_;
-        returnChange();
-    }
-
-    function Token(
-        uint32 answer_id,
-        uint256 root_public_key,
-        address root_owner_address,
-        bytes name,
-        bytes symbol,
-        uint8 decimals
+    function createToken(
+        uint32 callId,
+        string name,
+        string symbol,
+        uint8 decimals,
+        address initialSupplyTo,
+        uint128 initialSupply,
+        uint128 deployWalletValue,
+        bool mintDisabled,
+        bool burnByRootDisabled,
+        bool burnPaused,
+        address remainingGasTo
     ) public override {
-        uint128 expectedValue = Gas.TOKEN_FACTORY_FEE + Gas.DEPLOY_TOKEN_ROOT_MIN_VALUE;
-        require(msg.value >= expectedValue, TokenFactoryErrors.VALUE_TOO_LOW);
-        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.TOKEN_FACTORY_INITIAL_BALANCE, 0);
 
-        address tokenRoot = new RootTokenContract{
-            stateInit: _buildInitData(name, symbol, decimals),
-            value: msg.value - Gas.TOKEN_FACTORY_FEE,
+        TvmCell initData = tvm.buildStateInit({
+            contr: TokenRootUpgradeable,
+            varInit: {
+                randomNonce_: now,
+                deployer_: address(this),
+                rootOwner_: msg.sender,
+                name_: name,
+                symbol_: symbol,
+                decimals_: decimals,
+                walletCode_: walletCode_,
+                platformCode_: walletPlatformCode_
+            },
+            pubkey: 0,
+            code: rootCode_
+        });
+
+        address tokenRoot = new TokenRootUpgradeable {
+            stateInit: initData,
+            value: DexGas.DEPLOY_TOKEN_ROOT_VALUE,
             flag: MsgFlag.SENDER_PAYS_FEES
-        }(root_public_key, root_owner_address);
+        }(
+            initialSupplyTo,
+            initialSupply,
+            deployWalletValue,
+            mintDisabled,
+            burnByRootDisabled,
+            burnPaused,
+            remainingGasTo
+        );
 
-        RootTokenContract(tokenRoot).getDetails{value: Gas.GET_TOKEN_DETAILS_VALUE, callback: onTokenGetDetails}();
+        emit TokenCreated(tokenRoot);
 
-        new TokenFactoryStorage{
-            stateInit: _buildStorageInitData(tokenRoot),
+        ITokenRootDeployedCallback(msg.sender).onTokenRootDeployed{
             value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED
-        }(StorageData({
-            answer_id: answer_id,
-            pending_token: tokenRoot,
-            root_public_key: root_public_key,
-            root_owner_address: root_owner_address,
-            name: name,
-            symbol: symbol,
-            decimals: decimals,
-            sender: msg.sender
-        }));
-
-    }
-
-    function onTokenGetDetails(IRootTokenContract.IRootTokenContractDetails details) public view override {
-        TvmBuilder b;
-        b.store(details.root_public_key, details.root_owner_address);
-        address tfStorage = address(tvm.hash(_buildStorageInitData(msg.sender)));
-        TokenFactoryStorage(tfStorage).getData{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
-            callback: onStorageReadWithDetails
-        }(b.toCell());
-    }
-
-    function onStorageReadWithDetails(StorageData data, TvmCell meta) public view override {
-        address expected = address(tvm.hash(_buildStorageInitData(data.pending_token)));
-        require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
-        (uint256 root_public_key, address root_owner_address) = meta.toSlice().decode(uint256, address);
-        if (root_public_key == data.root_public_key && root_owner_address == data.root_owner_address) {
-            TokenFactoryStorage(msg.sender).prune{
-                value: 0,
-                flag: MsgFlag.REMAINING_GAS,
-                callback: onStoragePruneNotify
-            }();
-        } else {
-            TokenFactoryStorage(msg.sender).prune{
-                value: 0,
-                flag: MsgFlag.REMAINING_GAS,
-                callback: onStoragePruneReturn
-            }();
-        }
-    }
-
-    function onStoragePruneNotify(StorageData data) public view override {
-        address expected = address(tvm.hash(_buildStorageInitData(data.pending_token)));
-        require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
-        ITokenRootDeployedCallback(data.sender).notifyTokenRootDeployed{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
-        }(data.answer_id, data.pending_token);
+        }(callId, tokenRoot);
     }
 
-    function onStoragePruneReturn(StorageData data) public view override {
-        address expected = address(tvm.hash(_buildStorageInitData(data.pending_token)));
-        require(msg.sender == expected, TokenFactoryErrors.NOT_MY_STORAGE);
-        ITokenRootDeployedCallback(data.sender).notifyTokenRootNotDeployed{
-            value: 0,
-            flag: MsgFlag.REMAINING_GAS,
-            bounce: false
-        }(data.answer_id, data.pending_token);
+    function transferOwner(address newOwner) external responsible onlyOwner returns(address) {
+        pendingOwner_ = newOwner;
+
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } pendingOwner_;
     }
 
-    function _buildInitData(
-        bytes name,
-        bytes symbol,
-        uint8 decimals
-    ) private inline view returns (TvmCell) {
-        return tvm.buildStateInit({
-            contr: RootTokenContract,
-            varInit: {
-            //  Bug with rnd in node se
-            //  _randomNonce: rnd.next(uint32(0xFFFFFFFF)),
-                _randomNonce: now,
-                name: name,
-                symbol: symbol,
-                decimals: decimals,
-                wallet_code: wallet_code
-            },
-            pubkey: 0,
-            code: root_code
-        });
+    function acceptOwner() external responsible returns(address) {
+        require(msg.sender.value != 0 && msg.sender == pendingOwner_, TokenFactoryErrors.NOT_PENDING_OWNER);
+
+        owner_ = pendingOwner_;
+        pendingOwner_ = address(0);
+
+        return { value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS } owner_;
     }
 
-    function _buildStorageInitData(address tokenRoot) private view returns (TvmCell) {
-        return tvm.buildStateInit({
-            contr: TokenFactoryStorage,
-            varInit: {
-                root: address(this),
-                pending_token: tokenRoot
-            },
-            pubkey: 0,
-            code: storage_code
-        });
+    function setRootCode(TvmCell _rootCode) public onlyOwner {
+        rootCode_ = _rootCode;
+        msg.sender.transfer({value: 0, flag: MsgFlag.REMAINING_GAS + MsgFlag.IGNORE_ERRORS });
     }
 
-    function returnChange() private inline view {
-        owner.transfer({value: 0, flag: MsgFlag.REMAINING_GAS});
+    function setWalletCode(TvmCell _walletCode) public onlyOwner {
+        walletCode_ = _walletCode;
+        msg.sender.transfer({value: 0, flag: MsgFlag.REMAINING_GAS + MsgFlag.IGNORE_ERRORS });
+    }
+
+    function setWalletPlatformCode(TvmCell _walletPlatformCode) public onlyOwner {
+        walletPlatformCode_ = _walletPlatformCode;
+        msg.sender.transfer({value: 0, flag: MsgFlag.REMAINING_GAS + MsgFlag.IGNORE_ERRORS });
     }
 
     function upgrade(TvmCell code) public override onlyOwner {
@@ -202,11 +146,11 @@ contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
 
         TvmBuilder builder;
 
-        builder.store(root_code);
-        builder.store(wallet_code);
-        builder.store(storage_code);
-        builder.store(owner);
-        builder.store(pending_owner);
+        builder.store(rootCode_);
+        builder.store(walletCode_);
+        builder.store(walletPlatformCode_);
+        builder.store(owner_);
+        builder.store(pendingOwner_);
 
         tvm.setcode(code);
         tvm.setCurrentCode(code);
@@ -215,14 +159,4 @@ contract TokenFactory is IResetGas, ITokenFactory, IUpgradable {
     }
 
     function onCodeUpgrade(TvmCell upgrade_data) private {}
-
-    function resetGas(address receiver) override external view onlyOwner {
-        tvm.rawReserve(Gas.TOKEN_FACTORY_INITIAL_BALANCE, 2);
-        receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
-    }
-
-    function resetTargetGas(address target, address receiver) external view onlyOwner {
-        tvm.rawReserve(math.max(Gas.TOKEN_FACTORY_INITIAL_BALANCE, address(this).balance - msg.value), 2);
-        IResetGas(target).resetGas{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(receiver);
-    }
 }

@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 const logger = require('mocha-logger');
-const {Migration, TOKEN_CONTRACTS_PATH, Constants, afterRun} = require(process.cwd() + '/scripts/utils');
+const {Migration, TOKEN_CONTRACTS_PATH, Constants, afterRun, getRandomNonce} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 
@@ -35,11 +35,11 @@ describe('Check Dex Account transfer to Dex Account which not exist', async func
     keyPairs = await locklift.keys.getKeyPairs();
     dexRoot = migration.load(await locklift.factory.getContract('DexRoot'), 'DexRoot');
     fooRoot = migration.load(
-      await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
+      await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH),
       'FooRoot'
     );
     barRoot = migration.load(
-      await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
+      await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH),
       'BarRoot'
     );
     DexAccount = await locklift.factory.getContract('DexAccount');
@@ -64,9 +64,10 @@ describe('Check Dex Account transfer to Dex Account which not exist', async func
         contract: dexAccount2,
         method: 'transfer',
         params: {
+          call_id: getRandomNonce(),
           amount: TRANSFER_AMOUNT,
           token_root: fooRoot.address,
-          to_dex_account: dexAccount3Address,
+          recipient: account3,
           willing_to_deploy: true,
           send_gas_to: account2.address
         },

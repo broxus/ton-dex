@@ -63,8 +63,8 @@ describe('Test Dex Pair contract upgrade', async function () {
     NewDexPair = await locklift.factory.getContract('TestNewDexPair');
 
 
-    tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'FooRoot');
-    tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), 'BarRoot');
+    tokenFoo = migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), 'FooRoot');
+    tokenBar = migration.load(await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH), 'BarRoot');
 
     const [keyPair] = await locklift.keys.getKeyPairs();
 

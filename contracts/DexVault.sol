@@ -1,29 +1,28 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITONTokenWallet.sol";
+pragma AbiHeader time;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
 
-import "./libraries/PlatformTypes.sol";
+import "./abstract/DexContractBase.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
+
+import "ton-eth-bridge-token-contracts/contracts/interfaces/ITokenWallet.sol";
+
 import "./libraries/DexErrors.sol";
-import "./libraries/Gas.sol";
-import "./libraries/MsgFlag.sol";
+import "./libraries/DexGas.sol";
 
-import "./DexPlatform.sol";
 import "./DexVaultLpTokenPending.sol";
 import "./interfaces/IDexVault.sol";
 import "./interfaces/IDexPair.sol";
 import "./interfaces/IDexAccount.sol";
 import "./interfaces/IUpgradable.sol";
 import "./interfaces/IResetGas.sol";
-import "../node_modules/ton-eth-bridge-token-contracts/free-ton/contracts/interfaces/ITokenWalletDeployedCallback.sol";
 
 
-
-contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCallback {
+contract DexVault is DexContractBase, IDexVault, IResetGas, IUpgradable {
 
     uint32 static _nonce;
-
-    TvmCell public platform_code;
-    bool has_platform_code;
 
     TvmCell public lp_token_pending_code;
 
@@ -38,24 +37,6 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         _;
     }
 
-    modifier onlyAccount(address account_owner) {
-        address expected = address(tvm.hash(_buildInitData(
-            PlatformTypes.Account,
-            _buildAccountParams(account_owner)
-        )));
-        require(msg.sender == expected, DexErrors.NOT_ACCOUNT);
-        _;
-    }
-
-    modifier onlyPair(address left_root_, address right_root_) {
-        address expected = address(tvm.hash(_buildInitData(
-                PlatformTypes.Pair,
-                _buildPairParams(left_root_, right_root_)
-            )));
-        require(msg.sender == expected, DexErrors.NOT_PAIR);
-        _;
-    }
-
     modifier onlyLpTokenPending(uint32 nonce, address pair, address left_root, address right_root) {
         address expected = address(tvm.hash(_buildLpTokenPendingInitData(nonce, pair, left_root, right_root)));
         require(msg.sender == expected, DexErrors.NOT_LP_PENDING_CONTRACT);
@@ -67,11 +48,14 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         root = root_;
         owner = owner_;
         token_factory = token_factory_;
+    }
 
+    function _dexRoot() override internal view returns(address) {
+        return root;
     }
 
     function transferOwner(address new_owner) public override onlyOwner {
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         emit RequestedOwnerTransfer(owner, new_owner);
         pending_owner = new_owner;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
@@ -79,7 +63,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
 
     function acceptOwner() public override {
         require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         emit OwnerTransferAccepted(owner, pending_owner);
         owner = pending_owner;
         pending_owner = address(0);
@@ -95,21 +79,21 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     }
 
     function setTokenFactory(address new_token_factory) public override onlyOwner {
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         emit TokenFactoryAddressUpdated(token_factory, new_token_factory);
         token_factory = new_token_factory;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function installPlatformOnce(TvmCell code) external onlyOwner {
-        require(!has_platform_code, DexErrors.PLATFORM_CODE_NON_EMPTY);
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        require(platform_code.toSlice().empty(), DexErrors.PLATFORM_CODE_NON_EMPTY);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         platform_code = code;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function installOrUpdateLpTokenPendingCode(TvmCell code) public onlyOwner {
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         lp_token_pending_code = code;
         owner.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
@@ -121,7 +105,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         address right_root,
         address send_gas_to
     ) public override onlyPair(left_root, right_root) {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         new DexVaultLpTokenPending{
             stateInit: _buildLpTokenPendingInitData(now, pair, left_root, right_root),
             value: 0,
@@ -137,7 +121,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         address lp_root,
         address send_gas_to
     ) public override onlyLpTokenPending(nonce, pair, left_root, right_root) {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IDexPair(pair).liquidityTokenRootDeployed{value: 0, flag: MsgFlag.ALL_NOT_RESERVED}(lp_root, send_gas_to);
     }
 
@@ -149,38 +133,33 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         address lp_root,
         address send_gas_to
     ) public override onlyLpTokenPending(nonce, pair, left_root, right_root) {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IDexPair(pair).liquidityTokenRootNotDeployed{value: 0, flag: MsgFlag.ALL_NOT_RESERVED}(lp_root, send_gas_to);
     }
-
-    function notifyWalletDeployed(address token_root) public override {}
 
     function withdraw(
         uint64 call_id,
         uint128 amount,
         address /* token_root */,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         address account_owner,
         uint32 /* account_version */,
         address send_gas_to
     ) external override onlyAccount(account_owner) {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_public_key, recipient_address);
+        emit WithdrawTokens(vault_wallet, amount, account_owner, recipient_address);
 
         TvmCell empty;
-        ITONTokenWallet(vault_wallet).transferToRecipient{
-            value: Gas.TRANSFER_TO_RECIPIENT_VALUE + deploy_wallet_grams,
+        ITokenWallet(vault_wallet).transfer{
+            value: DexGas.TRANSFER_TOKENS_VALUE + deploy_wallet_grams,
             flag: MsgFlag.SENDER_PAYS_FEES
         }(
-            recipient_public_key,
-            recipient_address,
             amount,
+            recipient_address,
             deploy_wallet_grams,
-            0,
             send_gas_to,
             false,
             empty
@@ -194,7 +173,6 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         uint128 amount,
         address /* token_root */,
         address vault_wallet,
-        uint256 recipient_public_key,
         address recipient_address,
         uint128 deploy_wallet_grams,
         bool    notify_receiver,
@@ -204,19 +182,17 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         uint32  /* pair_version */,
         address send_gas_to
     ) external override onlyPair(left_root, right_root) {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
 
-        emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_public_key, recipient_address);
+        emit PairTransferTokens(vault_wallet, amount, left_root, right_root, recipient_address);
 
-        ITONTokenWallet(vault_wallet).transferToRecipient{
+        ITokenWallet(vault_wallet).transfer{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED
         }(
-            recipient_public_key,
-            recipient_address,
             amount,
+            recipient_address,
             deploy_wallet_grams,
-            0,
             send_gas_to,
             notify_receiver,
             payload
@@ -228,7 +204,7 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         address pair,
         address left_root,
         address right_root
-    ) private inline view returns (TvmCell) {
+    ) private view returns (TvmCell) {
         return tvm.buildStateInit({
             contr: DexVaultLpTokenPending,
             varInit: {
@@ -243,40 +219,9 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
         });
     }
 
-    function _buildInitData(uint8 type_id, TvmCell params) private inline view returns (TvmCell) {
-        return tvm.buildStateInit({
-            contr: DexPlatform,
-            varInit: {
-                root: root,
-                type_id: type_id,
-                params: params
-            },
-            pubkey: 0,
-            code: platform_code
-        });
-    }
-
-    function _buildAccountParams(address account_owner) private inline pure returns (TvmCell) {
-        TvmBuilder builder;
-        builder.store(account_owner);
-        return builder.toCell();
-    }
-
-    function _buildPairParams(address left_root, address right_root) private inline pure returns (TvmCell) {
-        TvmBuilder builder;
-        if (left_root.value < right_root.value) {
-            builder.store(left_root);
-            builder.store(right_root);
-        } else {
-            builder.store(right_root);
-            builder.store(left_root);
-        }
-        return builder.toCell();
-    }
-
     function upgrade(TvmCell code) public override onlyOwner {
-        require(msg.value > Gas.UPGRADE_VAULT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        require(msg.value > DexGas.UPGRADE_VAULT_MIN_VALUE, DexErrors.VALUE_TOO_LOW);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
 
         emit VaultCodeUpgraded();
 
@@ -303,14 +248,13 @@ contract DexVault is IDexVault, IResetGas, IUpgradable, ITokenWalletDeployedCall
     function onCodeUpgrade(TvmCell upgrade_data) private {}
 
     function resetGas(address receiver) override external view onlyOwner {
-        tvm.rawReserve(Gas.VAULT_INITIAL_BALANCE, 2);
+        tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         receiver.transfer({ value: 0, flag: MsgFlag.ALL_NOT_RESERVED });
     }
 
     function resetTargetGas(address target, address receiver) external view onlyOwner {
-        tvm.rawReserve(math.max(Gas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
+        tvm.rawReserve(math.max(DexGas.VAULT_INITIAL_BALANCE, address(this).balance - msg.value), 2);
         IResetGas(target).resetGas{ value: 0, flag: MsgFlag.ALL_NOT_RESERVED }(receiver);
     }
-
 
 }

@@ -49,22 +49,22 @@ async function logGas() {
 const loadWallets = async (data) => {
   const tokenData = Constants.tokens[data.tokenId];
   data.tokenRoot = migration.load(
-    await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH),
+    await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH),
     tokenData.symbol + 'Root'
   );
   data.vaultWallet = migration.load(
-    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH),
+    await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH),
     tokenData.symbol + 'VaultWallet'
   );
   data.vaultWalletBalance = new BigNumber(await data.vaultWallet.call({method: 'balance'}))
       .shiftedBy(-tokenData.decimals).toString();
   data.accountWallet = migration.load(
-    await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH),
+    await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH),
     tokenData.symbol + 'Wallet' + options.owner_n
   );
   data.accountWalletBalance = new BigNumber(await data.accountWallet.call({method: 'balance'}))
       .shiftedBy(-tokenData.decimals).toString();
-  data.dexAccountWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+  data.dexAccountWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
   const accountNWalletData = await dexAccountN.call({
     method: 'getWalletData',
     params: {token_root: data.tokenRoot.address}
@@ -133,13 +133,12 @@ describe('Check Deposit to Dex Account', async function () {
         logger.log(`# Make ${tokenData.symbol} deposit`);
         await accountN.runTarget({
           contract: deposit.accountWallet,
-          method: 'transfer',
+          method: 'transferToWallet',
           params: {
-            to: deposit.dexAccountWallet.address,
-            tokens: new BigNumber(deposit.amount).shiftedBy(tokenData.decimals).toString(),
-            grams: 0,
-            send_gas_to: accountN.address,
-            notify_receiver: true,
+            amount: new BigNumber(deposit.amount).shiftedBy(tokenData.decimals).toString(),
+            recipientTokenWallet: deposit.dexAccountWallet.address,
+            remainingGasTo: accountN.address,
+            notify: true,
             payload: EMPTY_TVM_CELL
           },
           value: locklift.utils.convertCrystal('0.5', 'nano'),

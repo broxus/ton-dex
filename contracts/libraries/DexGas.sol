@@ -1,6 +1,6 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
-library Gas {
+library DexGas {
 
     // ABSOLUTE
 
@@ -13,8 +13,9 @@ library Gas {
     uint128 constant DEPLOY_ACCOUNT_MIN_VALUE       = 2 ton;
     uint128 constant DEPLOY_PAIR_MIN_VALUE          = 5 ton;
 
-    uint128 constant TOKEN_FACTORY_FEE              = 1 ton;
-    uint128 constant DEPLOY_TOKEN_ROOT_MIN_VALUE    = 1 ton;
+    uint128 constant CREATE_TOKEN_VALUE             = 3 ton;
+    uint128 constant TRANSFER_ROOT_OWNERSHIP_VALUE  = 0.5 ton;
+    uint128 constant DEPLOY_TOKEN_ROOT_VALUE        = 2 ton;
     uint128 constant GET_TOKEN_DETAILS_VALUE        = 0.5 ton;
 
     uint128 constant PLATFORM_DEPLOY_VALUE          = 0.1 ton;
@@ -43,14 +44,11 @@ library Gas {
     uint128 constant VAULT_TRANSFER_BASE_VALUE_V2   = 0.5 ton;
 
     // TOKENS
-    uint128 constant TRANSFER_TO_RECIPIENT_VALUE    = 0.2 ton;
-    uint128 constant DEPLOY_MINT_VALUE_BASE         = 0.1 ton;
-    uint128 constant DEPLOY_MINT_VALUE_BASE_V2      = 0.5 ton;
-    uint128 constant MINT_VALUE                     = 0.03 ton;
+    uint128 constant TRANSFER_TOKENS_VALUE          = 0.2 ton;
+    uint128 constant DEPLOY_MINT_VALUE_BASE         = 0.5 ton;
     uint128 constant BURN_VALUE                     = 0.1 ton;
-    uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.2 ton;
-    uint128 constant DEPLOY_EMPTY_WALLET_VALUE_V2   = 0.5 ton;
-    uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.1 ton;
+    uint128 constant DEPLOY_EMPTY_WALLET_VALUE      = 0.5 ton;
+    uint128 constant DEPLOY_EMPTY_WALLET_GRAMS      = 0.2 ton;
     uint128 constant SEND_EXPECTED_WALLET_VALUE     = 0.1 ton;
 
     uint128 constant ADD_PAIR_MIN_VALUE             = 3 ton;

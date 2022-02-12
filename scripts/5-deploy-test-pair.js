@@ -33,10 +33,16 @@ async function main() {
 
     console.log(`Start deploy pair DexPair${pair.left}${pair.right}`);
 
-    const tokenFoo = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), pair.left + 'Root');
-    const tokenBar = migration.load(await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH), pair.right + 'Root');
+    const tokenFoo = migration.load(await locklift.factory.getContract(
+        tokenLeft.upgradeable ? 'TokenRootUpgradeable' : 'TokenRoot',
+        TOKEN_CONTRACTS_PATH
+    ), pair.left + 'Root');
+    const tokenBar = migration.load(await locklift.factory.getContract(
+        tokenRight.upgradeable ? 'TokenRootUpgradeable' : 'TokenRoot',
+        TOKEN_CONTRACTS_PATH
+    ), pair.right + 'Root');
 
-    await account2.runTarget({
+    const tx = await account2.runTarget({
       contract: dexRoot,
       method: 'deployPair',
       params: {
@@ -47,6 +53,8 @@ async function main() {
       value: locklift.utils.convertCrystal(10, 'nano'),
       keyPair: keyPairs[1]
     });
+
+    console.log(`Transaction: ${tx.transaction.id}`);
 
     await afterRun();
 
@@ -66,65 +74,62 @@ async function main() {
     dexPairFooBar.address = dexPairFooBarAddress;
     migration.store(dexPairFooBar, 'DexPair' + pair.left + pair.right);
 
-    const version = await dexPairFooBar.call({method: "getVersion", params: {_answer_id: 0}})
+    const version = await dexPairFooBar.call({method: "getVersion", params: {}})
     console.log(`DexPair${pair.left}${pair.right} version = ${version}`);
 
     await new Promise(resolve => setTimeout(resolve, 10000));
 
-    const FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+    const active = await dexPairFooBar.call({method: "isActive", params: {}})
+    console.log(`DexPair${pair.left}${pair.right} active = ${active}`);
+
+    const FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
     FooBarLpRoot.setAddress(await dexPairFooBar.call({method: "lp_root"}));
 
-    const FooPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const FooPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     FooPairWallet.setAddress(await tokenFoo.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexPairFooBarAddress,
+        walletOwner: dexPairFooBarAddress,
       }
     }));
 
-    const BarPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const BarPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     BarPairWallet.setAddress(await tokenBar.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexPairFooBarAddress,
+        walletOwner: dexPairFooBarAddress,
       }
     }));
 
-    const FooBarLpPairWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const FooBarLpPairWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     FooBarLpPairWallet.setAddress(await FooBarLpRoot.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexPairFooBarAddress,
+        walletOwner: dexPairFooBarAddress,
       }
     }));
 
-    const FooVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const FooVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     FooVaultWallet.setAddress(await tokenFoo.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexVault.address,
+        walletOwner: dexVault.address,
       }
     }));
 
-    const BarVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const BarVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     BarVaultWallet.setAddress(await tokenBar.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexVault.address,
+        walletOwner: dexVault.address,
       }
     }));
 
-    const FooBarLpVaultWallet = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+    const FooBarLpVaultWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
     FooBarLpVaultWallet.setAddress(await FooBarLpRoot.call({
-      method: "getWalletAddress",
+      method: "walletOf",
       params: {
-        wallet_public_key_: 0,
-        owner_address_: dexVault.address,
+        walletOwner: dexVault.address,
       }
     }));
 

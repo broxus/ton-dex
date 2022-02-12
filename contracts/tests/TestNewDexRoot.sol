@@ -1,19 +1,18 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
 pragma AbiHeader time;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "../libraries/DexErrors.sol";
-import "../libraries/Gas.sol";
-import "../libraries/MsgFlag.sol";
+import "../libraries/DexGas.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 // This is just for test purposes, this is not a real contract!
 contract NewDexRoot {
     uint32 static _nonce;
 
     TvmCell public platform_code;
-    bool has_platform_code;
     TvmCell public account_code;
     uint32 account_version;
     TvmCell public pair_code;
@@ -50,8 +49,8 @@ contract NewDexRoot {
     }
 
     function setActive(bool new_active) external {
-        tvm.rawReserve(Gas.ROOT_INITIAL_BALANCE, 2);
-        if (new_active && has_platform_code && vault.value != 0 && account_version > 0 && pair_version > 0) {
+        tvm.rawReserve(DexGas.ROOT_INITIAL_BALANCE, 2);
+        if (new_active && !platform_code.toSlice().empty() && vault.value != 0 && account_version > 0 && pair_version > 0) {
             active = true;
         } else {
             active = false;
@@ -72,8 +71,6 @@ contract NewDexRoot {
         platform_code = s.loadRef();
         account_code = s.loadRef();
         pair_code = s.loadRef();
-
-        has_platform_code = true;
 
         this.setActive(true);
 

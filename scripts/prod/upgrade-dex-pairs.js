@@ -7,7 +7,7 @@ const DEX_ROOT_ADDRESS = '0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8e
 const DEX_OWNER_ADDRESS = '';
 const DEX_OWNER_WALLET_TYPE = 'SafeMultisigWallet';
 
-const NewCodeContract = 'DexPairV4';
+const NewCodeContract = 'DexPair';
 
 const afterRun = async (tx) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -36,7 +36,7 @@ async function main() {
   if (NewCodeContract) {
       const NextVersionContract = await locklift.factory.getContract(NewCodeContract);
       console.log(`Installing new DexPair contract in DexRoot: ${dexRoot.address}`);
-      const startVersion = await dexRoot.call({method: 'getPairVersion', params: { _answer_id: 0 }});
+      const startVersion = await dexRoot.call({method: 'getPairVersion', params: {}});
       console.log(`Start version = ${startVersion}`);
 
       await dexOwner.runTarget({
@@ -49,7 +49,7 @@ async function main() {
 
       await new Promise(resolve => setTimeout(resolve, 120000));
 
-      const endVersion = await dexRoot.call({method: 'getPairVersion', params: { _answer_id: 0 }});
+      const endVersion = await dexRoot.call({method: 'getPairVersion', params: {}});
       console.log(`End version = ${endVersion}`);
   }
 

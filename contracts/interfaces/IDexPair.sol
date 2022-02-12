@@ -1,4 +1,4 @@
-pragma ton-solidity >= 0.39.0;
+pragma ton-solidity >= 0.57.0;
 
 import "../structures/IDepositLiquidityResult.sol";
 
@@ -61,12 +61,7 @@ interface IDexPair is IDepositLiquidityResult {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // INTERNAL
 
-    function checkPair(
-        uint64 call_id,
-        address account_owner,
-        uint32 account_version,
-        address send_gas_to
-    ) external;
+    function checkPair(address account_owner, uint32 account_version) external;
 
     function liquidityTokenRootDeployed(address lp_root, address send_gas_to) external;
     function liquidityTokenRootNotDeployed(address lp_root, address send_gas_to) external;
@@ -100,5 +95,23 @@ interface IDexPair is IDepositLiquidityResult {
         address account_owner,
         uint32  account_version,
         address send_gas_to
+    ) external;
+
+    function crossPairExchange(
+        uint64 id,
+
+        uint32 prev_pair_version,
+        address prev_pair_left_root,
+        address prev_pair_right_root,
+
+        address spent_token_root,
+        uint128 spent_amount,
+
+        address sender_address,
+
+        address original_gas_to,
+        uint128 deploy_wallet_grams,
+
+        TvmCell payload
     ) external;
 }

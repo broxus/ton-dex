@@ -1,25 +1,10 @@
 {
 	"ABI version": 2,
-	"version": "2.1",
+	"version": "2.2",
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
 			"name": "constructor",
-			"inputs": [
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setPlatformCode",
-			"inputs": [
-				{"name":"code","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "initialize",
 			"inputs": [
 				{"name":"code","type":"cell"},
 				{"name":"version","type":"uint32"},
@@ -27,30 +12,6 @@
 				{"name":"send_gas_to","type":"address"}
 			],
 			"outputs": [
-			]
-		},
-		{
-			"name": "root",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"root","type":"address"}
-			]
-		},
-		{
-			"name": "type_id",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"type_id","type":"uint8"}
-			]
-		},
-		{
-			"name": "params",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"params","type":"cell"}
 			]
 		}
 	],
@@ -67,8 +28,6 @@
 		{"name":"_constructorFlag","type":"bool"},
 		{"name":"root","type":"address"},
 		{"name":"type_id","type":"uint8"},
-		{"name":"params","type":"cell"},
-		{"name":"platform_code","type":"cell"},
-		{"name":"has_platform_code","type":"bool"}
+		{"name":"params","type":"cell"}
 	]
 }

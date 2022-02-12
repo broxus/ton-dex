@@ -1,4 +1,6 @@
-.version sol 0.49.0
+.version sol 0.57.1
+
+.pragma selector-save-my-code
 
 .macro constructor
 DROP
@@ -9,119 +11,102 @@ IFREF {
 }
 GETGLOB 6
 THROWIF 51
-ENDS
-.loc ../contracts/DexPlatform.sol, 53
-GETGLOB 9
-GETGLOB 10
-SDEQ
-THROWIFNOT 101
-.loc ../contracts/DexPlatform.sol, 19
-ACCEPT
-.loc ../contracts/DexPlatform.sol, 0
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.macro setPlatformCode
-DROP
-GETGLOB 6
-THROWIFNOT 76
-GETGLOB 2
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-.loc ../contracts/DexPlatform.sol, 22
-LDREF
-ENDS
-.loc ../contracts/DexPlatform.sol, 53
-GETGLOB 9
-GETGLOB 10
-SDEQ
-THROWIFNOT 101
-.loc ../contracts/DexPlatform.sol, 23
-GETGLOB 14
-THROWIF 108
-.loc ../contracts/DexPlatform.sol, 24
-SETGLOB 13
-.loc ../contracts/DexPlatform.sol, 25
-TRUE
-SETGLOB 14
-.loc ../contracts/DexPlatform.sol, 0
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
-
-.macro initialize
-DROP
-GETGLOB 6
-THROWIFNOT 76
-GETGLOB 2
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-.loc ../contracts/DexPlatform.sol, 28
-LDREF
-LDU 32
-LDMSGADDRQ
+OVER
 PUSHCONT {
+	LDREF
+	LDU 32
 	LDREF
 	ENDS
 	CTOS
-	LDMSGADDR
 }
-IFNOT
-LDMSGADDRQ
 PUSHCONT {
 	LDREF
-	ENDS
-	CTOS
-	LDMSGADDR
+	LDU 32
 }
-IFNOT
+IFELSE
+LDMSGADDR
+LDREF
 ENDS
-.loc ../contracts/DexPlatform.sol, 53
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/DexPlatform.sol, 17
 GETGLOB 9
 GETGLOB 10
 SDEQ
-THROWIFNOT 101
-.loc ../contracts/DexPlatform.sol, 29
-GETGLOB 14
-THROWIFNOT 107
+PUSHCONT {
+	.loc ../contracts/DexPlatform.sol, 18
+	BLKPUSH 4, 3
+	CALLREF {
+		CALL $_initialize_internal_macro$
+	}
+}
+PUSHCONT {
+	.loc ../contracts/DexPlatform.sol, 20
+	DUP
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHINT 111
+	STZEROES
+	ENDC
+	PUSHINT 128
+	ADDCONST 32
+	UFITS 8
+	SENDRAWMSG
+}
+IFELSE
+.loc ../contracts/DexPlatform.sol, 0
+BLKDROP 4
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	_initialize_internal
+.type	_initialize_internal, @function
+CALL $_initialize_internal_macro$
+
+.macro _initialize_internal_macro
 .loc ../contracts/DexPlatform.sol, 31
 GETGLOB 10
 NEWC
-.loc ../contracts/DexPlatform.sol, 33
 STSLICE
-.loc ../contracts/DexPlatform.sol, 34
+.loc ../contracts/DexPlatform.sol, 32
 XCHG S1, S2
 STSLICE
-.loc ../contracts/DexPlatform.sol, 35
+.loc ../contracts/DexPlatform.sol, 33
 PUSHINT 0
 SWAP
 STU 32
-.loc ../contracts/DexPlatform.sol, 36
+.loc ../contracts/DexPlatform.sol, 34
 XCHG S1, S2
 STU 32
-.loc ../contracts/DexPlatform.sol, 37
+.loc ../contracts/DexPlatform.sol, 35
 STSLICE
-.loc ../contracts/DexPlatform.sol, 39
-GETGLOB 13
+.loc ../contracts/DexPlatform.sol, 37
+GETGLOB 1
+PUSHREF {
+	DUP
+	SETGLOB 1
+	BLESS
+	JMPX
+}
+NEWC
+STSLICECONST x8adb35
+STREF
+STSLICE
+ENDC
 SWAP
 STREF
-.loc ../contracts/DexPlatform.sol, 40
+.loc ../contracts/DexPlatform.sol, 38
 GETGLOB 12
 SWAP
 STREF
-.loc ../contracts/DexPlatform.sol, 43
+.loc ../contracts/DexPlatform.sol, 41
 OVER
 SETCODE
-.loc ../contracts/DexPlatform.sol, 46
+.loc ../contracts/DexPlatform.sol, 44
 SWAP
 CTOS
 DUP
@@ -136,31 +121,96 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/DexPlatform.sol, 47
+.loc ../contracts/DexPlatform.sol, 45
 ENDC
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
 .loc ../contracts/DexPlatform.sol, 0
-CALLREF {
-	CALL $c7_to_c4$
-}
-TRUE
-SETGLOB 7
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-.loc ../contracts/DexPlatform.sol, 0
 DROP
+.loc ../contracts/DexPlatform.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
 COMMIT
 THROW 0
 
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDMSGADDR
+LDU 8
+LDREF
+ENDS
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHINT 1
+	OVER
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHREFSLICE {
+			.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+		}
+	}
+	IFNOT
+	PUSHINT 2
+	PUSH S2
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 8
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	PUSHINT 3
+	PUSH S3
+	PUSHINT 64
+	DICTUGETREF
+	PUSHCONT {
+		PUSHREF {
+		}
+	}
+	IFNOT
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
 .macro c7_to_c4
-GETGLOB 14
-GETGLOB 13
 GETGLOB 12
 GETGLOB 11
 GETGLOB 10
@@ -173,90 +223,23 @@ STONE
 STSLICE
 STU 8
 STREF
-STREF
-STI 1
 ENDC
 POPROOT
 
-.macro c4_to_c7
+.macro upd_only_time_in_c4
 PUSHROOT
 CTOS
-LDU 256 ; pubkey c4
-LDU 64 ; pubkey timestamp c4
-LDU 1 ; ctor flag
+LDU 256
+LDU 64
 NIP
-LDMSGADDR
-LDU 8
-LDREF
-LDREF
-LDI 1
-ENDS
-SETGLOB 14
-SETGLOB 13
-SETGLOB 12
-SETGLOB 11
-SETGLOB 10
-SETGLOB 3
-SETGLOB 2
-
-.macro c4_to_c7_with_init_storage
-PUSHROOT
-CTOS
-SBITS
-GTINT 1
-PUSHREFCONT {
-	CALL $c4_to_c7$
-}
-PUSHCONT {
-	PUSHINT 0
-	PUSHROOT
-	CTOS
-	PLDDICT ; D
-	PUSHINT 1
-	OVER
-	PUSHINT 64
-	DICTUGET
-	PUSHCONT {
-		PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-	}
-	IFNOT
-	SETGLOB 10
-	PUSHINT 2
-	OVER
-	PUSHINT 64
-	DICTUGET
-	PUSHCONT {
-		PLDU 8
-	}
-	PUSHCONT {
-		PUSHINT 0
-	}
-	IFELSE
-	SETGLOB 11
-	PUSHINT 3
-	OVER
-	PUSHINT 64
-	DICTUGETREF
-	PUSHCONT {
-		PUSHREF {
-		}
-	}
-	IFNOT
-	SETGLOB 12
-	PUSHREF {
-	}
-	SETGLOB 13
-	PUSHINT 0
-	SETGLOB 14
-	PUSHINT 64
-	DICTUGET
-	THROWIFNOT 61
-	PLDU 256
-	SETGLOB 2
-	PUSHINT 0 ; timestamp
-	SETGLOB 3
-}
-IFELSE
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
 
 .internal-alias :main_internal, 0
 .internal :main_internal
@@ -281,7 +264,7 @@ IFJMPREF {
 }
 OVER
 LDUQ 32  ; [funcId] body' ok
-THROWIFNOT 60 ; funcId body'
+THROWIFNOT 60
 OVER
 IFNOTJMPREF {
 	GETGLOB 6
@@ -291,9 +274,7 @@ SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
-GETGLOB 7
-ISNULL
-THROWIF 60
+THROW 60
 
 .internal-alias :main_external, -1
 .internal :main_external
@@ -302,7 +283,9 @@ CTOS
 SBITS
 NEQINT 1
 SETGLOB 6
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
 SETGLOB 9
 OVER
 CALLREF {
@@ -329,12 +312,12 @@ PUSHCONT {
 	}
 	IFELSE
 	CHKSIGNU ; msgSlice isSigned
-	THROWIFNOT 40 ; msgSlice
+	THROWIFNOT 40
 }
 PUSHCONT {
 	LDU 1 ; havePubkey msgSlice
 	SWAP
-	THROWIF 58 ; msgSlice
+	THROWIF 58
 }
 IFELSE
 LDU 64 ; timestamp msgSlice
@@ -350,118 +333,13 @@ SWAP
 CALLREF {
 	CALL $public_function_selector$
 }
-GETGLOB 7
-ISNULL
-THROWIF 60
-
-.macro root
-DROP
-ENDS
-CALLREF {
-	CALL $c4_to_c7$
-}
-GETGLOB 10
-OVER
-PUSHCONT {
-	PUSHSLICE xc0000000000000000000000000b7295e20
-	NEWC
-	STSLICE
-	STSLICE
-	ENDC
-	PUSHINT 0
-	SENDRAWMSG
-}
-IF
-TRUE
-SETGLOB 7
-
-.macro type_id
-DROP
-ENDS
-CALLREF {
-	CALL $c4_to_c7$
-}
-GETGLOB 11
-OVER
-PUSHCONT {
-	PUSHSLICE xc000000000000000000000000096c38030
-	NEWC
-	STSLICE
-	STU 8
-	ENDC
-	PUSHINT 0
-	SENDRAWMSG
-}
-IF
-TRUE
-SETGLOB 7
-
-.macro params
-DROP
-ENDS
-CALLREF {
-	CALL $c4_to_c7$
-}
-GETGLOB 12
-OVER
-PUSHCONT {
-	PUSHSLICE xc0000000000000000000000000b0887a21
-	NEWC
-	STSLICE
-	STREF
-	ENDC
-	PUSHINT 0
-	SENDRAWMSG
-}
-IF
-TRUE
-SETGLOB 7
+THROW 60
 
 .macro public_function_selector
 DUP
-PUSHINT 1667719843
-LEQ
+PUSHINT 362821883
+EQUAL
 IFJMPREF {
-	DUP
-	PUSHINT 381911088
-	EQUAL
-	IFJMPREF {
-		CALL $type_id$
-	}
-	DUP
-	PUSHINT 814250529
-	EQUAL
-	IFJMPREF {
-		CALL $params$
-	}
-	DUP
-	PUSHINT 925457952
-	EQUAL
-	IFJMPREF {
-		CALL $root$
-	}
-	DUP
-	PUSHINT 1667719843
-	EQUAL
-	IFJMPREF {
-		CALL $initialize$
-	}
-}
-DUP
-PUSHINT 1814366192
-LEQ
-IFJMPREF {
-	DUP
-	PUSHINT 1756716863
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
-	}
-	DUP
-	PUSHINT 1814366192
-	EQUAL
-	IFJMPREF {
-		CALL $setPlatformCode$
-	}
+	CALL $constructor$
 }
 

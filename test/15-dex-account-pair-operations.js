@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {Migration, afterRun, Constants} = require(process.cwd() + '/scripts/utils');
+const {Migration, afterRun, Constants, getRandomNonce, TOKEN_CONTRACTS_PATH} = require(process.cwd() + '/scripts/utils');
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
 const logger = require('mocha-logger');
@@ -23,8 +23,6 @@ const options = program.opts();
 
 options.pair_contract_name = options.pair_contract_name || 'DexPair';
 options.account_contract_name = options.account_contract_name || 'DexAccount';
-
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build';
 
 let DexRoot;
 let DexPairFooBar;
@@ -84,33 +82,30 @@ function logExpectedDeposit(expected) {
 async function dexAccountBalances(account) {
     const foo = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: FooRoot.address
         }
     })).balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
     const bar = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: BarRoot.address
         }
     })).balance).shiftedBy(-Constants.tokens.bar.decimals).toString();
     const lp = new BigNumber((await account.call({
         method: 'getWalletData', params: {
-            _answer_id: 0,
             token_root: FooBarLpRoot.address
         }
     })).balance).shiftedBy(-Constants.LP_DECIMALS).toString();
 
     let walletFoo = '0';
-    await FooWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooWallet2.call({method: 'balance', params: {}}).then(n => {
         walletFoo = new BigNumber(n).shiftedBy(-Constants.tokens.foo.decimals).toString();
     }).catch(e => {/*ignored*/});
     let walletBar = '0';
-    await BarWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await BarWallet2.call({method: 'balance', params: {}}).then(n => {
         walletBar = new BigNumber(n).shiftedBy(-Constants.tokens.bar.decimals).toString();
     }).catch(e => {/*ignored*/});
     let walletLp = '0';
-    await FooBarLpWallet2.call({method: 'balance', params: {_answer_id: 0}}).then(n => {
+    await FooBarLpWallet2.call({method: 'balance', params: {}}).then(n => {
         walletLp = new BigNumber(n).shiftedBy(-Constants.LP_DECIMALS).toString();
     }).catch(e => {/*ignored*/});
 
@@ -118,8 +113,8 @@ async function dexAccountBalances(account) {
 }
 
 async function dexPairInfo() {
-    const balances = await DexPairFooBar.call({method: 'getBalances', params: {_answer_id: 0}});
-    const total_supply = await FooBarLpRoot.call({method: 'getTotalSupply', params: {'_answer_id': 0}});
+    const balances = await DexPairFooBar.call({method: 'getBalances', params: {}});
+    const total_supply = await FooBarLpRoot.call({method: 'totalSupply', params: {}});
     let foo, bar;
     if (IS_FOO_LEFT) {
         foo = new BigNumber(balances.left_balance).shiftedBy(-Constants.tokens.foo.decimals).toString();
@@ -155,14 +150,14 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
         DexRoot = await locklift.factory.getContract('DexRoot');
         DexPairFooBar = await locklift.factory.getContract(options.pair_contract_name);
-        FooRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        BarRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
-        FooBarLpRoot = await locklift.factory.getContract('RootTokenContract', TOKEN_CONTRACTS_PATH);
+        FooRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooBarLpRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
         Account2 = await locklift.factory.getAccount('Wallet');
         DexAccount2 = await locklift.factory.getContract(options.account_contract_name);
-        FooBarLpWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        FooWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
-        BarWallet2 = await locklift.factory.getContract('TONTokenWallet', TOKEN_CONTRACTS_PATH);
+        FooBarLpWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        FooWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+        BarWallet2 = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
 
         migration.load(DexRoot, 'DexRoot');
         migration.load(DexPairFooBar, 'DexPairFooBar');
@@ -174,7 +169,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
 
         Account2.afterRun = afterRun;
 
-        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {_answer_id: 0}});
+        const pairRoots = await DexPairFooBar.call({method: 'getTokenRoots', params: {}});
         IS_FOO_LEFT = pairRoots.left === FooRoot.address;
 
         if (migration.exists('FooBarLpWallet2')) {
@@ -182,10 +177,9 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`FooBarLpWallet#2: ${FooBarLpWallet2.address}`);
         } else {
             const expected = await FooBarLpRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf',
+                params: {
+                    walletOwner: Account2.address
                 }
             });
             FooBarLpWallet2.setAddress(expected);
@@ -198,10 +192,9 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`BarWallet#2: ${BarWallet2.address}`);
         } else {
             const expected = await BarRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf',
+                params: {
+                   walletOwner: Account2.address
                 }
             });
             BarWallet2.setAddress(expected);
@@ -214,10 +207,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             logger.log(`BarWallet#2: ${FooWallet2.address}`);
         } else {
             const expected = await FooRoot.call({
-                method: 'getWalletAddress', params: {
-                    _answer_id: 0,
-                    wallet_public_key_: `0x0`,
-                    owner_address_: Account2.address
+                method: 'walletOf', params: {
+                    walletOwner: Account2.address
                 }
             });
             FooWallet2.setAddress(expected);
@@ -281,6 +272,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                     contract: DexAccount2,
                     method: 'depositLiquidity',
                     params: {
+                        call_id: getRandomNonce(),
                         left_root: IS_FOO_LEFT ? FooRoot.address : BarRoot.address,
                         left_amount: LEFT_AMOUNT,
                         right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
@@ -310,14 +302,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 let expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
                 let expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
-                let expectedDexAccount2Lp, expectedAccount2Lp;
-                if (options.pair_contract_name === 'DexPair') {
-                    expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
-                    expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-                } else {
-                    expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
-                    expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
-                }
+                let expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
+                let expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
 
                 const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(FOO_DEPOSIT).toString();
                 const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(BAR_DEPOSIT).toString();
@@ -379,6 +365,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
+                    call_id: getRandomNonce(),
                     left_root: IS_FOO_LEFT ? FooRoot.address : BarRoot.address,
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
@@ -408,14 +395,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
-            let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.pair_contract_name === 'DexPair') {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
-            }
+            let expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
+            let expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
 
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(FOO_DEPOSIT).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(BAR_DEPOSIT).toString();
@@ -473,6 +454,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
+                    call_id: getRandomNonce(),
                     left_root: IS_FOO_LEFT ? FooRoot.address : BarRoot.address,
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
@@ -502,14 +484,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
-            let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.pair_contract_name === 'DexPair') {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
-            }
+            let expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
+            let expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
 
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(FOO_DEPOSIT).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(BAR_DEPOSIT).toString();
@@ -567,6 +543,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
+                    call_id: getRandomNonce(),
                     left_root: IS_FOO_LEFT ? FooRoot.address : BarRoot.address,
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
@@ -596,14 +573,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).toString();
 
-            let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.pair_contract_name === 'DexPair') {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
-            }
+            let expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
+            let expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
 
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(FOO_DEPOSIT).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(BAR_DEPOSIT).toString();
@@ -664,6 +635,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'depositLiquidity',
                 params: {
+                    call_id: getRandomNonce(),
                     left_root: IS_FOO_LEFT ? FooRoot.address : BarRoot.address,
                     left_amount: LEFT_AMOUNT,
                     right_root: IS_FOO_LEFT ? BarRoot.address : FooRoot.address,
@@ -693,14 +665,8 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
             const expectedAccount2Foo = new BigNumber(dexAccount2Start.foo).minus(FOO_DEPOSIT).toString();
             const expectedAccount2Bar = new BigNumber(dexAccount2Start.bar).minus(BAR_DEPOSIT).plus(BAR_BACK_AMOUNT).toString();
 
-            let expectedDexAccount2Lp, expectedAccount2Lp;
-            if (options.pair_contract_name === 'DexPair') {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).plus(LP_REWARD).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).toString();
-            } else {
-                expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
-                expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
-            }
+            let expectedDexAccount2Lp = new BigNumber(dexAccount2Start.lp).toString();
+            let expectedAccount2Lp = new BigNumber(dexAccount2Start.walletLp).plus(LP_REWARD).toString();
 
             const expectedPairFoo = new BigNumber(dexPairInfoStart.foo).plus(FOO_DEPOSIT).toString();
             const expectedPairBar = new BigNumber(dexPairInfoStart.bar).plus(BAR_DEPOSIT).minus(BAR_BACK_AMOUNT).toString();
@@ -746,6 +712,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
+                    call_id: getRandomNonce(),
                     spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
                     spent_token_root: FooRoot.address,
                     receive_token_root: BarRoot.address,
@@ -805,6 +772,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
+                    call_id: getRandomNonce(),
                     spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.bar.decimals).toString(),
                     spent_token_root: BarRoot.address,
                     receive_token_root: FooRoot.address,
@@ -864,6 +832,7 @@ describe(`DexAccount interact with ${options.pair_contract_name}`, async functio
                 contract: DexAccount2,
                 method: 'exchange',
                 params: {
+                    call_id: getRandomNonce(),
                     spent_amount: new BigNumber(TOKENS_TO_EXCHANGE).shiftedBy(Constants.tokens.foo.decimals).toString(),
                     spent_token_root: FooRoot.address,
                     receive_token_root: BarRoot.address,

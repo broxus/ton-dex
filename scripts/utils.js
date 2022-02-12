@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/free-ton/build'
+const TOKEN_CONTRACTS_PATH = 'node_modules/ton-eth-bridge-token-contracts/build'
 const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA==';
 const BigNumber = require('bignumber.js');
 BigNumber.config({EXPONENTIAL_AT: 257});
@@ -28,7 +28,7 @@ async function sleep(ms) {
 }
 
 const afterRun = async (tx) => {
-  await new Promise(resolve => setTimeout(resolve, 120000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 };
 
 const Constants = {
@@ -36,22 +36,26 @@ const Constants = {
     foo: {
       name: 'Foo',
       symbol: 'Foo',
-      decimals: 9
+      decimals: 9,
+      upgradeable: true
     },
     bar: {
       name: 'Bar',
       symbol: 'Bar',
-      decimals: 18
+      decimals: 18,
+      upgradeable: false
     },
     tst: {
       name: 'Test',
       symbol: 'Tst',
-      decimals: 3
+      decimals: 3,
+      upgradeable: true
     },
     qwe: {
       name: 'Qwerty',
       symbol: 'Qwe',
-      decimals: 6
+      decimals: 6,
+      upgradeable: false
     }
   },
   LP_DECIMALS: 9,
