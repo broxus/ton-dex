@@ -227,7 +227,7 @@ contract DexRoot is DexContractBase, IDexRoot, IResetGas, IUpgradable {
     }
 
     function acceptOwner() external {
-        require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
+        require(msg.sender == pending_owner && msg.sender.value != 0, DexErrors.NOT_PENDING_OWNER);
         emit OwnerTransferAccepted(owner, pending_owner);
         owner = pending_owner;
         pending_owner = address.makeAddrStd(0, 0);

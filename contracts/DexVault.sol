@@ -62,7 +62,7 @@ contract DexVault is DexContractBase, IDexVault, IResetGas, IUpgradable {
     }
 
     function acceptOwner() public override {
-        require(msg.sender == pending_owner, DexErrors.NOT_PENDING_OWNER);
+        require(msg.sender == pending_owner && msg.sender.value != 0, DexErrors.NOT_PENDING_OWNER);
         tvm.rawReserve(DexGas.VAULT_INITIAL_BALANCE, 2);
         emit OwnerTransferAccepted(owner, pending_owner);
         owner = pending_owner;
