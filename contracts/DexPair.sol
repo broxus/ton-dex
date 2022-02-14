@@ -421,7 +421,7 @@ contract DexPair is DexContractBase, IDexPair, IAcceptTokensTransferCallback,
                             vault,
                             0,
                             original_gas_to,
-                            true,
+                            false,
                             empty
                         );
                     } else {
