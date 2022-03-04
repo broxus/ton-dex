@@ -182,7 +182,7 @@ contract DexVaultLpTokenPending is ITokenRootDeployedCallback, ITransferTokenRoo
         );
     }
 
-    function onDeployWallet(address) external {
+    function onDeployWallet(address) external onlyExpectedToken {
         pending_messages--;
     }
 

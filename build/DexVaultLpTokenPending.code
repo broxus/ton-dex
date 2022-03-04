@@ -638,8 +638,13 @@ CALLREF {
 THROW 0
 
 .macro onDeployWallet_internal_macro
-.loc ../contracts/DexVaultLpTokenPending.sol, 186
+.loc ../contracts/DexVaultLpTokenPending.sol, 57
 DROP
+CALLREF {
+	CALL $isSenderExpectedToken_internal_macro$
+}
+THROWIFNOT 126
+.loc ../contracts/DexVaultLpTokenPending.sol, 186
 GETGLOB 23
 DEC
 UFITS 8

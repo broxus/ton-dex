@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "@broxus/contracts": "^1.0.4",
-    "locklift": "^1.5.1"
+    "locklift": "^1.5.3"
   }
 }
