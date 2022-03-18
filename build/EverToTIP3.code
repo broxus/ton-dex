@@ -1,0 +1,1199 @@
+.version sol 0.57.1
+
+.macro constructor
+DROP
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+GETGLOB 6
+THROWIF 51
+ENDS
+.loc ../contracts/EverToTip3.sol, 33
+ACCEPT
+.loc ../contracts/EverToTip3.sol, 35
+PUSHINT 1000000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/EverToTip3.sol, 37
+PUSHINT 100000000
+MYADDR
+GETGLOB 11
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x41dcd6500000000000000000000000000003_
+STSLICER
+ROTREV
+PUSHSLICE x31edd4c7282c61f5
+NEWC
+STSLICE
+STSLICE
+STU 128
+STBREFR
+ENDC
+PUSHINT 1
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 46
+GETGLOB 9
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 128
+ADDCONST 2
+UFITS 8
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onWeverWallet
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/EverToTip3.sol, 50
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $onWeverWallet_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onWeverWallet_internal_macro
+.loc ../contracts/EverToTip3.sol, 51
+GETGLOB 9
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQINT 0
+GETGLOB 9
+GETGLOB 11
+SDEQ
+AND
+THROWIFNOT 200
+.loc ../contracts/EverToTip3.sol, 52
+DUP
+SETGLOB 13
+.loc ../contracts/EverToTip3.sol, 53
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 64
+ADDCONST 2
+UFITS 8
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 0
+
+.macro buildExchangePayload
+DROP
+GETGLOB 6
+THROWIFNOT 76
+.loc ../contracts/EverToTip3.sol, 57
+OVER
+PUSHCONT {
+	LDU 64
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+	LDMSGADDR
+	LDU 128
+}
+PUSHCONT {
+	LDU 64
+	LDU 128
+	LDMSGADDR
+	LDU 128
+	LDREF
+	ENDS
+	CTOS
+}
+IFELSE
+LDU 128
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $buildExchangePayload_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHSLICE x0000000000000000000000002d0381092_
+	STSLICER
+	STREF
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	DROP
+}
+IFELSE
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.macro buildExchangePayload_internal_macro
+.loc ../contracts/EverToTip3.sol, 65
+ROLL 4
+NEWC
+STU 64
+.loc ../contracts/EverToTip3.sol, 66
+ROLL 4
+SWAP
+STU 128
+.loc ../contracts/EverToTip3.sol, 67
+ROLL 3
+SWAP
+STSLICE
+.loc ../contracts/EverToTip3.sol, 68
+XCHG S1, S2
+STU 128
+.loc ../contracts/EverToTip3.sol, 69
+STU 128
+.loc ../contracts/EverToTip3.sol, 70
+ENDC
+.loc ../contracts/EverToTip3.sol, 0
+
+.macro swapEvers
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/EverToTip3.sol, 74
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDREF
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $swapEvers_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro swapEvers_internal_macro
+.loc ../contracts/EverToTip3.sol, 75
+DUP
+CTOS
+.loc ../contracts/EverToTip3.sol, 76
+DUP
+SBITS
+PUSHINT 715
+EQUAL
+THROWIFNOT 202
+.loc ../contracts/EverToTip3.sol, 78
+PUSHINT 1000000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/EverToTip3.sol, 80
+LDU 64
+LDU 128
+DROP
+.loc ../contracts/EverToTip3.sol, 82
+DEPTH
+ADDCONST -2
+PICK
+OVER
+PUSHINT 4000000000
+ADD
+UFITS 128
+GEQ
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 83
+	PUSH2 S2, S3
+	MYADDR
+	PUSH S3
+	GETGLOB 12
+	FALSE
+	NEWC
+	STSLICECONST x6_
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	PUSHINT 1
+	STUR 111
+	ROLLREV 4
+	NEWC
+	STSLICECONST x689c57c3
+	STU 128
+	STSLICE
+	ROTREV
+	NEWC
+	STSLICE
+	STREF
+	STBREFR
+	STBREFR
+}
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 91
+	OVER
+	NEWC
+	STU 64
+	.loc ../contracts/EverToTip3.sol, 93
+	DROP
+	PUSH2 S1, S3
+	FALSE
+	NEWC
+	STSLICECONST x6_
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	PUSHSLICE x00000000000000000000000000003a4c3fcf_
+	STSLICER
+	STU 64
+}
+IFELSE
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 0
+BLKDROP 4
+
+.macro onAcceptTokensMint
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/EverToTip3.sol, 98
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $onAcceptTokensMint_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onAcceptTokensMint_internal_macro
+.loc ../contracts/EverToTip3.sol, 104
+GETGLOB 9
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQINT 0
+GETGLOB 9
+GETGLOB 13
+SDEQ
+AND
+THROWIFNOT 201
+.loc ../contracts/EverToTip3.sol, 105
+PUSHINT 1000000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/EverToTip3.sol, 107
+CTOS
+.loc ../contracts/EverToTip3.sol, 108
+DUP
+SBITS
+PUSHINT 715
+EQUAL
+DEPTH
+ADDCONST -2
+PICK
+PUSHINT 4000000000
+GEQ
+AND
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 109
+	DUP
+	LDU 64
+	LDU 128
+	LDMSGADDR
+	LDU 128
+	LDU 128
+	POP S6
+	.loc ../contracts/EverToTip3.sol, 112
+	PUSH3 S0, S1, S2
+	ROLL 6
+	PUSH S7
+	PUSHSLICE xc0000000000000000000000001
+	NEWC
+	STSLICE
+	ROLLREV 5
+	NEWC
+	STSLICECONST x077c963f
+	STU 64
+	STU 128
+	STSLICE
+	STU 128
+	SWAP
+	NEWC
+	STU 128
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+	.loc ../contracts/EverToTip3.sol, 115
+	NEWC
+	STSLICECONST x00
+	.loc ../contracts/EverToTip3.sol, 116
+	PUXC S4, S-1
+	STU 64
+	.loc ../contracts/EverToTip3.sol, 117
+	PUXC S1, S-1
+	STU 128
+	.loc ../contracts/EverToTip3.sol, 120
+	NEWC
+	STSLICECONST x01
+	.loc ../contracts/EverToTip3.sol, 121
+	PUXC S5, S-1
+	STU 64
+	.loc ../contracts/EverToTip3.sol, 125
+	NEWC
+	STSLICECONST x01
+	.loc ../contracts/EverToTip3.sol, 126
+	ROLL 6
+	SWAP
+	STU 64
+	.loc ../contracts/EverToTip3.sol, 127
+	ROLL 3
+	SWAP
+	STU 128
+	.loc ../contracts/EverToTip3.sol, 128
+	ROLL 3
+	SWAP
+	STU 128
+	.loc ../contracts/EverToTip3.sol, 130
+	ROT
+	STBREFR
+	.loc ../contracts/EverToTip3.sol, 131
+	STBREF
+	.loc ../contracts/EverToTip3.sol, 133
+	ENDC
+	TRUE
+	PUSH S4
+	PUSHINT 0
+	ROLL 4
+}
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 142
+	PUSHINT 0
+	.loc ../contracts/EverToTip3.sol, 143
+	OVER
+	SBITS
+	GTINT 63
+	PUSHCONT {
+		.loc ../contracts/EverToTip3.sol, 144
+		OVER
+		LDU 64
+		POP S3
+		NIP
+		.loc ../contracts/EverToTip3.sol, 0
+	}
+	IF
+	.loc ../contracts/EverToTip3.sol, 148
+	NEWC
+	STU 64
+	.loc ../contracts/EverToTip3.sol, 151
+	ENDC
+	TRUE
+	PUSH S3
+	PUSHINT 0
+	GETGLOB 12
+}
+IFELSE
+PUSH S7
+GETGLOB 9
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+PUSHINT 3
+STZEROES
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 6
+NEWC
+STSLICECONST x73e22143
+STU 128
+STSLICE
+STU 128
+ROLLREV 3
+NEWC
+STSLICE
+STI 1
+STREF
+STBREFR
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 0
+BLKDROP 4
+
+.macro onAcceptTokensTransfer
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/EverToTip3.sol, 163
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $onAcceptTokensTransfer_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onAcceptTokensTransfer_internal_macro
+.loc ../contracts/EverToTip3.sol, 171
+CTOS
+.loc ../contracts/EverToTip3.sol, 172
+PUSHINT 0
+.loc ../contracts/EverToTip3.sol, 173
+PUSHINT 1000000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/EverToTip3.sol, 175
+OVER
+SBITS
+GTINT 7
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 176
+	OVER
+	LDU 8
+	POP S3
+	.loc ../contracts/EverToTip3.sol, 177
+	PUSH S2
+	SBITS
+	EQINT 64
+	OVER
+	EQINT 1
+	AND
+	DUP
+	PUSHCONT {
+		DROP
+		GETGLOB 9
+		PARSEMSGADDR
+		INDEX 3
+		PLDU 256
+		NEQINT 0
+		GETGLOB 9
+		GETGLOB 13
+		SDEQ
+		AND
+	}
+	IF
+	PUSHCONT {
+		.loc ../contracts/EverToTip3.sol, 180
+		PUSH S2
+		LDU 64
+		POP S4
+		.loc ../contracts/EverToTip3.sol, 183
+		NEWC
+		STU 64
+		.loc ../contracts/EverToTip3.sol, 186
+		ENDC
+		TRUE
+		PUSH S5
+		PUSHINT 0
+		GETGLOB 12
+		PUSH S11
+		GETGLOB 9
+		FALSE
+		NEWC
+		STSLICECONST x6_
+		STI 1
+		PUSHINT 3
+		STZEROES
+		STSLICE
+		PUSHINT 1
+		STUR 111
+		ROLLREV 6
+		NEWC
+		STSLICECONST x73e22143
+		STU 128
+		STSLICE
+		STU 128
+		ROLLREV 3
+		NEWC
+		STSLICE
+		STI 1
+		STREF
+		STBREFR
+		STBREFR
+		ENDC
+		PUSHINT 128
+		SENDRAWMSG
+	}
+	PUSHCONT {
+		PUSH S2
+		SBITS
+		PUSHINT 192
+		EQUAL
+		OVER
+		EQINT 0
+		AND
+		PUSHCONT {
+			.loc ../contracts/EverToTip3.sol, 195
+			PUSH S2
+			LDU 64
+			LDU 128
+			POP S5
+			.loc ../contracts/EverToTip3.sol, 197
+			PUSH3 S8, S1, S5
+			FALSE
+			NEWC
+			STSLICECONST x6_
+			STI 1
+			PUSHINT 3
+			STZEROES
+			STSLICE
+			PUSHSLICE x000000000000000000000000000061ef9801_
+			STSLICER
+			STU 64
+			STU 128
+			ENDC
+			PUSHINT 1
+			SENDRAWMSG
+			.loc ../contracts/EverToTip3.sol, 199
+			PUSH2 S1, S5
+			PUSHSLICE xc00000000000000000000000001bbe8058
+			NEWC
+			STSLICE
+			STSLICE
+			STU 64
+			ENDC
+			PUSHINT 0
+			SENDRAWMSG
+			.loc ../contracts/EverToTip3.sol, 202
+			SWAP
+			NEWC
+			STU 64
+			.loc ../contracts/EverToTip3.sol, 205
+			ENDC
+			TRUE
+			PUSH S6
+			ROLL 3
+			PUSH2 S7, S10
+			GETGLOB 9
+			FALSE
+			NEWC
+			STSLICECONST x6_
+			STI 1
+			PUSHINT 3
+			STZEROES
+			STSLICE
+			PUSHINT 1
+			STUR 111
+			ROLLREV 6
+			NEWC
+			STSLICECONST x73e22143
+			STU 128
+			STSLICE
+			STU 128
+			ROLLREV 3
+			NEWC
+			STSLICE
+			STI 1
+			STREF
+			STBREFR
+			STBREFR
+			ENDC
+			PUSHINT 128
+			SENDRAWMSG
+		}
+		PUSHCONT {
+			.loc ../contracts/EverToTip3.sol, 214
+			TRUE
+			POP S2
+		}
+		IFELSE
+	}
+	IFELSE
+	.loc ../contracts/EverToTip3.sol, 0
+	DROP
+}
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 217
+	DROP
+	TRUE
+}
+IFELSE
+.loc ../contracts/EverToTip3.sol, 220
+PUSHCONT {
+	.loc ../contracts/EverToTip3.sol, 221
+	PUSHREF {
+	}
+	.loc ../contracts/EverToTip3.sol, 222
+	TRUE
+	PUSH S3
+	PUSHINT 0
+	PUSH2 S7, S8
+	GETGLOB 9
+	FALSE
+	NEWC
+	STSLICECONST x6_
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	PUSHINT 1
+	STUR 111
+	ROLLREV 6
+	NEWC
+	STSLICECONST x73e22143
+	STU 128
+	STSLICE
+	STU 128
+	ROLLREV 3
+	NEWC
+	STSLICE
+	STI 1
+	STREF
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+	.loc ../contracts/EverToTip3.sol, 0
+}
+IF
+.loc ../contracts/EverToTip3.sol, 0
+BLKDROP 6
+
+.macro onAcceptTokensBurn
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/EverToTip3.sol, 234
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../contracts/EverToTip3.sol, 0
+CALLREF {
+	CALL $onAcceptTokensBurn_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onAcceptTokensBurn_internal_macro
+.loc ../contracts/EverToTip3.sol, 241
+GETGLOB 9
+PARSEMSGADDR
+INDEX 3
+PLDU 256
+NEQINT 0
+GETGLOB 9
+GETGLOB 11
+SDEQ
+AND
+THROWIFNOT 200
+.loc ../contracts/EverToTip3.sol, 242
+PUSHINT 1000000000
+PUSHINT 0
+RAWRESERVE
+.loc ../contracts/EverToTip3.sol, 244
+CTOS
+.loc ../contracts/EverToTip3.sol, 245
+LDU 64
+DROP
+.loc ../contracts/EverToTip3.sol, 247
+PUSH2 S0, S1
+PUSHSLICE xc00000000000000000000000006c148672
+NEWC
+STSLICE
+STSLICE
+STU 64
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 248
+SWAP
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+PUSHINT 3
+STZEROES
+STSLICE
+PUSHSLICE x00000000000000000000000000003a4c3fcf_
+STSLICER
+STU 64
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/EverToTip3.sol, 0
+BLKDROP 3
+
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDU 32
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHINT 1
+	OVER
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 32
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	PUSHINT 2
+	PUSH S2
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHREFSLICE {
+			.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+		}
+	}
+	IFNOT
+	PUSHINT 3
+	PUSH S3
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PUSHREFSLICE {
+			.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+		}
+	}
+	IFNOT
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
+.macro c7_to_c4
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
+GETGLOB 2
+NEWC
+STU 256
+STU 64
+STONE
+STU 32
+STSLICE
+ROTREV
+NEWC
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+ENDC
+POPROOT
+
+.macro upd_only_time_in_c4
+PUSHROOT
+CTOS
+LDU 256
+LDU 64
+NIP
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSH S2
+CTOS
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
+OVER
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP
+	PUSHCONT {
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG S2
+		GETGLOB 2
+	}
+	IFELSE
+	CHKSIGNU ; msgSlice isSigned
+	THROWIFNOT 40
+}
+PUSHCONT {
+	LDU 1 ; havePubkey msgSlice
+	SWAP
+	THROWIF 58
+}
+IFELSE
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU 32 ; funcId body
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.macro weverRoot
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 11
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000fe107c52
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro weverVault
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 12
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b75f660d
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro weverWallet
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 13
+OVER
+PUSHCONT {
+	PUSHSLICE xc00000000000000000000000009e3cdebb
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro public_function_selector
+DUP
+PUSHINT 928998925
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 507305659
+	EQUAL
+	IFJMPREF {
+		CALL $weverWallet$
+	}
+	DUP
+	PUSHINT 673997301
+	EQUAL
+	IFJMPREF {
+		CALL $onWeverWallet$
+	}
+	DUP
+	PUSHINT 873333796
+	EQUAL
+	IFJMPREF {
+		CALL $buildExchangePayload$
+	}
+	DUP
+	PUSHINT 928998925
+	EQUAL
+	IFJMPREF {
+		CALL $weverVault$
+	}
+}
+DUP
+PUSHINT 1893244873
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1371248571
+	EQUAL
+	IFJMPREF {
+		CALL $swapEvers$
+	}
+	DUP
+	PUSHINT 1745391003
+	EQUAL
+	IFJMPREF {
+		CALL $onAcceptTokensBurn$
+	}
+	DUP
+	PUSHINT 1756716863
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 1893244873
+	EQUAL
+	IFJMPREF {
+		CALL $onAcceptTokensTransfer$
+	}
+}
+DUP
+PUSHINT 2115009618
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 2057231915
+	EQUAL
+	IFJMPREF {
+		CALL $onAcceptTokensMint$
+	}
+	DUP
+	PUSHINT 2115009618
+	EQUAL
+	IFJMPREF {
+		CALL $weverRoot$
+	}
+}
+
