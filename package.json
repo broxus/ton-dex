@@ -18,10 +18,11 @@
     "mocha": "^8.2.1",
     "mocha-logger": "^1.0.7",
     "ton-client-js": "^0.28.1",
-    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#d3c1cd920c0320ffaab03b54c878dd0e06fed3c7"
+    "ton-eth-bridge-token-contracts": "git://github.com/broxus/ton-eth-bridge-token-contracts#d3c1cd920c0320ffaab03b54c878dd0e06fed3c7",
+    "ton-wton": "git://github.com/broxus/ton-wton#42a5aaf95b51b8a365d40ef3e95c1a6931f0a90c"
   },
   "devDependencies": {
     "@broxus/contracts": "^1.0.4",
-    "locklift": "^1.5.3"
+    "locklift": "^1.5.1"
   }
 }

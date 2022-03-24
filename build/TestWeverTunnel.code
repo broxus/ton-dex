@@ -1,0 +1,927 @@
+.version sol 0.57.1
+
+.macro constructor
+DROP
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+GETGLOB 6
+THROWIF 51
+OVER
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDREF
+	ENDS
+	CTOS
+}
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+}
+IFELSE
+LDMSGADDR
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 34
+PUSHREF {
+	.blob x54756e6e656c3a2057726f6e67206465706c6f79206b6579
+}
+GETGLOB 2
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+EQUAL
+THROWARGIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 35
+PUSHREF {
+	.blob x54756e6e656c3a20736f7572636520616e642064657374696e6174696f6e732073697a6520646966666572656e74
+}
+PUSH S3
+FIRST
+PUSH S3
+FIRST
+EQUAL
+THROWARGIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 36
+ACCEPT
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 38
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 40
+PUSHINT 0
+PUSHCONT {
+	PUSH2 S0, S2
+	FIRST
+	LESS
+}
+PUSHCONT {
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 41
+	PUSH2 S0, S1
+	SECOND
+	PUSHINT 32
+	DICTUGET
+	THROWIFNOT 50
+	PUSH2 S1, S3
+	SECOND
+	PUSHINT 32
+	DICTUGET
+	THROWIFNOT 50
+	GETGLOB 13
+	PUSHINT 267
+	DICTSET
+	SETGLOB 13
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 40
+	INC
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+}
+WHILE
+BLKDROP 3
+.loc ../contracts/tests/TestWeverTunnel.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro fallback_macro
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 25
+PUSHREF {
+	.blob x54756e6e656c3a204e6f7420736f75726365
+}
+GETGLOB 9
+GETGLOB 13
+PUSHINT 267
+DICTGET
+NULLSWAPIFNOT
+NIP
+THROWARGIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 46
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 49
+DEPTH
+ADDCONST -4
+PICK
+NEWC
+STSLICE
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 51
+GETGLOB 9
+GETGLOB 13
+PUSHINT 267
+DICTGET
+PUSHCONT {
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+}
+IFNOT
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 1
+STUR 111
+STBREF
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+DUP
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+
+.macro __getTunnels
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 54
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+CALLREF {
+	CALL $__getTunnels_internal_macro$
+}
+PUSH S2
+PUSHCONT {
+	PUSH S4
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 98
+	STZEROES
+	REVERSE 2, 1
+	STSLICECONST x869c0210
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	DROP2
+}
+IFELSE
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.globl	__getTunnels_internal
+.type	__getTunnels_internal, @function
+CALL $__getTunnels_internal_macro$
+
+.macro __getTunnels_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 54
+PUSHINT 0
+NEWDICT
+PAIR
+DUP
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 58
+GETGLOB 13
+DUP
+PUSHINT 267
+DICTMIN
+PUSHCONT {
+	DUP
+	ROT
+}
+PUSHCONT {
+	NULL
+	BLKPUSH 2, 0
+}
+IFELSE
+PUSHCONT {
+	PUSH S2
+	ISNULL
+	NOT
+}
+PUSHCONT {
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 59
+	PUSH2 S1, S5
+	UNPAIR
+	OVER
+	INC
+	ROLLREV 3
+	PUSHINT 32
+	DICTUSET
+	PAIR
+	POP S6
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 60
+	PUSH2 S0, S4
+	UNPAIR
+	OVER
+	INC
+	ROLLREV 3
+	PUSHINT 32
+	DICTUSET
+	PAIR
+	POP S5
+	.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+	PUSH2 S2, S3
+	PUSHINT 267
+	DICTGETNEXT
+	PUSHCONT {
+		DUP
+		ROT
+	}
+	PUSHCONT {
+		NULL
+		BLKPUSH 2, 0
+	}
+	IFELSE
+	BLKDROP2 3, 3
+}
+WHILE
+BLKDROP 4
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+
+.macro __updateTunnel
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 64
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+CALLREF {
+	CALL $__updateTunnel_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	__updateTunnel_internal
+.type	__updateTunnel_internal, @function
+CALL $__updateTunnel_internal_macro$
+
+.macro __updateTunnel_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 68
+SWAP
+GETGLOB 13
+PUSHINT 267
+DICTSET
+SETGLOB 13
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+
+.macro __removeTunnel
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 71
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+CALLREF {
+	CALL $__removeTunnel_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	__removeTunnel_internal
+.type	__removeTunnel_internal, @function
+CALL $__removeTunnel_internal_macro$
+
+.macro __removeTunnel_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 74
+GETGLOB 13
+PUSHINT 267
+DICTDEL
+DROP
+SETGLOB 13
+.loc ../node_modules/ton-wton/everscale/contracts/Tunnel.sol, 0
+
+.macro pause
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 31
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 0
+CALLREF {
+	CALL $pause_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	pause_internal
+.type	pause_internal, @function
+CALL $pause_internal_macro$
+
+.macro pause_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 16
+PUSHREF {
+	.blob x5061757361626c653a206e6f7420756e706175736564
+}
+GETGLOB 11
+NOT
+THROWARGIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 32
+TRUE
+SETGLOB 11
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 33
+PUSHREF {
+	.blob xc00000000000000000000000001a441a60
+}
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 0
+
+.macro unpause
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 39
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 0
+CALLREF {
+	CALL $unpause_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	unpause_internal
+.type	unpause_internal, @function
+CALL $unpause_internal_macro$
+
+.macro unpause_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 24
+PUSHREF {
+	.blob x5061757361626c653a206e6f7420706175736564
+}
+GETGLOB 11
+THROWARGIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 40
+FALSE
+SETGLOB 11
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 41
+PUSHREF {
+	.blob xc000000000000000000000000011d865d4
+}
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/utils/Pausable.sol, 0
+
+.globl	setOwnership_internal
+.type	setOwnership_internal, @function
+CALL $setOwnership_internal_macro$
+
+.macro setOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 24
+GETGLOB 10
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 26
+OVER
+SETGLOB 10
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 28
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICECONST x6115f072
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro transferOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 34
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $transferOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro transferOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 37
+DUP
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SDEQ
+THROWIF 1102
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 39
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro renounceOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 45
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $renounceOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro renounceOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 46
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 48
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDMSGADDR
+LDI 1
+LDREF
+ENDS
+CTOS
+LDU 256
+LDDICT
+ENDS
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	PUSHINT 0
+	PUSHINT 1
+	PUSH S3
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 256
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	NEWDICT
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	FALSE
+	SETGLOB 11
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
+.macro c7_to_c4
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
+GETGLOB 2
+NEWC
+STU 256
+STU 64
+STONE
+STSLICE
+STI 1
+ROTREV
+NEWC
+STU 256
+STDICT
+STBREFR
+ENDC
+POPROOT
+
+.macro upd_only_time_in_c4
+PUSHROOT
+CTOS
+LDU 256
+LDU 64
+NIP
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSH S2
+CTOS
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+PUSHCONT {
+	DROP
+	CALLREF {
+		CALL $fallback_macro$
+	}
+	THROW 0
+}
+IFNOT
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+DROP2
+CALLREF {
+	CALL $fallback_macro$
+}
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
+OVER
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP
+	PUSHCONT {
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG S2
+		GETGLOB 2
+	}
+	IFELSE
+	DUP
+	SETGLOB 5
+	CHKSIGNU ; msgSlice isSigned
+	THROWIFNOT 40
+}
+PUSHCONT {
+	LDU 1 ; havePubkey msgSlice
+	SWAP
+	THROWIF 58
+}
+IFELSE
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU 32 ; funcId body
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+DROP2
+CALLREF {
+	CALL $fallback_macro$
+}
+
+.macro owner
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 10
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000df0bcfde
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro paused
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 11
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b08d66d1
+	NEWC
+	STSLICE
+	STI 1
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro public_function_selector
+DUP
+PUSHINT 814573265
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 110887440
+	EQUAL
+	IFJMPREF {
+		CALL $__getTunnels$
+	}
+	DUP
+	PUSHINT 235197086
+	EQUAL
+	IFJMPREF {
+		CALL $transferOwnership$
+	}
+	DUP
+	PUSHINT 327451255
+	EQUAL
+	IFJMPREF {
+		CALL $__updateTunnel$
+	}
+	DUP
+	PUSHINT 814573265
+	EQUAL
+	IFJMPREF {
+		CALL $paused$
+	}
+}
+DUP
+PUSHINT 1729444094
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 840284606
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 1105452580
+	EQUAL
+	IFJMPREF {
+		CALL $pause$
+	}
+	DUP
+	PUSHINT 1594609630
+	EQUAL
+	IFJMPREF {
+		CALL $owner$
+	}
+	DUP
+	PUSHINT 1729444094
+	EQUAL
+	IFJMPREF {
+		CALL $renounceOwnership$
+	}
+}
+DUP
+PUSHINT 2114348389
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1916555405
+	EQUAL
+	IFJMPREF {
+		CALL $unpause$
+	}
+	DUP
+	PUSHINT 2114348389
+	EQUAL
+	IFJMPREF {
+		CALL $__removeTunnel$
+	}
+}
+

@@ -1,0 +1,1259 @@
+.version sol 0.57.1
+
+.macro constructor
+DROP
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+GETGLOB 6
+THROWIF 51
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
+LDU 128
+LDU 128
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/utils/CheckPubKey.sol, 9
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+GETGLOB 2
+EQUAL
+THROWIFNOT 1103
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 51
+ACCEPT
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 53
+ROLL 5
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 55
+GETGLOB 12
+ROLL 5
+SETINDEX 1
+DUP
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 56
+ROLL 4
+SETINDEX 0
+DUP
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 57
+ROLL 3
+SETINDEX 2
+DUP
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 58
+ROT
+SETINDEX 3
+DUP
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 59
+SWAP
+SETINDEX 4
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 61
+CALLREF {
+	CALL $setUpTokenWallet_internal_macro$
+}
+.loc ../contracts/tests/TestWeverVault.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	setUpTokenWallet_internal
+.type	setUpTokenWallet_internal, @function
+CALL $setUpTokenWallet_internal_macro$
+
+.macro setUpTokenWallet_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 69
+GETGLOB 12
+INDEX 3
+MYADDR
+GETGLOB 12
+SECOND
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHSLICE x43b9aca00000000000000000000000000003_
+STSLICER
+ROTREV
+PUSHSLICE x31edd4c750bfca9f
+NEWC
+STSLICE
+STSLICE
+STU 128
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro receiveTokenWalletAddress
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 83
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $receiveTokenWalletAddress_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro receiveTokenWalletAddress_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 86
+GETGLOB 9
+GETGLOB 12
+SECOND
+SDEQ
+THROWIFNOT 102
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 88
+SETGLOB 13
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro drain
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 96
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $drain_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.globl	drain_internal
+.type	drain_internal, @function
+CALL $drain_internal_macro$
+
+.macro drain_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 99
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 101
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro setConfiguration
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 109
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
+LDU 128
+LDU 128
+ROLLREV 5
+TUPLE 5
+SWAP
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $setConfiguration_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setConfiguration_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 112
+GETGLOB 12
+SECOND
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 114
+SWAP
+DUP
+SETGLOB 12
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 116
+SECOND
+SDEQ
+PUSHCONT {
+	.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 117
+	CALLREF {
+		CALL $setUpTokenWallet_internal_macro$
+	}
+	.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+}
+IFNOT
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro withdraw
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 127
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $withdraw_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro withdraw_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 130
+NEGATE
+CALLREF {
+	CALL $updateTotalWrapped_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 132
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 134
+GETGLOB 11
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro grant
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 143
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $grant_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro grant_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 146
+DUP
+DEPTH
+ADDCONST -2
+PICK
+PUSHINT 1000000000
+ADD
+UFITS 128
+LEQ
+THROWIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 148
+CALLREF {
+	CALL $updateTotalWrapped_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 150
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 152
+GETGLOB 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro receive_macro
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 164
+DEPTH
+ADDCONST -2
+PICK
+GETGLOB 12
+THIRD
+GREATER
+THROWIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 166
+DEPTH
+ADDCONST -2
+PICK
+GETGLOB 12
+THIRD
+SUB
+UFITS 128
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 168
+DUP
+CALLREF {
+	CALL $updateTotalWrapped_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 170
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 172
+PUSHREF {
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 174
+TRUE
+GETGLOB 9
+GETGLOB 12
+INDEX 3
+GETGLOB 9
+ROLL 5
+GETGLOB 12
+FIRST
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 6
+NEWC
+STSLICECONST x20bfb3b8
+STU 128
+STSLICE
+STU 128
+ROLLREV 3
+NEWC
+STSLICE
+STI 1
+STREF
+STBREFR
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+
+.globl	updateTotalWrapped_internal
+.type	updateTotalWrapped_internal, @function
+CALL $updateTotalWrapped_internal_macro$
+
+.macro updateTotalWrapped_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 189
+GETGLOB 14
+ADD
+UFITS 128
+SETGLOB 14
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro wrap
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 200
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $wrap_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro wrap_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 206
+DEPTH
+ADDCONST -2
+PICK
+PUSH S4
+GETGLOB 12
+THIRD
+ADD
+UFITS 128
+GEQ
+THROWIFNOT 101
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 211
+PUSH S3
+CALLREF {
+	CALL $updateTotalWrapped_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 213
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 215
+TRUE
+ROT
+GETGLOB 12
+INDEX 3
+BLKSWAP 2, 4
+SWAP
+GETGLOB 12
+FIRST
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 6
+NEWC
+STSLICECONST x20bfb3b8
+STU 128
+STSLICE
+STU 128
+ROLLREV 3
+NEWC
+STSLICE
+STI 1
+STREF
+STBREFR
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+
+.macro onAcceptTokensTransfer
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 230
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+CALLREF {
+	CALL $onAcceptTokensTransfer_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onAcceptTokensTransfer_internal_macro
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 238
+ROLL 5
+GETGLOB 12
+SECOND
+SDEQ
+THROWIFNOT 102
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 239
+GETGLOB 9
+GETGLOB 13
+SDEQ
+THROWIFNOT 105
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 241
+PUSH S4
+NEGATE
+CALLREF {
+	CALL $updateTotalWrapped_internal_macro$
+}
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 243
+GETGLOB 14
+GETGLOB 12
+INDEX 4
+ADD
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 246
+ROLL 3
+ROT
+ROLL 4
+GETGLOB 13
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 4
+NEWC
+STSLICECONST x562548ad
+STU 128
+STSLICE
+ROTREV
+NEWC
+STSLICE
+STREF
+STBREFR
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../node_modules/ton-wton/everscale/contracts/Vault.sol, 0
+DROP
+
+.globl	setOwnership_internal
+.type	setOwnership_internal, @function
+CALL $setOwnership_internal_macro$
+
+.macro setOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 24
+GETGLOB 11
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 26
+OVER
+SETGLOB 11
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 28
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICECONST x6115f072
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro transferOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 34
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $transferOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro transferOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 37
+DUP
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SDEQ
+THROWIF 1102
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 39
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro renounceOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 45
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $renounceOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro renounceOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 46
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 48
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDU 256
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
+LDU 128
+LDU 128
+ROLLREV 5
+TUPLE 5
+SWAP
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
+ENDS
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHINT 1
+	OVER
+	PUSHINT 64
+	DICTUGET
+	PUSHCONT {
+		PLDU 256
+	}
+	PUSHCONT {
+		PUSHINT 0
+	}
+	IFELSE
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	BLKPUSH 2, 0
+	PUSHINT 0
+	BLKPUSH 2, 0
+	TUPLE 5
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	PUSHINT 0
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
+.macro c7_to_c4
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
+GETGLOB 2
+NEWC
+STU 256
+STU 64
+STONE
+STU 256
+ROLLREV 4
+NEWC
+STSLICE
+SWAP
+UNTUPLE 5
+REVERSE 6, 0
+ROLLREV 7
+NEWC
+STSLICE
+ROLLREV 6
+NEWC
+STSLICE
+STU 128
+STU 128
+STU 128
+ROTREV
+NEWC
+STSLICE
+STU 128
+STBREFR
+STBREFR
+STBREFR
+STBREFR
+ENDC
+POPROOT
+
+.macro upd_only_time_in_c4
+PUSHROOT
+CTOS
+LDU 256
+LDU 64
+NIP
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSH S2
+CTOS
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+OVER
+SEMPTY ; isEmpty
+DUP
+PUSHCONT {
+	DROP
+	OVER
+	LDUQ 32  ; [funcId] body' ok
+	THROWIFNOT 60
+	OVER
+	EQINT 0 ; funcId body' isZero
+	DUP
+	PUSHCONT {
+		BLKDROP2 2, 1
+	}
+	IF
+}
+IFNOT
+IFJMPREF {
+	CALL $receive_macro$
+}
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
+OVER
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP
+	PUSHCONT {
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG S2
+		GETGLOB 2
+	}
+	IFELSE
+	DUP
+	SETGLOB 5
+	CHKSIGNU ; msgSlice isSigned
+	THROWIFNOT 40
+}
+PUSHCONT {
+	LDU 1 ; havePubkey msgSlice
+	SWAP
+	THROWIF 58
+}
+IFELSE
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU 32 ; funcId body
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.macro _randomNonce
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 10
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000bb53331f
+	NEWC
+	STSLICE
+	STU 256
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro owner
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 11
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000df0bcfde
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro configuration
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 12
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000001
+	NEWC
+	STSLICE
+	SWAP
+	NEWC
+	STSLICECONST x8f439147
+	SWAP
+	UNTUPLE 5
+	REVERSE 6, 0
+	STSLICE
+	ROLLREV 4
+	NEWC
+	STSLICE
+	STU 128
+	STU 128
+	STU 128
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro token_wallet
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 13
+OVER
+PUSHCONT {
+	PUSHSLICE xc00000000000000000000000009af72ec9
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro total_wrapped
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 14
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000e7948292
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro public_function_selector
+DUP
+PUSHINT 313391878
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 154467053
+	EQUAL
+	IFJMPREF {
+		CALL $setConfiguration$
+	}
+	DUP
+	PUSHINT 235197086
+	EQUAL
+	IFJMPREF {
+		CALL $transferOwnership$
+	}
+	DUP
+	PUSHINT 256086343
+	EQUAL
+	IFJMPREF {
+		CALL $configuration$
+	}
+	DUP
+	PUSHINT 313391878
+	EQUAL
+	IFJMPREF {
+		CALL $withdraw$
+	}
+}
+DUP
+PUSHINT 973828957
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 447738777
+	EQUAL
+	IFJMPREF {
+		CALL $drain$
+	}
+	DUP
+	PUSHINT 452406985
+	EQUAL
+	IFJMPREF {
+		CALL $token_wallet$
+	}
+	DUP
+	PUSHINT 724033212
+	EQUAL
+	IFJMPREF {
+		CALL $constructor$
+	}
+	DUP
+	PUSHINT 973828957
+	EQUAL
+	IFJMPREF {
+		CALL $grant$
+	}
+}
+DUP
+PUSHINT 1729444094
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 995308319
+	EQUAL
+	IFJMPREF {
+		CALL $_randomNonce$
+	}
+	DUP
+	PUSHINT 1354746527
+	EQUAL
+	IFJMPREF {
+		CALL $receiveTokenWalletAddress$
+	}
+	DUP
+	PUSHINT 1594609630
+	EQUAL
+	IFJMPREF {
+		CALL $owner$
+	}
+	DUP
+	PUSHINT 1729444094
+	EQUAL
+	IFJMPREF {
+		CALL $renounceOwnership$
+	}
+}
+DUP
+PUSHINT 1893244873
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1737786002
+	EQUAL
+	IFJMPREF {
+		CALL $total_wrapped$
+	}
+	DUP
+	PUSHINT 1755076547
+	EQUAL
+	IFJMPREF {
+		CALL $wrap$
+	}
+	DUP
+	PUSHINT 1893244873
+	EQUAL
+	IFJMPREF {
+		CALL $onAcceptTokensTransfer$
+	}
+}
+
